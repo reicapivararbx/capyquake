@@ -1,0 +1,3 @@
+[     784ms] [ERROR] Not allowed to load local resource: file:///tmp/opencode/def-vis-tab1.png @ about:blank:0
+[   39133ms] [ERROR] Access to image at 'http://localhost:8099/def-vis-tab1.png' from origin 'null' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource. @ about:blank:0
+[   39134ms] [ERROR] Failed to load resource: net::ERR_FAILED @ http://localhost:8099/def-vis-tab1.png:0

@@ -49,14 +49,17 @@ async (page) => {
   // O handler em player.js define this.locked = true, destravando o update() (movimento).
   async function injectPointerLock(p) {
     return await p.evaluate(() => {
-      const canvas = document.querySelector('canvas');
+      // O canvas do jogo é appendado direto no body pelo renderer; o #fire-canvas
+      // fica dentro de #celebration. querySelector('canvas') genérico pegaria o errado.
+      const canvas = document.querySelector('body > canvas')
+        || Array.from(document.querySelectorAll('canvas')).find(c => c.id !== 'fire-canvas');
       if (!canvas) return 'NO_CANVAS';
       Object.defineProperty(document, 'pointerLockElement', {
         configurable: true,
         get: () => canvas,
       });
       document.dispatchEvent(new Event('pointerlockchange'));
-      return 'INJECTED';
+      return 'INJECTED canvas=' + (canvas.id || '(renderer)');
     });
   }
 
