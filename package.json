@@ -7,7 +7,7 @@
     "build": "vite build",
     "server": "node server/index.js",
     "start": "concurrently \"npm run dev\" \"npm run server\"",
-    "tunnel": "cloudflared tunnel --url http://localhost:3000",
+    "tunnel": "cloudflared tunnel --url http://localhost:8080",
     "world": "concurrently -k -s first \"npm run start\" \"npm run tunnel\""
   },
   "dependencies": {

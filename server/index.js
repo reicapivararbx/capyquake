@@ -1,8 +1,38 @@
+import { createServer } from 'http';
+import { readFile, stat } from 'fs/promises';
+import { extname, join, normalize, relative, resolve } from 'path';
+import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
 import { networkInterfaces } from 'os';
 
-const PORT = 8080;
-const wss = new WebSocketServer({ port: PORT });
+const HOST = '0.0.0.0';
+const PORT = Number.parseInt(process.env.PORT || '8080', 10);
+const __dirname = fileURLToPath(new URL('.', import.meta.url));
+const DIST_DIR = resolve(__dirname, '../dist');
+
+const MIME_TYPES = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.gif': 'image/gif',
+  '.webp': 'image/webp',
+  '.svg': 'image/svg+xml',
+  '.ico': 'image/x-icon',
+  '.mp3': 'audio/mpeg',
+  '.wav': 'audio/wav',
+  '.ogg': 'audio/ogg',
+  '.m4a': 'audio/mp4',
+  '.wasm': 'application/wasm',
+  '.glb': 'model/gltf-binary',
+  '.gltf': 'model/gltf+json',
+  '.obj': 'text/plain; charset=utf-8',
+  '.mtl': 'text/plain; charset=utf-8'
+};
 
 const rooms = new Map();
 let roomIdCounter = 0;
@@ -99,6 +129,103 @@ function getAvailableRoom() {
   return room;
 }
 
+function sendNotFound(res) {
+  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('Not found');
+}
+
+function getStaticFilePath(pathname) {
+  let decodedPath;
+  try {
+    decodedPath = decodeURIComponent(pathname.split('?')[0]);
+  } catch {
+    return null;
+  }
+
+  const requestPath = decodedPath === '/' ? '/index.html' : decodedPath;
+  const normalizedPath = normalize(requestPath).replace(/^[/\\]+/, '');
+  const filePath = resolve(join(DIST_DIR, normalizedPath));
+  const rel = relative(DIST_DIR, filePath);
+
+  if (rel.startsWith('..') || rel === '..' || filePath === DIST_DIR) {
+    return null;
+  }
+
+  return filePath;
+}
+
+async function serveStatic(req, res) {
+  let pathname;
+  try {
+    pathname = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`).pathname;
+  } catch {
+    sendNotFound(res);
+    return;
+  }
+
+  const filePath = getStaticFilePath(pathname);
+  if (!filePath) {
+    sendNotFound(res);
+    return;
+  }
+
+  const ext = extname(filePath).toLowerCase();
+  const contentType = MIME_TYPES[ext];
+  if (!contentType) {
+    sendNotFound(res);
+    return;
+  }
+
+  try {
+    const fileStat = await stat(filePath);
+    if (!fileStat.isFile()) {
+      sendNotFound(res);
+      return;
+    }
+
+    const body = await readFile(filePath);
+    res.writeHead(200, {
+      'Content-Type': contentType,
+      'Content-Length': body.length,
+      'Cache-Control': ext === '.html' ? 'no-cache' : 'public, max-age=31536000, immutable'
+    });
+    res.end(body);
+  } catch {
+    sendNotFound(res);
+  }
+}
+
+const server = createServer((req, res) => {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8' });
+    res.end('Method not allowed');
+    return;
+  }
+
+  serveStatic(req, res);
+});
+
+const wss = new WebSocketServer({ noServer: true });
+
+server.on('upgrade', (req, socket, head) => {
+  let pathname;
+  try {
+    pathname = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`).pathname;
+  } catch {
+    socket.destroy();
+    return;
+  }
+
+  if (pathname !== '/ws') {
+    socket.destroy();
+    return;
+  }
+
+  wss.handleUpgrade(req, socket, head, (ws) => {
+    wss.emit('connection', ws, req);
+  });
+});
+
 wss.on('connection', (ws) => {
   let currentRoom = null;
 
@@ -134,12 +261,17 @@ wss.on('connection', (ws) => {
   });
 });
 
-console.log(`CapiQuake server running on ws://localhost:${PORT}`);
+server.listen(PORT, HOST, () => {
+  const address = server.address();
+  const actualPort = typeof address === 'object' && address ? address.port : PORT;
+  console.log(`CapiQuake server running on http://localhost:${actualPort}`);
+  console.log(`CapiQuake WebSocket available on ws://localhost:${actualPort}/ws`);
 
-const lanIps = Object.values(networkInterfaces())
-  .flat()
-  .filter(i => i && i.family === 'IPv4' && !i.internal)
-  .map(i => i.address);
-if (lanIps.length) {
-  console.log('Jogar na mesma rede (LAN): http://' + lanIps[0] + ':3000');
-}
+  const lanIps = Object.values(networkInterfaces())
+    .flat()
+    .filter(i => i && i.family === 'IPv4' && !i.internal)
+    .map(i => i.address);
+  if (lanIps.length) {
+    console.log('Jogar na mesma rede (LAN): http://' + lanIps[0] + ':' + actualPort);
+  }
+});

@@ -12,7 +12,11 @@ export class Network {
     this._reconnectTimer = null;
   }
 
-  connect() {
+  connect(name) {
+    if (name) this.setPlayerInfo(name);
+    const intendedPlayerName = this.playerName || 'Jogador';
+    this.playerName = intendedPlayerName;
+
     if (this._reconnectTimer) {
       clearTimeout(this._reconnectTimer);
       this._reconnectTimer = null;
@@ -28,7 +32,7 @@ export class Network {
       this.connected = true;
       if (!this.joined) {
         this.joined = true;
-        this.sendJoin(this.playerName || 'Jogador');
+        this.sendJoin(intendedPlayerName);
       }
     };
 
@@ -81,6 +85,7 @@ export class Network {
       this.ws = null;
     }
     this.connected = false;
+    this.joined = false;
   }
 
   send(type, data) {
@@ -111,7 +116,8 @@ export class Network {
   }
 
   setPlayerInfo(name, color) {
-    if (name) this.playerName = name;
+    const nextName = String(name || '').trim();
+    if (nextName) this.playerName = nextName;
     if (color) this.color = color;
   }
 

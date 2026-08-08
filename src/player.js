@@ -227,7 +227,7 @@ export class Player {
 
   setSpeedMultiplier(mult) {
     this.speedMultiplier = mult;
-    this.moveSpeed = 15 * mult;
+    this.moveSpeed = 12,5 * mult;
   }
 
   lock() {

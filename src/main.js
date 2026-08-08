@@ -72,15 +72,28 @@ document.getElementById('btn-test-mode').addEventListener('click', () => {
   showTutorial(() => startGame({ mode: 'test', botCount: 5, animalCount: 300, playerName, map: null }));
 });
 
+function getLobbyPlayerName() {
+  const lobbyInput = document.getElementById('lobby-player-name');
+  const lobbyName = lobbyInput ? lobbyInput.value.trim() : '';
+  return lobbyName || menu.getPlayerName();
+}
+
 menu.onMultiplayer(() => {
+  const playerName = getLobbyPlayerName();
+  const lobbyInput = document.getElementById('lobby-player-name');
+  if (lobbyInput && !lobbyInput.value.trim()) lobbyInput.value = playerName;
+  network.setPlayerInfo(playerName);
   menu.showLobby();
-  network.connect();
+  network.connect(playerName);
 });
 
 menu.onStartGame(() => {
-  const name = document.getElementById('lobby-player-name').value.trim() || 'Jogador';
+  const name = getLobbyPlayerName();
   network.setPlayerInfo(name);
-  if (network.connected) network.sendJoin(name);
+  if (network.connected && !network.joined) {
+    network.joined = true;
+    network.sendJoin(name);
+  }
   menu.showMapVote((map) => {
     network.send('startGame', { map, animalCount: 20 });
   });
@@ -94,6 +107,7 @@ menu.onBackToMenu(() => {
 
 network.onGameStart((data) => {
   menu.hideLobby();
+  menu.hideMapVote();
   game = new Game({ mode: 'multiplayer', network, playerName: network.playerName, ...data });
   game.start();
 });
