@@ -10,11 +10,11 @@ export class Celebration {
 
     if (playerDied && killedByBoss) {
       titleEl.textContent = 'SONEGADOR!';
-      subtitleEl.textContent = 'Voce nao pagou seus impostos e o governo te viu sonegar!';
+      subtitleEl.textContent = 'Voce não pagou seus impostos e o governo te viu sonegar!';
       celebEl.querySelector('#btn-play-again').textContent = 'Pagar as multas e recomecar';
     } else if (playerDied) {
       titleEl.textContent = 'PRESO!';
-      subtitleEl.textContent = 'Voce e seus amigos cometeram muitos crimes e foram pegos pelo IBAMA!';
+      subtitleEl.textContent = 'Você e seus amigos cometeram muitos crimes e foram pegos pelo IBAMA!';
       celebEl.querySelector('#btn-play-again').textContent = 'Pagar as multas e recomecar';
     } else {
       titleEl.textContent = 'PRESOS!';

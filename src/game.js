@@ -809,7 +809,7 @@ export class Game {
         } else if (pickup.type === 'ammo') {
           this.weapon.addAmmo(null, pickup.ammoCount);
           const text = pickup.ammoCount === Infinity ? 'INF' : pickup.ammoCount;
-          this.hud.showMessage(`MUNICAO! +${text} balas!`);
+          this.hud.showMessage(`MUNIÇãO! +${text} balas!`);
           this.weapon.updateDisplay();
         }
         this.hud.updateHealth(this.playerHealth, this.playerMaxHealth);
@@ -852,7 +852,7 @@ export class Game {
       }
       case 'red':
         this.playerHealth += this.playerMaxHealth * 0.5;
-        this.hud.showMessage('POCAO VERMELHA! +50% vida extra!');
+        this.hud.showMessage('Poção VERMELHA! +50% vida extra!');
         break;
       case 'blue':
         this.playerHealth = Math.min(this.playerMaxHealth, this.playerHealth + this.playerMaxHealth * 0.3);
@@ -870,7 +870,7 @@ export class Game {
         this.speedBoost = true;
         this.speedBoostTimer = 20;
         this.player.setSpeedMultiplier(1.5);
-        this.hud.showMessage('POCAO MARROM! Velocidade!');
+        this.hud.showMessage('POCAO MARROM! + Velocidade!');
         break;
       case 'gray':
         this.invincible = true;
@@ -1289,13 +1289,13 @@ export class Game {
         }
       }
     }
-    this.hud.showMessage('PEIDO! +5 dano e fuga!');
+    this.hud.showMessage('PEIDO! +5 dano nos bixos');
   }
 
   useTeleport() {
     if (!this.shopPurchases.teleport) return;
     if (this.teleportCooldown > 0) {
-      this.hud.showCooldownMessage(`Espere! Faltam ${Math.ceil(this.teleportCooldown)} segundos.`);
+      this.hud.showCooldownMessage(`Espere ai, amigão! Bah... Faltam ${Math.ceil(this.teleportCooldown)} segundos pra tu usar dnv...`);
       return;
     }
     this.teleportCooldown = 15;
@@ -1392,7 +1392,7 @@ export class Game {
       this.performRevive();
       return;
     }
-    this.hud.showCooldownMessage('Sem dinheiro suficiente para reviver!');
+    this.hud.showCooldownMessage('Tas tolo eh? tas Sem dinheiro pra reviver...');
   }
 
   performRevive() {
@@ -1430,7 +1430,7 @@ export class Game {
         this.tokens -= 1;
         this.saveBalance();
       } else {
-        this.hud.showCooldownMessage('Sem dinheiro ou tokens!');
+        this.hud.showCooldownMessage('TU TA SEM GRANA E TOKENS CARA, VAI TRABALHAR!');
         return;
       }
       this.playerMaxHealth += 50;
@@ -1452,7 +1452,7 @@ export class Game {
         if (countEl) countEl.textContent = Math.max(0, this.reviveCount - this.usedRevives);
         this.hud.showMessage('REVIVE COMPRADO!');
       } else {
-        this.hud.showCooldownMessage('Sem tokens!');
+        this.hud.showCooldownMessage('Sem tokens! :(');
       }
     };
     shop.appendChild(buyLife);
@@ -1512,7 +1512,7 @@ export class Game {
     const spawn = this.pickBossSpawn();
     if (!spawn) return;
     this.bossActive = true;
-    this.hud.showBossMessage('MINI BOSS A VISTA!!!');
+    this.hud.showBossMessage('ANÃO VEI! O MINI GOVERNO APARECEU! ');
     this.hud.showBossBar();
     this.boss = new MiniBoss(this.scene, spawn.x, spawn.z, this.arena);
     this.boss.isMiniBoss = true;
@@ -1527,7 +1527,7 @@ export class Game {
     const x = c * 4 + 2;
     const z = r * 4 + 2;
     this.bossActive = true;
-    this.hud.showBossMessage('CHEFE DA ONDA A VISTA!!!');
+    this.hud.showBossMessage('ANÃO VEI! O GOVERNO DA ONDA APARECEU!');
     this.hud.showBossBar();
     this.boss = new Boss(this.scene, x, z, this.arena);
     this.boss.isWaveBoss = true;
@@ -1838,7 +1838,7 @@ export class Game {
     if (!def) return;
     this.achievements.add(id);
     localStorage.setItem('capiquake_achievements', JSON.stringify([...this.achievements]));
-    this.hud.showMessage(`CONQUISTA DESBLOQUEADA: ${def.name}!`);
+    this.hud.showMessage(`BOA GURIZÃO! CONQUISTA DESBLOQUEADA: ${def.name}!`);
   }
 
   checkAchievements() {
@@ -2022,7 +2022,7 @@ endGame() {
     this.voidTimer -= delta;
     if (this.voidTimer <= 0) {
       this.voidActive = false;
-      this.hud.showMessage('Habilidade Void acabou!');
+      this.hud.showMessage('Bah Tche Cabou a habilidade void...!');
     }
   }
 
@@ -2149,7 +2149,7 @@ endGame() {
             this.hud.updateHealth(0, this.playerMaxHealth);
             const killerName = target.config ? target.config.name : 'ANIMAL';
             this.hud.addKillEntry(killerName, this.playerName);
-            this.hud.showMessage('VOCE MORREU!');
+            this.hud.showMessage('CARA... TU MORREU!!');
             this.showDeathScreen();
           }
         }
@@ -2167,7 +2167,7 @@ endGame() {
           this.killedByBoss = true;
           this.hud.updateHealth(0, this.playerMaxHealth);
           this.hud.addKillEntry('GOVERNO FEDERAL', this.playerName);
-          this.hud.showMessage('VOCE MORREU!');
+          this.hud.showMessage('CARA... TU MORREU!!');
           this.showDeathScreen();
         }
       }

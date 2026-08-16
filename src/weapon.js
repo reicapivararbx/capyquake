@@ -44,7 +44,7 @@ export const WEAPONS = {
     precoMoney: 490, precoTokens: 490, preco3RodadasMoney: 24500, preco3RodadasTokens: 24
   },
   sniper: {
-    name: 'SNIPER', damage: 120, type: 'hitscan', range: 200, cooldown: 2.0, ammoType: 'sniper',
+    name: 'SNIPER', damage: 120, type: 'hitscan', range: 100000000000000000000, cooldown: 2.0, ammoType: 'sniper',
     precoMoney: 50000, precoTokens: 50
   },
 };
@@ -570,35 +570,64 @@ export class Weapon {
     const brassMat = new THREE.MeshLambertMaterial({ color: 0xb88b35 });
     const stringMat = new THREE.MeshLambertMaterial({ color: 0xccccaa });
 
-    switch (id) {
-      case 'pistola': {
-        const body = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.34, 8), darkMat);
-        body.position.set(0.3, -0.22, -0.32);
-        group.add(body);
-        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.32, 8), mat1);
-        barrel.position.set(0.3, -0.2, -0.62);
-        barrel.rotation.x = Math.PI / 2;
-        group.add(barrel);
-        const muzzle = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.03, 6), brassMat);
-        muzzle.position.set(0.3, -0.2, -0.8);
-        muzzle.rotation.x = Math.PI / 2;
-        group.add(muzzle);
-        const hammer = new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 4), mat1);
-        hammer.position.set(0.3, -0.16, -0.12);
-        group.add(hammer);
-        const sight = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.025, 0.07, 4), brassMat);
-        sight.position.set(0.3, -0.16, -0.5);
-        group.add(sight);
-        const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.032, 0.14, 6), leatherMat);
-        grip.position.set(0.3, -0.33, -0.16);
-        grip.rotation.x = 0.3;
-        group.add(grip);
-        const triggerGuard = new THREE.Mesh(new THREE.TorusGeometry(0.04, 0.009, 4, 6, Math.PI), brassMat);
-        triggerGuard.position.set(0.3, -0.29, -0.28);
-        triggerGuard.rotation.y = Math.PI / 2;
-        group.add(triggerGuard);
-        break;
-      }
+  switch (id) {
+  case 'pistola': {
+    const body = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.04, 0.045, 0.34, 8),
+      darkMat
+    );
+    body.position.set(0.3, -0.22, -0.32);
+    body.rotation.x = Math.PI / 2;
+    group.add(body);
+
+    const barrel = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.024, 0.024, 0.32, 8),
+      mat1
+    );
+    barrel.position.set(0.3, -0.2, -0.62);
+    barrel.rotation.x = Math.PI / 2;
+    group.add(barrel);
+
+    const muzzle = new THREE.Mesh(
+      new THREE.ConeGeometry(0.06, 0.03, 6),
+      brassMat
+    );
+    muzzle.position.set(0.3, -0.2, -0.8);
+    muzzle.rotation.x = -Math.PI / 2;
+    group.add(muzzle);
+
+    const hammer = new THREE.Mesh(
+      new THREE.SphereGeometry(0.022, 6, 4),
+      mat1
+    );
+    hammer.position.set(0.3, -0.16, -0.12);
+    group.add(hammer);
+
+    const sight = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.025, 0.07, 4),
+      brassMat
+    );
+    sight.position.set(0.3, -0.16, -0.5);
+    group.add(sight);
+
+    const grip = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.018, 0.032, 0.14, 6),
+      leatherMat
+    );
+    grip.position.set(0.3, -0.33, -0.16);
+    grip.rotation.x = 0.3;
+    group.add(grip);
+
+    const triggerGuard = new THREE.Mesh(
+      new THREE.TorusGeometry(0.04, 0.009, 4, 6, Math.PI),
+      brassMat
+    );
+    triggerGuard.position.set(0.3, -0.29, -0.28);
+    triggerGuard.rotation.y = Math.PI / 2;
+    group.add(triggerGuard);
+
+    break;
+  }
       case 'funda': {
         const pouch = new THREE.Mesh(new THREE.IcosahedronGeometry(0.075, 1), leatherMat);
         pouch.position.set(0.3, -0.22, -0.4);

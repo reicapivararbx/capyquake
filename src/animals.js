@@ -3,6 +3,39 @@ import { Audio } from './audio.js';
 
 let animalId = 0;
 
+// Categorias visuais usadas para dar materiais e movimentos diferentes a cada bicho.
+const FLYING_TYPES = new Set([
+  'tucano', 'arara', 'harpia', 'urubu', 'gaviao', 'coruja', 'aguia',
+  'falcao', 'pelicano', 'flamingo', 'condor', 'grifo', 'fenix',
+  'pegasus', 'anjo'
+]);
+
+const AQUATIC_TYPES = new Set([
+  'pirarucu', 'boto', 'piranha', 'tubarao', 'kraken', 'iara'
+]);
+
+const SCALED_TYPES = new Set([
+  'jacare', 'sucuri', 'tatu', 'tartaruga', 'cobracoral', 'cascavel',
+  'jiboia', 'boiuna', 'crocodilo', 'dragao_komodo', 'dinossauro',
+  'basilisco', 'hidra'
+]);
+
+const FURRED_TYPES = new Set([
+  'anta', 'queixada', 'onca', 'loboguara', 'micoleao', 'tamandua',
+  'preguica', 'sagui', 'gamba', 'paca', 'cutia', 'veado',
+  'jaguatirica', 'caititu', 'bugio', 'macacoaranha', 'quati', 'cervo',
+  'urso', 'leao', 'tigre', 'elefante', 'gorila', 'rinoceronte',
+  'hipopotamo', 'lobo', 'raposa', 'coiote', 'hiena', 'leopardo',
+  'pantera', 'bufalo', 'bisonte', 'javali', 'alce', 'rena', 'camelo',
+  'girafa', 'zebra', 'gnu', 'antilope', 'gazela', 'canguru', 'koala',
+  'ornitorrinco', 'wombat', 'diabo_tasmania', 'panda', 'urso_polar',
+  'morsa', 'foca'
+]);
+
+const DORSAL_RIDGE_TYPES = new Set([
+  'jacare', 'crocodilo', 'dragao_komodo', 'dinossauro', 'basilisco'
+]);
+
 export class Animal {
   constructor(scene, x, z, type, arena) {
     this.scene = scene;
@@ -29,6 +62,8 @@ export class Animal {
     this.dropTokens = 0;
 
     this.mesh = this.config.createMesh();
+    this.animationTime = Math.random() * Math.PI * 2;
+    this.visualState = this.prepareRealisticMesh();
     this.mesh.position.set(x, 0, z);
     scene.add(this.mesh);
   }
@@ -2534,6 +2569,277 @@ export class Animal {
     }
   };
 
+  getSurfaceSettings() {
+    if (AQUATIC_TYPES.has(this.type)) {
+      return { roughness: 0.32, clearcoat: 0.7, clearcoatRoughness: 0.22 };
+    }
+    if (SCALED_TYPES.has(this.type)) {
+      return { roughness: 0.52, clearcoat: 0.32, clearcoatRoughness: 0.38 };
+    }
+    if (FURRED_TYPES.has(this.type)) {
+      return { roughness: 0.92, clearcoat: 0, clearcoatRoughness: 1 };
+    }
+    if (FLYING_TYPES.has(this.type)) {
+      return { roughness: 0.76, clearcoat: 0.04, clearcoatRoughness: 0.8 };
+    }
+    return { roughness: 0.78, clearcoat: 0.05, clearcoatRoughness: 0.75 };
+  }
+
+  createRealisticMaterial(oldMaterial, surface, materialCache) {
+    if (!oldMaterial) return oldMaterial;
+    if (oldMaterial.userData?.isRealisticAnimalMaterial) return oldMaterial;
+    if (materialCache.has(oldMaterial.uuid)) return materialCache.get(oldMaterial.uuid);
+
+    const color = oldMaterial.color?.clone() || new THREE.Color(0xffffff);
+    const common = {
+      color,
+      map: oldMaterial.map || null,
+      alphaMap: oldMaterial.alphaMap || null,
+      aoMap: oldMaterial.aoMap || null,
+      normalMap: oldMaterial.normalMap || null,
+      roughnessMap: oldMaterial.roughnessMap || null,
+      metalnessMap: oldMaterial.metalnessMap || null,
+      transparent: oldMaterial.transparent,
+      opacity: oldMaterial.opacity,
+      alphaTest: oldMaterial.alphaTest,
+      side: oldMaterial.side,
+      depthTest: oldMaterial.depthTest,
+      depthWrite: oldMaterial.depthWrite,
+      vertexColors: oldMaterial.vertexColors,
+      roughness: surface.roughness,
+      metalness: 0.01
+    };
+
+    const shouldUseClearcoat = AQUATIC_TYPES.has(this.type) || SCALED_TYPES.has(this.type);
+    const material = shouldUseClearcoat
+      ? new THREE.MeshPhysicalMaterial({
+          ...common,
+          clearcoat: surface.clearcoat,
+          clearcoatRoughness: surface.clearcoatRoughness
+        })
+      : new THREE.MeshStandardMaterial(common);
+
+    // Partes que eram MeshBasic continuam ligeiramente emissivas, como olhos e magia.
+    if (oldMaterial.isMeshBasicMaterial) {
+      material.emissive.copy(color).multiplyScalar(0.16);
+      material.emissiveIntensity = 0.5;
+    } else if (oldMaterial.emissive) {
+      material.emissive.copy(oldMaterial.emissive);
+      material.emissiveIntensity = oldMaterial.emissiveIntensity ?? 1;
+    }
+
+    material.name = `${oldMaterial.name || 'animal'}-realistic`;
+    material.userData.isRealisticAnimalMaterial = true;
+    material.needsUpdate = true;
+    materialCache.set(oldMaterial.uuid, material);
+    return material;
+  }
+
+  prepareRealisticMesh() {
+    const surface = this.getSurfaceSettings();
+    const materialCache = new Map();
+    const meshes = [];
+
+    this.mesh.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(this.mesh);
+    const size = box.getSize(new THREE.Vector3());
+    const center = box.getCenter(new THREE.Vector3());
+
+    this.mesh.traverse((child) => {
+      if (!child.isMesh) return;
+
+      child.castShadow = true;
+      child.receiveShadow = true;
+
+      if (child.geometry) {
+        child.geometry.computeVertexNormals();
+        child.geometry.normalizeNormals();
+        child.geometry.computeBoundingBox();
+      }
+
+      child.material = Array.isArray(child.material)
+        ? child.material.map((mat) => this.createRealisticMaterial(mat, surface, materialCache))
+        : this.createRealisticMaterial(child.material, surface, materialCache);
+
+      const geometrySize = new THREE.Vector3();
+      child.geometry?.boundingBox?.getSize(geometrySize);
+      geometrySize.set(
+        Math.abs(geometrySize.x * child.scale.x),
+        Math.abs(geometrySize.y * child.scale.y),
+        Math.abs(geometrySize.z * child.scale.z)
+      );
+
+      const worldPosition = new THREE.Vector3();
+      child.getWorldPosition(worldPosition);
+      const localPosition = this.mesh.worldToLocal(worldPosition.clone());
+      const volume = Math.max(0.000001, geometrySize.x * geometrySize.y * geometrySize.z);
+
+      meshes.push({
+        mesh: child,
+        size: geometrySize,
+        position: localPosition,
+        volume,
+        baseRotation: child.rotation.clone(),
+        baseScale: child.scale.clone()
+      });
+    });
+
+    const body = [...meshes].sort((a, b) => b.volume - a.volume)[0] || null;
+    const head = meshes
+      .filter((part) =>
+        part !== body &&
+        part.position.z > center.z + size.z * 0.1 &&
+        part.position.y > box.min.y + size.y * 0.32
+      )
+      .sort((a, b) => b.volume - a.volume)[0] || null;
+
+    const wings = FLYING_TYPES.has(this.type)
+      ? meshes.filter((part) =>
+          part !== body &&
+          part.position.y > center.y - size.y * 0.22 &&
+          part.position.z > center.z - size.z * 0.48 &&
+          (
+            Math.abs(part.position.x - center.x) > size.x * 0.18 ||
+            part.size.x > part.size.y * 2.2
+          )
+        )
+      : [];
+
+    const legs = FLYING_TYPES.has(this.type)
+      ? []
+      : meshes.filter((part) =>
+          part !== body &&
+          part !== head &&
+          part.position.y < center.y &&
+          Math.abs(part.position.x - center.x) > size.x * 0.045 &&
+          part.size.y > part.size.x * 1.25 &&
+          Math.abs(part.position.z - center.z) < size.z * 0.48
+        );
+
+    const tails = meshes
+      .filter((part) =>
+        part !== body &&
+        part !== head &&
+        !wings.includes(part) &&
+        !legs.includes(part) &&
+        part.position.z < center.z - size.z * 0.2 &&
+        Math.abs(part.position.x - center.x) < size.x * 0.38
+      )
+      .sort((a, b) => b.position.z - a.position.z);
+
+    const state = { box, size, center, meshes, body, head, wings, legs, tails };
+    this.addRealisticGroundShadow(state);
+    this.addDorsalRidges(state, surface);
+    return state;
+  }
+
+  addRealisticGroundShadow(state) {
+    if (FLYING_TYPES.has(this.type) || AQUATIC_TYPES.has(this.type)) return;
+
+    const shadow = new THREE.Mesh(
+      new THREE.CircleGeometry(1, 32),
+      new THREE.MeshBasicMaterial({
+        color: 0x050505,
+        transparent: true,
+        opacity: 0.2,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      })
+    );
+    shadow.name = 'animal-contact-shadow';
+    shadow.rotation.x = -Math.PI / 2;
+    shadow.position.set(state.center.x, state.box.min.y + 0.012, state.center.z);
+    shadow.scale.set(
+      Math.max(0.12, state.size.x * 0.5),
+      Math.max(0.18, state.size.z * 0.43),
+      1
+    );
+    shadow.castShadow = false;
+    shadow.receiveShadow = false;
+    shadow.renderOrder = -1;
+    this.mesh.add(shadow);
+  }
+
+  addDorsalRidges(state, surface) {
+    if (!DORSAL_RIDGE_TYPES.has(this.type)) return;
+
+    const count = this.type === 'dinossauro' ? 7 : 5;
+    const scale = Math.max(0.025, Math.min(state.size.x, state.size.y) * 0.075);
+    const ridgeMat = new THREE.MeshPhysicalMaterial({
+      color: 0x26351d,
+      roughness: surface.roughness,
+      clearcoat: surface.clearcoat,
+      clearcoatRoughness: surface.clearcoatRoughness
+    });
+
+    for (let i = 0; i < count; i++) {
+      const ridge = new THREE.Mesh(
+        new THREE.ConeGeometry(scale * 0.7, scale * (1.35 - i * 0.08), 6),
+        ridgeMat
+      );
+      ridge.name = 'dorsal-ridge';
+      ridge.position.set(
+        state.center.x,
+        state.box.max.y + scale * 0.34,
+        state.center.z + state.size.z * (0.25 - (i / Math.max(1, count - 1)) * 0.55)
+      );
+      ridge.castShadow = true;
+      this.mesh.add(ridge);
+    }
+  }
+
+  animateRealisticMesh(delta, movementSpeed) {
+    const state = this.visualState;
+    if (!state) return;
+
+    const pace = THREE.MathUtils.clamp(movementSpeed / 3, 0.55, 3.4);
+    const urgency = this.chasing ? 1.5 : 1;
+    this.animationTime += delta * pace * urgency;
+
+    const breath = Math.sin(this.animationTime * 2.1) * 0.014;
+    if (state.body) {
+      const { mesh, baseScale, baseRotation } = state.body;
+      mesh.scale.set(
+        baseScale.x * (1 - breath * 0.3),
+        baseScale.y * (1 + breath),
+        baseScale.z * (1 + breath * 0.45)
+      );
+      mesh.rotation.z = baseRotation.z;
+
+      if (AQUATIC_TYPES.has(this.type)) {
+        mesh.rotation.z += Math.sin(this.animationTime * 2.5) * 0.035;
+      }
+    }
+
+    if (state.head) {
+      state.head.mesh.rotation.x =
+        state.head.baseRotation.x + Math.sin(this.animationTime * 1.7) * 0.028;
+      state.head.mesh.rotation.y =
+        state.head.baseRotation.y + Math.sin(this.animationTime * 1.15) * 0.018;
+    }
+
+    const gait = this.animationTime * 5.2;
+    const legAmplitude = this.chasing ? 0.52 : 0.25;
+    state.legs.forEach((part) => {
+      const side = part.position.x >= state.center.x ? 1 : -1;
+      const front = part.position.z >= state.center.z ? 1 : -1;
+      const phase = side * front > 0 ? 0 : Math.PI;
+      part.mesh.rotation.x = part.baseRotation.x + Math.sin(gait + phase) * legAmplitude;
+    });
+
+    state.tails.forEach((part, index) => {
+      const amount = 0.035 + index * 0.025;
+      part.mesh.rotation.y =
+        part.baseRotation.y + Math.sin(this.animationTime * 2.4 - index * 0.45) * amount;
+    });
+
+    state.wings.forEach((part) => {
+      const side = part.position.x >= state.center.x ? 1 : -1;
+      const flap = 0.2 + Math.sin(this.animationTime * 7.2) * 0.3;
+      part.mesh.rotation.z = part.baseRotation.z - side * flap;
+    });
+  }
+
   update(delta, playerPos) {
     if (!this.alive) return null;
 
@@ -2573,11 +2879,15 @@ export class Animal {
     const angle = Math.atan2(this.wanderDir.x, this.wanderDir.z);
     this.mesh.rotation.y = angle;
 
-    if (this.type === 'tucano' || this.type === 'arara' || this.type === 'harpia' || this.type === 'urubu' || this.type === 'gaviao' || this.type === 'coruja' || this.type === 'aguia' || this.type === 'falcao' || this.type === 'condor' || this.type === 'grifo' || this.type === 'fenix' || this.type === 'pegasus' || this.type === 'anjo') {
-      this.mesh.position.y = 2 + Math.sin(performance.now() * 0.004) * 0.3;
+    if (FLYING_TYPES.has(this.type)) {
+      this.mesh.position.y = 2 + Math.sin(this.animationTime * 2.6) * 0.28;
+    } else if (AQUATIC_TYPES.has(this.type)) {
+      this.mesh.position.y = 0.28 + Math.sin(this.animationTime * 2.2) * 0.1;
     } else {
-      this.mesh.position.y = Math.sin(performance.now() * 0.005 * speed) * 0.03;
+      this.mesh.position.y = Math.max(0, Math.sin(this.animationTime * 4.2) * 0.022);
     }
+
+    this.animateRealisticMesh(delta, speed);
 
     if (distToPlayer < this.attackRange && this.attackCooldown <= 0) {
       this.attackCooldown = 6.0;
