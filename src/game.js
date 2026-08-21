@@ -1805,6 +1805,10 @@ export class Game {
     if (leveled) {
       this.hud.showMessage(`NIVEL ${this.level}!`);
       this.stats.level = this.level;
+      if (this.mode !== 'test') {
+        const best = Number.parseInt(localStorage.getItem('capiquake_best_level'), 10) || 1;
+        if (this.level > best) localStorage.setItem('capiquake_best_level', String(this.level));
+      }
       this.checkAchievements();
     }
   }

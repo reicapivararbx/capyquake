@@ -189,6 +189,82 @@ document.addEventListener('keydown', (e) => {
   chatInput.focus();
 });
 
+function rbMultipliers(level) {
+  return {
+    money: 'x' + (1 + level),
+    tokens: 'x' + (1 + level * 0.5),
+    xp: 'x' + (1 + level),
+    hp: 'x' + Math.pow(2, level)
+  };
+}
+
+function readRbBalances() {
+  const int = (k) => {
+    const v = Number.parseInt(localStorage.getItem(k), 10);
+    return Number.isSafeInteger(v) && v >= 0 ? v : 0;
+  };
+  return { tokens: int('capiquake_tokens'), money: int('capiquake_money') };
+}
+
+function refreshRebirthPanel() {
+  const level = Number.parseInt(localStorage.getItem('capiquake_rebirth'), 10) || 0;
+  const mult = rbMultipliers(level);
+  document.getElementById('rb-current').textContent = level;
+  document.getElementById('rb-mult-money').textContent = mult.money;
+  document.getElementById('rb-mult-tokens').textContent = mult.tokens;
+  document.getElementById('rb-mult-xp').textContent = mult.xp;
+  document.getElementById('rb-mult-hp').textContent = mult.hp;
+
+  const bal = readRbBalances();
+  const bestLevel = Number.parseInt(localStorage.getItem('capiquake_best_level'), 10) || 1;
+  const reqs = [
+    { el: 'rb-req-level', val: 'rb-val-level', ok: bestLevel >= 100, text: bestLevel + ' / 100' },
+    { el: 'rb-req-tokens', val: 'rb-val-tokens', ok: bal.tokens >= 10000, text: bal.tokens.toLocaleString('pt-BR') + ' / 10.000' },
+    { el: 'rb-req-money', val: 'rb-val-money', ok: bal.money >= 1000000, text: bal.money.toLocaleString('pt-BR') + ' / 1.000.000' }
+  ];
+  let allOk = true;
+  for (const r of reqs) {
+    const reqEl = document.getElementById(r.el);
+    reqEl.classList.toggle('done', r.ok);
+    document.getElementById(r.val).textContent = r.text;
+    if (!r.ok) allOk = false;
+  }
+  const goBtn = document.getElementById('btn-do-rebirth');
+  goBtn.disabled = !allOk;
+  goBtn.textContent = allOk ? 'FAZER REBIRTH' : 'REQUISITOS INCOMPLETOS';
+  document.getElementById('rb-warning').style.display = allOk ? 'block' : 'none';
+}
+
+document.getElementById('btn-rebirth-menu').addEventListener('click', () => {
+  refreshRebirthPanel();
+  document.getElementById('rebirth-screen').style.display = 'flex';
+});
+
+document.getElementById('btn-rebirth-close').addEventListener('click', () => {
+  document.getElementById('rebirth-screen').style.display = 'none';
+});
+
+let rbConfirmPending = false;
+document.getElementById('btn-do-rebirth').addEventListener('click', function() {
+  if (this.disabled) return;
+  if (!rbConfirmPending) {
+    rbConfirmPending = true;
+    this.textContent = 'TEM CERTEZA? ZERA DINHEIRO E TOKENS!';
+    setTimeout(() => {
+      rbConfirmPending = false;
+      if (this && document.getElementById('btn-do-rebirth')) refreshRebirthPanel();
+    }, 4000);
+    return;
+  }
+  rbConfirmPending = false;
+  const level = (Number.parseInt(localStorage.getItem('capiquake_rebirth'), 10) || 0) + 1;
+  localStorage.setItem('capiquake_rebirth', String(level));
+  localStorage.setItem('capiquake_tokens', '0');
+  localStorage.setItem('capiquake_money', '0');
+  refreshRebirthPanel();
+  this.textContent = '🔄 REBIRTH ' + level + ' FEITO! BÔNUS PERMANENTES ATIVOS';
+});
+
 const settingsScreen = document.getElementById('settings-screen');
 document.getElementById('btn-settings').addEventListener('click', () => {
   settingsScreen.style.display = settingsScreen.style.display === 'none' ? 'flex' : 'none';
