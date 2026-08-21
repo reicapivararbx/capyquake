@@ -142,6 +142,7 @@ export class Game {
     this._lastHotbarIndex = -1;
     this._lastHotbarLen = -1;
     this.stats = null;
+    this.purchaseFlags = {};
   }
 
   start() {
@@ -281,6 +282,29 @@ export class Game {
 
     if (this.shopPurchases.revive) {
       this.reviveCount = this.shopPurchases.revive;
+    }
+    if (this.shopPurchases.armorHpTotal) {
+      this.playerMaxHealth += this.shopPurchases.armorHpTotal;
+    }
+    if (this.shopPurchases.weapons) {
+      for (const [slug, enabled] of Object.entries(this.shopPurchases.weapons)) {
+        if (!enabled || !WEAPONS[slug]) continue;
+        if (this.weapon.inventory.includes(slug)) continue;
+        const def = WEAPONS[slug];
+        const startingAmmo = def.type === 'melee' ? 0 : 50;
+        this.weapon.addWeapon(slug, startingAmmo);
+      }
+      this.stats.weaponsOwned = this.weapon.inventory.length;
+    }
+    if (this.shopPurchases.ammoReserve) {
+      for (const [slug, amount] of Object.entries(this.shopPurchases.ammoReserve)) {
+        if (this.weapon.inventory.includes(slug)) {
+          this.weapon.addAmmo(slug, amount);
+        }
+      }
+    }
+    if (this.shopPurchases.flags) {
+      this.purchaseFlags = this.shopPurchases.flags;
     }
     if (this.shopPurchases.voidArmor || this.shopPurchases.voidExplosion) {
       this.hasVoidAbility = true;
@@ -1822,13 +1846,24 @@ export class Game {
     return (this.stats && this.stats[stat]) || 0;
   }
 
-  showAchievementNotification(def) {
+  formatAchievementReward(reward) {
+    if (!reward) return '';
+    const parts = [];
+    if (reward.money) parts.push('+R$' + reward.money.toLocaleString('pt-BR'));
+    if (reward.tokens) parts.push('+' + reward.tokens + ' token' + (reward.tokens > 1 ? 's' : ''));
+    return parts.join(' | ');
+  }
+
+  showAchievementNotification(def, rewardText) {
     const notif = document.getElementById('achievement-notification');
     const nameEl = document.getElementById('achievement-notif-name');
     if (!notif || !nameEl) return;
-    nameEl.textContent = def.name + (def.rarity ? ' [' + def.rarity + ']' : '');
+    let text = def.name + (def.rarity ? ' [' + def.rarity + ']' : '');
+    if (rewardText) text += ' — ' + rewardText;
+    nameEl.textContent = text;
     notif.classList.add('show');
-    setTimeout(() => notif.classList.remove('show'), 4000);
+    clearTimeout(this._achNotifTimeout);
+    this._achNotifTimeout = setTimeout(() => notif.classList.remove('show'), 4500);
   }
 
   unlockAchievement(id) {
@@ -1838,7 +1873,13 @@ export class Game {
     if (!def) return;
     this.achievements.add(id);
     localStorage.setItem('capiquake_achievements', JSON.stringify([...this.achievements]));
-    this.showAchievementNotification(def);
+    if (def.reward) {
+      if (def.reward.money) this.money += def.reward.money;
+      if (def.reward.tokens) this.tokens += def.reward.tokens;
+      this.saveBalance();
+      if (this.hud) this.hud.updateResources(this.tokens, this.money, this.armor);
+    }
+    this.showAchievementNotification(def, this.formatAchievementReward(def.reward));
   }
 
   checkAchievements() {
@@ -2156,7 +2197,7 @@ endGame() {
     }
 
     for (const target of this.targets) {
-      if (target.alive && !target.dormant) {
+      if ((target.alive || target.dying) && !target.dormant) {
         const dmg = target.update(delta, this.player.getPosition());
         if (dmg && !this.playerDead) {
           if (this.invincible) continue;

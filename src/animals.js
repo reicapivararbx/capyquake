@@ -400,7 +400,10 @@ export class Animal {
     this.visualState = this.prepareRealisticMesh();
     this.mesh.position.set(x, 0, z);
     scene.add(this.mesh);
+    Animal.REGISTRY.add(this);
   }
+
+  static REGISTRY = new Set();
 
   static TYPES = {
     jacare: {
@@ -3264,11 +3267,39 @@ export class Animal {
   }
 
   update(delta, playerPos) {
-    if (!this.alive) return null;
+    if (!this.alive) {
+      if (this.dying) {
+        this.deathTimer += delta;
+        const t = Math.min(1, this.deathTimer / 0.9);
+        const ease = t * t * (3 - 2 * t);
+        this.mesh.rotation.z = (this.deathSide || 1) * ease * Math.PI * 0.48;
+        this.mesh.position.y = -ease * 0.4;
+        if (this.deathTimer >= 1.0) this.dying = false;
+      }
+      return null;
+    }
 
     this.attackCooldown -= delta;
     const pos = this.mesh.position;
     const distToPlayer = pos.distanceTo(playerPos);
+
+    let sepX = 0, sepZ = 0;
+    for (const other of Animal.REGISTRY) {
+      if (other === this || !other.alive) continue;
+      const dx = pos.x - other.mesh.position.x;
+      const dz = pos.z - other.mesh.position.z;
+      const d2 = dx * dx + dz * dz;
+      const minDist = ((this.hitRadius || 1) + (other.hitRadius || 1)) * 1.5;
+      if (d2 < minDist * minDist && d2 > 0.0001) {
+        const d = Math.sqrt(d2);
+        sepX += (dx / d) * (minDist - d);
+        sepZ += (dz / d) * (minDist - d);
+      }
+    }
+    if (sepX !== 0 || sepZ !== 0) {
+      pos.x += sepX * delta * 3.5;
+      pos.z += sepZ * delta * 3.5;
+    }
 
     if (distToPlayer < this.detectionRange) {
       this.chasing = true;
@@ -3353,16 +3384,18 @@ export class Animal {
 
   die() {
     this.alive = false;
+    this.dying = true;
+    this.deathTimer = 0;
+    this.deathSide = Math.random() < 0.5 ? -1 : 1;
     Audio.animalScream();
     this.spawnBlood();
     this.dropMoney = 81 + Math.floor(Math.random() * 233);
     this.dropTokens = Math.random() < 0.02 ? 1 + Math.floor(Math.random() * 5) : 0;
     const deathPos = this.mesh.position.clone();
     const deathRot = this.mesh.rotation.y;
-    this.mesh.scale.set(1, 0.1, 1);
-    this.mesh.position.y = 0;
     setTimeout(() => {
       this.scene.remove(this.mesh);
+      Animal.REGISTRY.delete(this);
       this.spawnSkeleton(deathPos, deathRot);
       this.spawnBBQ(deathPos);
     }, 1000);
@@ -3496,6 +3529,13 @@ export class Animal {
     skel.position.set(pos.x, 0.05, pos.z);
     skel.rotation.y = rot;
     this.scene.add(skel);
+    setTimeout(() => {
+      this.scene.remove(skel);
+      skel.traverse((child) => {
+        if (child.geometry) child.geometry.dispose();
+        if (child.material) child.material.dispose();
+      });
+    }, 12000);
   }
 
   spawnBloodSmall() {

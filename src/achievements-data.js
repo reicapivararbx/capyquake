@@ -223,3 +223,18 @@ export const ACHIEVEMENTS = [
   { id: 'dmg_0_match', name: 'Inofensivo', description: 'Termine uma partida com 0 de dano.', rarity: 'CURSED', type: 'instant', test: g => (g.stats.zeroDmgMatches || 0) >= 1 },
   { id: 'death_100', name: 'Lenda das Mortes', description: 'Morra 100 vezes.', rarity: 'CURSED', type: 'cumulative', stat: 'deaths', target: 100 },
 ];
+
+const RARITY_REWARDS = {
+  COMMON: { money: 250 },
+  UNCOMMON: { money: 500 },
+  RARE: { money: 1500, tokens: 1 },
+  EPIC: { money: 3000, tokens: 2 },
+  LEGENDARY: { money: 7500, tokens: 4 },
+  MYTHIC: { money: 15000, tokens: 8 },
+  DIVINE: { money: 40000, tokens: 15 },
+  CURSED: { money: 1000, tokens: 3 }
+};
+
+for (const def of ACHIEVEMENTS) {
+  def.reward = { ...RARITY_REWARDS[def.rarity] };
+}

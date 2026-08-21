@@ -69,6 +69,7 @@ function startGame(opts) {
     mobileControls = null;
   }
   game = new Game(opts);
+  window.__game = game;
   game.start();
   if (document.body.dataset.device === 'mobile' && game.player) {
     mobileControls = new MobileControls(game.player);
@@ -232,6 +233,42 @@ function loadSettings() {
     }
   }
 }
+
+function keyLabelFromEvent(e) {
+  if (e.code === 'Space') return ' ';
+  if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') return 'SHIFT';
+  if (e.code === 'ControlLeft' || e.code === 'ControlRight') return 'CTRL';
+  if (e.code === 'AltLeft' || e.code === 'AltRight') return 'ALT';
+  if (e.code === 'Escape') return 'ESC';
+  if (/^F\d{1,2}$/.test(e.code)) return e.code;
+  if (e.key.length === 1) return e.key.toUpperCase();
+  return null;
+}
+
+function checkKeyConflicts() {
+  const values = [...document.querySelectorAll('.key-bindings input')]
+    .map(i => i.value.trim().toUpperCase());
+  const dup = values.some((v, i) => v && values.indexOf(v) !== i);
+  const warn = document.getElementById('key-conflict-warning');
+  if (warn) warn.style.display = dup ? 'block' : 'none';
+}
+
+document.querySelectorAll('.key-bindings input').forEach(input => {
+  input.addEventListener('keydown', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.code === 'Escape') {
+      input.blur();
+      return;
+    }
+    const label = keyLabelFromEvent(e);
+    if (!label) return;
+    input.value = label;
+    input.blur();
+    checkKeyConflicts();
+    saveSettings();
+  });
+});
 
 loadSettings();
 
@@ -401,6 +438,18 @@ function renderAchievements(unlockedSet, statusFilter, rarityFilter) {
     desc.className = 'achievement-desc';
     desc.textContent = a.description || '';
     card.appendChild(desc);
+
+    if (a.reward) {
+      const parts = [];
+      if (a.reward.money) parts.push('💰 R$' + a.reward.money.toLocaleString('pt-BR'));
+      if (a.reward.tokens) parts.push('🪙 ' + a.reward.tokens);
+      if (parts.length) {
+        const rewardEl = document.createElement('div');
+        rewardEl.className = 'achievement-reward';
+        rewardEl.textContent = 'Recompensa: ' + parts.join(' + ');
+        card.appendChild(rewardEl);
+      }
+    }
 
     if (a.target && a.target > 1) {
       const saved = JSON.parse(localStorage.getItem('capiquake_achievement_progress') || '{}');

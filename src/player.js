@@ -228,7 +228,7 @@ export class Player {
 
   setSpeedMultiplier(mult) {
     this.speedMultiplier = mult;
-    this.moveSpeed = 12,5 * mult;
+    this.moveSpeed = 15 * mult;
   }
 
   rotateCamera(deltaX, deltaY) {

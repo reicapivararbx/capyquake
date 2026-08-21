@@ -1174,6 +1174,13 @@
       color: #aaa;
     }
 
+    .achievement-reward {
+      margin-top: 6px;
+      font-size: 11px;
+      color: #ffd000;
+      font-weight: bold;
+    }
+
     .achievement-card .achievement-progress-bar {
       height: 4px;
       background: #222;
@@ -1413,31 +1420,9 @@
       }
     }
 
-    /* ============================================
-       RESPONSIVE: WINDOW RESIZE
-       ============================================ */
-    @media (max-width: 768px) {
-      #shop {
-        width: 95vw !important;
-        padding: 10px !important;
-      }
-    }
-
-    /* ============================================
-       RESPONSIVE: PC LARGE SCREEN - SHOP
-       ============================================ */
-    @media (min-width: 1200px) {
-      body[data-device="pc"] #shop {
-        width: 900px;
-      }
-
-      body[data-device="pc"] .shop-items {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
   </style>
-  <script type="module" crossorigin src="/assets/index-B4NqJS2U.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-CXM3Q1Q8.css">
+  <script type="module" crossorigin src="/assets/index-1LKAka1i.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-DP6qyewS.css">
 </head>
 <body>
   <div id="menu">
@@ -1459,97 +1444,17 @@
   </div>
 
   <div id="shop">
-    <h2>LOJA</h2>
-    <div class="shop-balance">
-      <span id="shop-tokens">TOKENS: 0</span>
-      <span id="shop-money">R$: 0</span>
+    <div class="shop-header">
+      <h2>🛒 LOJA</h2>
+      <button id="btn-close-shop-top" title="Fechar">✕</button>
+      <div class="shop-balance">
+        <span id="shop-tokens">TOKENS: 0</span>
+        <span id="shop-money">R$: 0</span>
+      </div>
     </div>
-    <button id="btn-convert-tokens" class="shop-convert">Trocar $1.000 por 1 token</button>
+    <button id="btn-convert-tokens" class="shop-convert">🔄 Trocar R$ 1.000 por 1 token</button>
     <div id="shop-convert-error" class="shop-convert-error" hidden></div>
-    <div class="shop-section">
-      <h3>ARMAS (R$)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="minigun" data-cost="5000" data-currency="money">MINIGUN - R$5000</button>
-        <button class="shop-item" data-item="ak47" data-cost="3000" data-currency="money">AK-47 - R$3000</button>
-      </div>
-    </div>
-    <div class="shop-section">
-      <h3>ARMADURAS (R$)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="armor25" data-cost="2000" data-currency="money">Armadura Leve (+25) - R$2000</button>
-        <button class="shop-item" data-item="armor50" data-cost="4000" data-currency="money">Armadura Pesada (+50) - R$4000</button>
-      </div>
-    </div>
-    <div class="shop-section">
-      <h3>BOOSTS (TOKENS)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="speedBoost" data-cost="1" data-currency="tokens">Velocidade 60s - 1 Token</button>
-        <button class="shop-item" data-item="healthBoost" data-cost="1" data-currency="tokens">+100 HP Max - 1 Token</button>
-      </div>
-    </div>
-
-    <div class="shop-section">
-      <h3>MUNIÇÕES (R$)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="ammo-bazuca" data-cost="575" data-currency="money" title="Munição Bazuca - 100 tiros - Duração instantânea">Munição Bazuca - R$575</button>
-        <button class="shop-item" data-item="ammo-chicken" data-cost="58" data-currency="money" title="Munição Chicken - 10 tiros - Duração instantânea">Munição Chicken - R$58</button>
-        <button class="shop-item" data-item="ammo-sniper" data-cost="288" data-currency="money" title="Munição Sniper - 10 tiros - Duração instantânea">Munição Sniper - R$288</button>
-      </div>
-    </div>
-
-    <div class="shop-section">
-      <h3>ARMADURAS COMPLETAS (R$)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="armor-leather" data-cost="1150" data-currency="money" title="Armadura de Couro - +20 HP - Duração permanente">Armadura Couro (+20) - R$1150</button>
-        <button class="shop-item" data-item="armor-gold" data-cost="2300" data-currency="money" title="Armadura de Ouro - +30 HP - Duração permanente">Armadura Ouro (+30) - R$2300</button>
-        <button class="shop-item" data-item="armor-iron" data-cost="5750" data-currency="money" title="Armadura de Ferro - +50 HP - Duração permanente">Armadura Ferro (+50) - R$5750</button>
-        <button class="shop-item" data-item="armor-diamond" data-cost="11500" data-currency="money" title="Armadura de Diamante - +100 HP - Duração permanente">Armadura Diamante (+100) - R$11500</button>
-        <button class="shop-item" data-item="armor-void" data-cost="57500" data-currency="money" title="Armadura Void - +500 HP - Duração permanente">Armadura Void (+500) - R$57500</button>
-      </div>
-    </div>
-
-    <div class="shop-section">
-      <h3>HABILIDADES (TOKENS)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="void-explosion" data-cost="10" data-currency="tokens" title="Explosão Void - Dano AoE 200 - Cooldown 30s - Duração 5s">Explosão Void - 10 Tokens</button>
-        <button class="shop-item" data-item="teleport" data-cost="8" data-currency="tokens" title="Teletransporte - Instantâneo - Cooldown 15s">Teleporte - 8 Tokens</button>
-        <button class="shop-item" data-item="speed-rush" data-cost="15" data-currency="tokens" title="Rush de Velocidade - Aumento 200% velocidade - Cooldown 45s - Duração 10s">Rush de Velocidade - 15 Tokens</button>
-      </div>
-    </div>
-
-    <div class="shop-section">
-      <h3>ENCANTAMENTOS (TOKENS)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="enchant-fire" data-cost="12" data-currency="tokens" title="Encantamento Fogo - Visual ígneo - Cooldown 60s - Duração permanente">Fogo - 12 Tokens</button>
-        <button class="shop-item" data-item="enchant-ice" data-cost="10" data-currency="tokens" title="Encantamento Gelado - Lentidão inimiga - Cooldown 60s - Duração 5s">Gelado - 10 Tokens</button>
-        <button class="shop-item" data-item="enchant-lightning" data-cost="15" data-currency="tokens" title="Encantamento Raio - Visual elétrico - Cooldown 45s - Duração permanente">Raio - 15 Tokens</button>
-      </div>
-    </div>
-
-    <div class="shop-section">
-      <h3>SKINS DE JOGADOR (TOKENS)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="skin-void" data-cost="50" data-currency="tokens" title="Skin Void - Estilo sombrio - Unlock permanente">Void - 50 Tokens</button>
-        <button class="shop-item" data-item="skin-flame" data-cost="45" data-currency="tokens" title="Skin Flame - Estilo chama - Unlock permanente">Flame - 45 Tokens</button>
-        <button class="shop-item" data-item="skin-steam" data-cost="40" data-currency="tokens" title="Skin Steam - Estilo vapor - Unlock permanente">Steam - 40 Tokens</button>
-      </div>
-    </div>
-
-    <div class="shop-section">
-      <h3>SKINS DE ARMAS (TOKENS)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="weapon-skin-void" data-cost="25" data-currency="tokens" title="Skin Armadilha - Visual exclusivo - Unlock permanente">Armadilha - 25 Tokens</button>
-        <button class="shop-item" data-item="weapon-skin-gold" data-cost="30" data-currency="tokens" title="Skin Dourada - Visual exclusivo - Unlock permanente">Dourada - 30 Tokens</button>
-        <button class="shop-item" data-item="weapon-skin-cryogenic" data-cost="35" data-currency="tokens" title="Skin Criogênico - Visual exclusivo - Unlock permanente">Criogênico - 35 Tokens</button>
-      </div>
-    </div>
-
-    <div class="shop-section">
-      <h3>REVIVES (R$)</h3>
-      <div class="shop-items">
-        <button class="shop-item" data-item="revive" data-cost="5750" data-currency="money" title="Revive - Reaparecer no jogo - Uso único - Cooldown 300s">Revive - R$5750</button>
-      </div>
-    </div>
+    <div id="shop-sections"></div>
 
     <div id="shop-cart"></div>
     <button id="btn-start-game-shop">INICIAR PARTIDA</button>
@@ -1647,59 +1552,59 @@
           <div class="key-bindings">
             <div class="key-binding-row">
               <label>Mover Frente:</label>
-              <input type="text" id="key-move-forward" value="W" maxlength="1" readonly>
+              <input type="text" id="key-move-forward" value="W" maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Mover Trás:</label>
-              <input type="text" id="key-move-back" value="S" maxlength="1" readonly>
+              <input type="text" id="key-move-back" value="S" maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Esquerda:</label>
-              <input type="text" id="key-move-left" value="A" maxlength="1" readonly>
+              <input type="text" id="key-move-left" value="A" maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Direita:</label>
-              <input type="text" id="key-move-right" value="D" maxlength="1" readonly>
+              <input type="text" id="key-move-right" value="D" maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Pular:</label>
-              <input type="text" id="key-jump" value=" " maxlength="1" readonly>
+              <input type="text" id="key-jump" value=" " maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Correr:</label>
-              <input type="text" id="key-sprint" value="SHIFT" maxlength="6" readonly>
+              <input type="text" id="key-sprint" value="SHIFT" maxlength="6">
             </div>
             <div class="key-binding-row">
               <label>Pegar Item [E]:</label>
-              <input type="text" id="key-pickup" value="E" maxlength="1" readonly>
+              <input type="text" id="key-pickup" value="E" maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Habilidade Void [F]:</label>
-              <input type="text" id="key-void" value="F" maxlength="1" readonly>
+              <input type="text" id="key-void" value="F" maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Alternar Câmera [F3]:</label>
-              <input type="text" id="key-camera" value="F3" maxlength="2" readonly>
+              <input type="text" id="key-camera" value="F3" maxlength="2">
             </div>
             <div class="key-binding-row">
               <label>Peido [T]:</label>
-              <input type="text" id="key-fart" value="T" maxlength="1" readonly>
+              <input type="text" id="key-fart" value="T" maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Emotes [B]:</label>
-              <input type="text" id="key-emotes" value="B" maxlength="1" readonly>
+              <input type="text" id="key-emotes" value="B" maxlength="1">
             </div>
             <div class="key-binding-row">
               <label>Mira Sniper [Ctrl]:</label>
-              <input type="text" id="key-sniper" value="CTRL" maxlength="4" readonly>
+              <input type="text" id="key-sniper" value="CTRL" maxlength="4">
             </div>
             <div class="key-binding-row">
               <label>Abrir Inventário [ESC]:</label>
-              <input type="text" id="key-inventory" value="ESC" maxlength="3" readonly>
+              <input type="text" id="key-inventory" value="ESC" maxlength="3">
             </div>
             <div class="key-binding-row">
               <label>Soltar Arma [Z]:</label>
-              <input type="text" id="key-drop" value="Z" maxlength="1" readonly>
+              <input type="text" id="key-drop" value="Z" maxlength="1">
             </div>
           </div>
           <div id="key-conflict-warning" style="display:none; color:#ff4444; margin-top:10px; font-size:12px;">Tecla duplicada!</div>

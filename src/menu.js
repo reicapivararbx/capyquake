@@ -1,4 +1,5 @@
 import { getRandomMaps } from './maps.js';
+import { SHOP_SECTIONS, SHOP_ITEM_MAP } from './shop-data.js';
 
 export class Menu {
   constructor() {
@@ -134,7 +135,105 @@ export class Menu {
     this.shopEl.style.display = 'none';
   }
 
+  closeShopAndReturn() {
+    this.shopPurchases = this.buildPurchases();
+    this.hideShop();
+    if (this._shopCallback) {
+      const cb = this._shopCallback;
+      this._shopCallback = null;
+      cb(this.shopPurchases);
+    } else if (typeof window !== 'undefined' && typeof window.returnToMainMenu === 'function') {
+      const prev = window.__shopPreviousScreen || 'menu';
+      this.hideStandaloneShop();
+      if (prev === 'menu') {
+        window.returnToMainMenu();
+      } else if (prev === 'singleplayer' || prev === 'multiplayer') {
+        if (window.__game && typeof window.__game.resumeFromShop === 'function') {
+          window.__game.resumeFromShop();
+        } else if (document.getElementById('hud')) {
+          document.getElementById('hud').style.display = 'block';
+        }
+        if (window.__game) window.__game.running = true;
+      }
+    }
+  }
+
+  renderShopSections() {
+    const container = document.getElementById('shop-sections');
+    if (!container || container.childElementCount) return;
+    for (const section of SHOP_SECTIONS) {
+      const sec = document.createElement('div');
+      sec.className = 'shop-section';
+      const h3 = document.createElement('h3');
+      h3.innerHTML = `<span class="sec-icon">${section.icon}</span>${section.title}<span class="sec-cur ${section.currency === 'money' ? 'money-cur' : 'token-cur'}">${section.currency === 'money' ? 'R$' : '🪙'}</span>`;
+      sec.appendChild(h3);
+      const grid = document.createElement('div');
+      grid.className = 'shop-items';
+      for (const it of section.items) {
+        const btn = document.createElement('button');
+        btn.className = 'shop-item';
+        btn.dataset.item = it.item;
+        btn.dataset.cost = it.cost;
+        btn.dataset.currency = it.currency;
+        if (it.purchasable === false) {
+          btn.classList.add('bought', 'locked');
+          btn.title = 'Item não comprável — em breve';
+        } else {
+          btn.title = `${it.name} - ${it.desc}`;
+        }
+        btn.innerHTML = `<span class="si-icon">${it.icon}</span>` +
+          `<span class="si-info"><span class="si-name">${it.name}</span><span class="si-desc">${it.desc}</span></span>` +
+          `<span class="si-price ${it.currency === 'money' ? 'money-cur' : 'token-cur'}">${it.currency === 'money' ? 'R$ ' + it.cost.toLocaleString('pt-BR') : it.cost + ' 🪙'}</span>`;
+        grid.appendChild(btn);
+      }
+      sec.appendChild(grid);
+      container.appendChild(sec);
+    }
+    this.shopEl.querySelectorAll('.shop-item').forEach(btn => {
+      btn.addEventListener('click', () => this.handleShopItemClick(btn));
+    });
+  }
+
+  handleShopItemClick(btn) {
+    const item = btn.dataset.item;
+    const def = SHOP_ITEM_MAP[item];
+    if ((def && def.purchasable === false) || btn.classList.contains('locked')) return;
+    const isConsumable = !!(def && def.grant && def.grant.type === 'revive');
+    if (!isConsumable && this.isOwned(item)) return;
+    const cost = Number.parseInt(btn.dataset.cost, 10);
+    const currency = btn.dataset.currency;
+    this.readBalances();
+    if (!Number.isSafeInteger(cost) || cost <= 0) return;
+    if (currency === 'money' && this.money < cost) {
+      this.updateShopCart();
+      document.getElementById('shop-cart').textContent = 'Dinheiro insuficiente!';
+      return;
+    }
+    if (currency === 'tokens' && this.tokens < cost) {
+      document.getElementById('shop-cart').textContent = 'Tokens insuficientes!';
+      return;
+    }
+    if (currency === 'money') {
+      this.money -= cost;
+      localStorage.setItem('capiquake_money', this.money);
+    } else {
+      this.tokens -= cost;
+      localStorage.setItem('capiquake_tokens', this.tokens);
+    }
+    if (!isConsumable) this.ownedItems.add(item);
+    this.savePurchases();
+    this.shopPurchases = this.buildPurchases();
+    btn.classList.add('bought');
+    setTimeout(() => { if (isConsumable) btn.classList.remove('bought'); }, 600);
+    this.updateShopBalance();
+    this.updateShopCart();
+  }
+
   setupShop() {
+    this.renderShopSections();
+    document.getElementById('btn-close-shop-top').addEventListener('click', () => {
+      this.closeShopAndReturn();
+    });
     document.getElementById('btn-convert-tokens').addEventListener('click', () => {
       this.readBalances();
 
@@ -153,40 +252,6 @@ export class Menu {
       this.updateShopBalance();
     });
 
-    this.shopEl.querySelectorAll('.shop-item').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const item = btn.dataset.item;
-        if (this.isOwned(item)) return;
-        const cost = Number.parseInt(btn.dataset.cost, 10);
-        const currency = btn.dataset.currency;
-        this.readBalances();
-
-        if (!Number.isSafeInteger(cost) || cost <= 0) return;
-        if (currency === 'money' && (this.money === null || this.money < cost)) return;
-        if (currency === 'tokens' && (this.tokens === null || this.tokens < cost)) return;
-
-        if (currency === 'money') {
-          this.money -= cost;
-          localStorage.setItem('capiquake_money', this.money);
-        } else if (currency === 'tokens') {
-          this.tokens -= cost;
-          localStorage.setItem('capiquake_tokens', this.tokens);
-        } else {
-          return;
-        }
-
-        if (item === 'revive') {
-          this.reviveCount = Math.min(this.reviveCount + 1, 3);
-        } else {
-          this.ownedItems.add(item);
-        }
-        this.savePurchases();
-        this.shopPurchases = this.buildPurchases();
-        btn.classList.toggle('bought', this.isOwned(item));
-        this.updateShopBalance();
-        this.updateShopCart();
-      });
-    });
 
     document.getElementById('btn-start-game-shop').addEventListener('click', () => {
       this.shopPurchases = this.buildPurchases();
@@ -248,6 +313,19 @@ export class Menu {
   }
 
   applyItem(p, id) {
+    const def = SHOP_ITEM_MAP[id];
+    if (def && def.grant) {
+      const g = def.grant;
+      if (g.type === 'weapon') { p.weapons = p.weapons || {}; p.weapons[g.id] = true; return; }
+      if (g.type === 'armorHp') { p.armorHpTotal = (p.armorHpTotal || 0) + g.hp; return; }
+      if (g.type === 'ammo') {
+        p.ammoReserve = p.ammoReserve || {};
+        p.ammoReserve[g.weapon] = (p.ammoReserve[g.weapon] || 0) + g.amount;
+        return;
+      }
+      if (g.type === 'revive') { this.reviveCount = Math.min(this.reviveCount + g.count, 99); return; }
+      if (g.type === 'flag') { p.flags = p.flags || {}; p.flags[g.key] = true; return; }
+    }
     switch (id) {
       case 'minigun': p.weapons = p.weapons || {}; p.weapons.minigun = true; break;
       case 'ak47': p.weapons = p.weapons || {}; p.weapons.ak47 = true; break;
