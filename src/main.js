@@ -3,6 +3,7 @@ import { Game } from './game.js';
 import { Network } from './network.js';
 import { setupDevice } from './device.js';
 import { MobileControls } from './controls-mobile.js';
+import { invalidateKeyBindings } from './keybindings.js';
 
 const currentDevice = setupDevice();
 const menu = new Menu();
@@ -214,6 +215,7 @@ function saveSettings() {
     settings[input.id] = input.value;
   });
   localStorage.setItem('capiquake_settings', JSON.stringify(settings));
+  invalidateKeyBindings();
 }
 
 function loadSettings() {

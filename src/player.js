@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { Audio } from './audio.js';
 import { MiniBoss } from './boss.js';
+import { keyMatches } from './keybindings.js';
 
 export class Player {
   constructor(camera, domElement, scene, arena, isMobile = false) {
@@ -72,7 +73,7 @@ export class Player {
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.code === 'F3') {
+      if (keyMatches('key-camera', e.code)) {
         e.preventDefault();
         this.toggleCamera();
       }
@@ -94,14 +95,12 @@ export class Player {
   }
 
   setKey(code, state) {
-    switch (code) {
-      case 'KeyW': this.keys.forward = state; break;
-      case 'KeyS': this.keys.backward = state; break;
-      case 'KeyA': this.keys.left = state; break;
-      case 'KeyD': this.keys.right = state; break;
-      case 'Space': this.keys.jump = state; break;
-      case 'ShiftLeft': case 'ShiftRight': this.keys.sprint = state; break;
-    }
+    if (keyMatches('key-move-forward', code)) { this.keys.forward = state; return; }
+    if (keyMatches('key-move-back', code)) { this.keys.backward = state; return; }
+    if (keyMatches('key-move-left', code)) { this.keys.left = state; return; }
+    if (keyMatches('key-move-right', code)) { this.keys.right = state; return; }
+    if (keyMatches('key-jump', code)) { this.keys.jump = state; return; }
+    if (keyMatches('key-sprint', code)) { this.keys.sprint = state; return; }
   }
 
   onShoot(cb) {

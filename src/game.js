@@ -8,6 +8,7 @@ import { HUD } from './hud.js';
 import { Bot } from './bot.js';
 import { Celebration } from './celebration.js';
 import { Audio } from './audio.js';
+import { keyMatches } from './keybindings.js';
 import { Chest } from './chest.js';
 import { Boss, MiniBoss } from './boss.js';
 
@@ -326,7 +327,7 @@ export class Game {
 
   setupInteraction() {
     this._keyHandler = (e) => {
-      if (e.code === 'KeyE' && this.nearChest && !this.playerDead && !this.inventoryOpen && !this.paused) {
+      if (keyMatches('key-pickup', e.code) && this.nearChest && !this.playerDead && !this.inventoryOpen && !this.paused) {
         const loot = this.nearChest.open();
         if (loot) {
           this.weapon.addWeapon(loot.weaponId, loot.ammo);
@@ -338,25 +339,25 @@ export class Game {
           this.updateHotbar();
         }
       }
-      if (e.code === 'KeyE' && this.nearPickup && !this.playerDead && !this.inventoryOpen && !this.paused) {
+      if (keyMatches('key-pickup', e.code) && this.nearPickup && !this.playerDead && !this.inventoryOpen && !this.paused) {
         this.collectNearPickup();
       }
-      if (e.code === 'KeyZ' && !this.playerDead && !this.inventoryOpen && !this.paused) {
+      if (keyMatches('key-drop', e.code) && !this.playerDead && !this.inventoryOpen && !this.paused) {
         this.dropCurrentWeapon();
       }
-      if (e.code === 'KeyF' && !this.playerDead && !this.inventoryOpen && !this.paused) {
+      if (keyMatches('key-void', e.code) && !this.playerDead && !this.inventoryOpen && !this.paused) {
         this.useVoidAbility();
       }
-      if (e.code === 'KeyT' && !this.playerDead && !this.inventoryOpen && !this.paused) {
+      if (keyMatches('key-fart', e.code) && !this.playerDead && !this.inventoryOpen && !this.paused) {
         this.useFartAbility();
       }
-      if (e.code === 'KeyG' && !this.playerDead && !this.inventoryOpen && !this.paused) {
+      if (keyMatches('key-grenade', e.code) && !this.playerDead && !this.inventoryOpen && !this.paused) {
         this.useTeleport();
       }
-      if (e.code === 'KeyH' && !this.playerDead && !this.inventoryOpen && !this.paused) {
+      if (keyMatches('key-speedrush', e.code) && !this.playerDead && !this.inventoryOpen && !this.paused) {
         this.useSpeedRush();
       }
-      if (e.code === 'KeyP' && (this.mode === 'singleplayer' || this.mode === 'test')) {
+      if ((e.code === 'KeyP' || keyMatches('key-pause', e.code)) && (this.mode === 'singleplayer' || this.mode === 'test')) {
         this.togglePause();
       }
       if (e.code.startsWith('Digit') && !this.playerDead && !this.inventoryOpen && !this.paused) {
@@ -366,7 +367,7 @@ export class Game {
       if (e.code === 'F8' && this.mode === 'test') {
         this.toggleAdminPanel();
       }
-      if (e.code === 'Escape') {
+      if (e.code === 'Escape' || keyMatches('key-inventory', e.code)) {
         this.toggleInventoryScreen();
       }
     };

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { Audio } from './audio.js';
+import { keyMatches } from './keybindings.js';
 
 export const WEAPONS = {
   bastao: { name: 'BASTAO', damage: 12, type: 'melee', range: 4.0, cooldown: 0.3 },
@@ -105,7 +106,7 @@ export class Weapon {
   setupInput() {
     document.addEventListener('keydown', (e) => {
       if (e.code === 'KeyR') this.cycleWeapon();
-      if ((e.code === 'ControlLeft' || e.code === 'ControlRight') && this.currentWeapon === 'sniper') {
+      if (keyMatches('key-sniper', e.code) && this.currentWeapon === 'sniper') {
         this.toggleZoom();
       }
     });
