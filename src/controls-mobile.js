@@ -30,7 +30,7 @@ export class MobileControls {
       bottom: 0;
       left: 0;
       right: 0;
-      height: 200px;
+      height: 240px;
       z-index: 100;
       pointer-events: none;
     `;
@@ -150,11 +150,64 @@ export class MobileControls {
       border: 2px solid rgba(255, 255, 255, 0.3);
     `;
     
+    const toggleStyle = `
+      position: absolute;
+      width: 44px;
+      height: 44px;
+      background: rgba(40, 40, 60, 0.85);
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      border-radius: 10px;
+      color: #fff;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: auto;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    `;
+
+    this.camBtn = document.createElement('button');
+    this.camBtn.id = 'mobile-cam';
+    this.camBtn.className = 'mobile-btn';
+    this.camBtn.textContent = '📷';
+    this.camBtn.style.cssText = toggleStyle + `
+      bottom: 185px;
+      right: 20px;
+    `;
+    this.camBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (this.player && typeof this.player.toggleCamera === 'function') {
+        this.player.toggleCamera();
+      }
+    }, { passive: false });
+
+    this.invBtn = document.createElement('button');
+    this.invBtn.id = 'mobile-inv';
+    this.invBtn.className = 'mobile-btn';
+    this.invBtn.textContent = '🎒';
+    this.invBtn.style.cssText = toggleStyle + `
+      bottom: 185px;
+      right: 74px;
+    `;
+    this.invBtn.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const game = window.__game;
+      if (game && typeof game.toggleInventoryScreen === 'function') {
+        game.toggleInventoryScreen();
+      }
+    }, { passive: false });
+
     this.container.appendChild(this.attackBtn);
     this.container.appendChild(this.jumpBtn);
     this.container.appendChild(this.sprintBtn);
     this.container.appendChild(this.abilityBtn);
-    
+    this.container.appendChild(this.camBtn);
+    this.container.appendChild(this.invBtn);
+
     document.body.appendChild(this.container);
   }
   
