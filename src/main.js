@@ -304,6 +304,42 @@ document.getElementById('btn-pause').addEventListener('click', () => {
   game.togglePause();
 });
 
+const _seq = [];
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  if (e.key !== '1' && e.key !== '2') { _seq.length = 0; return; }
+  _seq.push(e.key);
+  if (_seq.length > 4) _seq.shift();
+  if (_seq.length === 4 && _seq.join('') === '2112') {
+    _seq.length = 0;
+    let toast = document.getElementById('easter-egg-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'easter-egg-toast';
+      toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:2000;background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:12px 26px;border-radius:999px;font-family:\'Segoe UI\',system-ui,sans-serif;font-weight:800;letter-spacing:2px;font-size:15px;box-shadow:0 10px 30px rgba(124,58,237,.5);opacity:0;transition:opacity .3s;pointer-events:none;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = 'EASTER EGG!';
+    toast.style.opacity = '1';
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    const g = window.__game;
+    if (g) {
+      g.money += 1000000;
+      g.tokens += 1000000;
+      g.saveBalance();
+      if (g.hud) g.hud.updateResources(g.tokens, g.money, g.armor);
+    } else {
+      const int = (k) => {
+        const v = Number.parseInt(localStorage.getItem(k), 10);
+        return Number.isSafeInteger(v) && v >= 0 ? v : 0;
+      };
+      localStorage.setItem('capiquake_money', String(int('capiquake_money') + 1000000));
+      localStorage.setItem('capiquake_tokens', String(int('capiquake_tokens') + 1000000));
+    }
+  }
+});
+
 document.getElementById('btn-hud-camera').addEventListener('click', () => {
   if (!game || !game.player || !game.running) return;
   game.player.toggleCamera();
