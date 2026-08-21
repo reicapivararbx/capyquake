@@ -118,13 +118,32 @@ function getLobbyPlayerName() {
   return lobbyName || menu.getPlayerName();
 }
 
+function setLobbyStatus(text, state) {
+  const dot = document.querySelector('.lobby-status .status-dot');
+  const label = document.getElementById('lobby-status-text');
+  if (label) label.textContent = text;
+  if (dot) {
+    dot.classList.remove('online', 'offline');
+    if (state) dot.classList.add(state);
+  }
+}
+
 menu.onMultiplayer(() => {
   const playerName = getLobbyPlayerName();
   const lobbyInput = document.getElementById('lobby-player-name');
   if (lobbyInput && !lobbyInput.value.trim()) lobbyInput.value = playerName;
   network.setPlayerInfo(playerName);
   menu.showLobby();
+  setLobbyStatus('Conectando...', null);
   network.connect(playerName);
+});
+
+network.onOpen(() => setLobbyStatus('Conectado - aguardando jogadores', 'online'));
+network.onClose(() => {
+  const lobbyEl = document.getElementById('lobby');
+  if (lobbyEl && lobbyEl.style.display === 'flex') {
+    setLobbyStatus('Servidor offline - rode node server/index.js', 'offline');
+  }
 });
 
 menu.onStartGame(() => {

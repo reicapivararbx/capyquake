@@ -403,12 +403,32 @@ export class Menu {
   }
 
   updatePlayersList(players) {
-    this.playersList.replaceChildren();
-    players.forEach(p => {
-      const entry = document.createElement('div');
-      entry.className = 'player-entry';
-      entry.textContent = p.name;
-      this.playersList.appendChild(entry);
-    });
+    const MAX_PLAYERS = 6;
+    const list = this.playersList;
+    if (!list) return;
+    list.replaceChildren();
+    const countEl = document.getElementById('lobby-count');
+    const names = (players || []).map(p => p.name || 'Jogador');
+    if (countEl) countEl.textContent = `${names.length}/${MAX_PLAYERS}`;
+    for (let i = 0; i < MAX_PLAYERS; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'player-slot';
+      const avatar = document.createElement('span');
+      avatar.className = 'slot-avatar';
+      const name = document.createElement('span');
+      name.className = 'slot-name';
+      if (names[i]) {
+        slot.classList.add('filled');
+        avatar.style.background = players[i].color || '#7c3aed';
+        avatar.textContent = names[i].charAt(0).toUpperCase();
+        name.textContent = names[i];
+      } else {
+        avatar.textContent = '?';
+        name.textContent = 'Aguardando...';
+      }
+      slot.appendChild(avatar);
+      slot.appendChild(name);
+      list.appendChild(slot);
+    }
   }
 }

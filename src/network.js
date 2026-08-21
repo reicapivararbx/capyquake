@@ -30,6 +30,7 @@ export class Network {
 
     this.ws.onopen = () => {
       this.connected = true;
+      if (this.callbacks.open) this.callbacks.open();
       if (!this.joined) {
         this.joined = true;
         this.sendJoin(intendedPlayerName);
@@ -63,6 +64,7 @@ export class Network {
     this.ws.onclose = () => {
       this.connected = false;
       this.joined = false;
+      if (this.callbacks.close) this.callbacks.close();
       if (this._shouldReconnect) {
         console.warn('[Network] Conexão perdida, tentando reconectar em 3s...');
         this._reconnectTimer = setTimeout(() => {
@@ -123,6 +125,14 @@ export class Network {
 
   onPlayersUpdate(cb) {
     this.callbacks.playersUpdate = cb;
+  }
+
+  onOpen(cb) {
+    this.callbacks.open = cb;
+  }
+
+  onClose(cb) {
+    this.callbacks.close = cb;
   }
 
   onGameStart(cb) {

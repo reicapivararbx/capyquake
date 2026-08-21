@@ -534,63 +534,181 @@
       background: #ff6600;
       color: #1a1a1a;
     }
+    /* ===== LOBBY MULTIPLAYER ===== */
     #lobby {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
       display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(180deg, #0d0d0d 0%, #2a1a0a 100%);
+      background:
+        radial-gradient(ellipse 70% 45% at 50% -5%, rgba(109, 40, 217, 0.16), transparent 60%),
+        linear-gradient(180deg, #0b0b10 0%, #100d14 60%, #17101f 100%);
       z-index: 100;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .lobby-back {
+      position: absolute;
+      top: 22px;
+      left: 26px;
+      padding: 10px 18px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      color: #cfcfd8;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+    .lobby-back:hover { background: rgba(255, 255, 255, 0.12); color: #fff; }
+    .lobby-card {
+      width: min(460px, 92vw);
+      background: linear-gradient(180deg, #16121f, #0e0c13);
+      border: 1px solid #2f2a3d;
+      border-radius: 18px;
+      padding: 26px 28px;
+      box-sizing: border-box;
+      box-shadow: 0 24px 70px rgba(0, 0, 0, 0.65);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .lobby-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
     }
     #lobby h2 {
-      font-size: 36px;
-      color: #ff6600;
-      margin-bottom: 20px;
+      margin: 0;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(95deg, #a78bfa, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    #lobby .lobby-info {
-      font-size: 18px;
-      color: #aa8844;
-      margin-bottom: 20px;
+    .lobby-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 12px;
+      color: #9aa0b4;
+      white-space: nowrap;
     }
-    #lobby .players-list {
-      background: #2a1a0a;
-      border: 2px solid #ff6600;
-      padding: 20px;
-      min-width: 300px;
-      margin-bottom: 20px;
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #ffd000;
+      animation: lobbyPulse 1.2s infinite;
     }
-    #lobby .player-entry {
-      padding: 5px 0;
-      color: #ffcc66;
-    }
+    .status-dot.online { background: #4ade80; animation: none; }
+    .status-dot.offline { background: #ff5555; animation: none; }
+    @keyframes lobbyPulse { 50% { opacity: 0.35; } }
     #lobby input {
-      padding: 10px 20px;
-      font-size: 18px;
-      font-family: 'Courier New', monospace;
-      background: #1a1a1a;
-      color: #ffcc66;
-      border: 2px solid #ff6600;
-      margin-bottom: 15px;
+      padding: 12px 20px;
+      font-size: 15px;
+      font-family: inherit;
+      background: rgba(255, 255, 255, 0.05);
+      color: #f5f5f7;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      outline: none;
       text-align: center;
-      width: 300px;
+      width: 100%;
+      box-sizing: border-box;
+      transition: 0.2s;
     }
-    #lobby button {
-      padding: 12px 30px;
-      font-size: 18px;
-      font-family: 'Courier New', monospace;
-      background: #3a2a1a;
-      color: #ffcc66;
-      border: 2px solid #ff6600;
+    #lobby input::placeholder { color: #6b6b78; }
+    #lobby input:focus {
+      border-color: #7c3aed;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.2);
+    }
+    .lobby-grid-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: #9aa0b4;
+      display: flex;
+      justify-content: space-between;
+    }
+    #lobby-count { color: #a78bfa; }
+    #lobby .players-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      min-height: 132px;
+      align-content: start;
+    }
+    .player-slot {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px dashed rgba(255, 255, 255, 0.14);
+      border-radius: 10px;
+      padding: 10px 12px;
+      min-height: 46px;
+      box-sizing: border-box;
+    }
+    .player-slot.filled {
+      border-style: solid;
+      border-color: rgba(124, 58, 237, 0.5);
+      background: rgba(124, 58, 237, 0.09);
+    }
+    .slot-avatar {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 900;
+      color: #fff;
+      background: #3a3550;
+    }
+    .player-slot.filled .slot-avatar { animation: slotPop 0.25s ease; }
+    @keyframes slotPop { from { transform: scale(0.4); opacity: 0; } }
+    .slot-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e8e8ef;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .player-slot:not(.filled) .slot-name { color: #55555f; font-weight: 400; }
+    #lobby #btn-start-game {
+      padding: 14px;
+      background: linear-gradient(160deg, #8b5cf6, #6d28d9);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1px;
       cursor: pointer;
-      text-transform: uppercase;
+      box-shadow: 0 8px 24px rgba(109, 40, 217, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    #lobby button:hover {
-      background: #ff6600;
-      color: #1a1a1a;
+    #lobby #btn-start-game:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px rgba(109, 40, 217, 0.55);
     }
+    .lobby-hint {
+      text-align: center;
+      font-size: 11.5px;
+      color: #6b6b78;
+    }
+    body[data-device="mobile"] #lobby .players-list { grid-template-columns: 1fr; }
 
 
     /* SETTINGS SCREEN */
@@ -1604,7 +1722,7 @@
     }
 
   </style>
-  <script type="module" crossorigin src="./assets/index-B8NpEcka.js"></script>
+  <script type="module" crossorigin src="./assets/index-CpT-xcuR.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-DP6qyewS.css">
 </head>
 <body>
@@ -1651,12 +1769,18 @@
   </div>
 
   <div id="lobby">
-    <h2>LOBBY</h2>
-    <input type="text" id="lobby-player-name" placeholder="Seu nome" maxlength="12">
-    <div class="lobby-info">Aguardando jogadores...</div>
-    <div class="players-list" id="players-list"></div>
-    <button id="btn-start-game">Iniciar Partida</button>
-    <button id="btn-back-menu" style="margin-top:10px; background:#1a1a1a;">Voltar</button>
+    <button id="btn-back-menu" class="lobby-back" title="Voltar ao menu">← Voltar</button>
+    <div class="lobby-card">
+      <div class="lobby-head">
+        <h2>🌐 MULTIPLAYER</h2>
+        <div class="lobby-status"><span class="status-dot"></span><span id="lobby-status-text">Conectando...</span></div>
+      </div>
+      <input type="text" id="lobby-player-name" placeholder="Digite seu nome..." maxlength="12" autocomplete="off">
+      <div class="lobby-grid-label">JOGADORES <span id="lobby-count">0/6</span></div>
+      <div class="players-list" id="players-list"></div>
+      <button id="btn-start-game">🚀 INICIAR PARTIDA</button>
+      <div class="lobby-hint">Escolha o mapa quando todos estiverem prontos</div>
+    </div>
   </div>
 
   <div id="hud">
