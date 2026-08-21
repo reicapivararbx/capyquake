@@ -37,35 +37,76 @@ const MIME_TYPES = {
 const rooms = new Map();
 let roomIdCounter = 0;
 
+const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function generateRoomCode() {
+  let code;
+  do {
+    code = '';
+    for (let i = 0; i < 4; i++) code += CODE_CHARS[Math.floor(Math.random() * CODE_CHARS.length)];
+  } while ([...rooms.values()].some(r => r.code === code));
+  return code;
+}
+
 class GameRoom {
   constructor() {
     this.id = roomIdCounter++;
+    this.code = generateRoomCode();
     this.players = new Map();
+    this.host = null;
     this.started = false;
     this.animalCount = 20;
     this.kills = {};
   }
 
   addPlayer(ws, name) {
-    this.players.set(ws, { name, position: { x: 0, y: 1.7, z: 0 }, kills: 0 });
+    const isFirst = this.players.size === 0;
+    this.players.set(ws, { name, position: { x: 0, y: 1.7, z: 0 }, rotation: 0, kills: 0 });
     this.kills[name] = 0;
-    this.broadcastPlayers();
+    if (isFirst || !this.host || !this.players.has(this.host)) {
+      this.host = ws;
+    }
+    this.broadcastLobby();
   }
 
   removePlayer(ws) {
+    const wasHost = this.host === ws;
     this.players.delete(ws);
-    this.broadcastPlayers();
+    if (wasHost) {
+      const next = this.players.keys().next();
+      this.host = next.done ? null : next.value;
+      if (!next.done && !this.started) {
+        this.broadcast({ type: 'chat', data: { name: '[SERVIDOR]', color: '#a78bfa', message: 'O host saiu. Novo host: ' + this.players.get(this.host).name, ts: Date.now() } });
+      }
+    }
+    this.broadcastLobby();
     if (this.players.size === 0) {
       rooms.delete(this.id);
     }
   }
 
-  broadcastPlayers() {
-    const playerList = Array.from(this.players.values()).map(p => ({ name: p.name }));
-    this.broadcast({ type: 'players', players: playerList });
+  isHost(ws) {
+    return this.host === ws;
   }
 
-  startGame(data) {
+  broadcastLobby() {
+    const playerList = Array.from(this.players.values()).map(p => ({ name: p.name }));
+    const hostName = this.host && this.players.get(this.host) ? this.players.get(this.host).name : '';
+    for (const [socket] of this.players) {
+      if (socket.readyState !== 1) continue;
+      socket.send(JSON.stringify({
+        type: 'lobby',
+        code: this.code,
+        hostName,
+        players: playerList,
+        maxPlayers: 6,
+        started: this.started,
+        youAreHost: this.isHost(socket)
+      }));
+    }
+  }
+
+  startGame(data, ws) {
+    if (!this.isHost(ws)) return false;
     this.started = true;
     const d = data || {};
     this.broadcast({
@@ -76,6 +117,7 @@ class GameRoom {
         bots: ['UmLegalGaucho', 'Bot_Mineiro', 'Bot_Paulista', 'Bot_Carioca', 'Bot_Baiano']
       }
     });
+    return true;
   }
 
   handleChat(ws, data) {
@@ -120,13 +162,12 @@ class GameRoom {
   }
 }
 
-function getAvailableRoom() {
+function findRoomByCode(code) {
+  const wanted = String(code || '').trim().toUpperCase();
   for (const [, room] of rooms) {
-    if (!room.started && room.players.size < 8) return room;
+    if (room.code === wanted) return room;
   }
-  const room = new GameRoom();
-  rooms.set(room.id, room);
-  return room;
+  return null;
 }
 
 function sendNotFound(res) {
@@ -234,12 +275,44 @@ wss.on('connection', (ws) => {
     try { msg = JSON.parse(raw); } catch { return; }
 
     switch (msg.type) {
-      case 'join':
-        currentRoom = getAvailableRoom();
-        currentRoom.addPlayer(ws, msg.name || 'Anon');
+      case 'createLobby': {
+        if (currentRoom) currentRoom.removePlayer(ws);
+        const room = new GameRoom();
+        rooms.set(room.id, room);
+        currentRoom = room;
+        room.addPlayer(ws, String(msg.name || 'Anon').slice(0, 12));
+        ws.send(JSON.stringify({ type: 'lobbyCreated', code: room.code }));
         break;
-      case 'startGame':
-        if (currentRoom) currentRoom.startGame(msg);
+      }
+      case 'joinLobby': {
+        if (currentRoom) currentRoom.removePlayer(ws);
+        const room = findRoomByCode(msg.code);
+        if (!room) {
+          ws.send(JSON.stringify({ type: 'lobbyError', message: 'Lobby nao encontrado. Confira o codigo.' }));
+          currentRoom = null;
+          break;
+        }
+        if (room.started) {
+          ws.send(JSON.stringify({ type: 'lobbyError', message: 'Essa partida ja comecou.' }));
+          break;
+        }
+        if (room.players.size >= 6) {
+          ws.send(JSON.stringify({ type: 'lobbyError', message: 'Lobby cheio (6/6).' }));
+          break;
+        }
+        currentRoom = room;
+        room.addPlayer(ws, String(msg.name || 'Anon').slice(0, 12));
+        break;
+      }
+      case 'startGame': {
+        if (!currentRoom) break;
+        const ok = currentRoom.startGame(msg, ws);
+        if (!ok) ws.send(JSON.stringify({ type: 'lobbyError', message: 'Apenas o host pode iniciar a partida.' }));
+        break;
+      }
+      case 'leaveLobby':
+        if (currentRoom) currentRoom.removePlayer(ws);
+        currentRoom = null;
         break;
       case 'position':
         if (currentRoom) currentRoom.handlePosition(ws, msg.position, msg.rotation);
