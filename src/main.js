@@ -63,7 +63,11 @@ document.getElementById('btn-tutorial-next').addEventListener('click', () => {
   }
 });
 
+let _startingGame = false;
 function startGame(opts) {
+  if (_startingGame) return;
+  _startingGame = true;
+  setTimeout(() => { _startingGame = false; }, 1000);
   if (mobileControls) {
     mobileControls.destroy();
     mobileControls = null;
@@ -75,6 +79,8 @@ function startGame(opts) {
     mobileControls = new MobileControls(game.player);
   }
   document.getElementById('btn-ingame-shop').style.display = 'block';
+  document.getElementById('btn-hud-camera').style.display = 'block';
+  document.getElementById('btn-hud-inventory').style.display = 'block';
 }
 
 function hideAllScreens() {
@@ -86,6 +92,8 @@ function showMenu() {
   hideAllScreens();
   menu.show();
   document.getElementById('btn-ingame-shop').style.display = 'none';
+  document.getElementById('btn-hud-camera').style.display = 'none';
+  document.getElementById('btn-hud-inventory').style.display = 'none';
 }
 
 window.returnToMainMenu = function() {
@@ -102,12 +110,6 @@ window.returnToMainMenu = function() {
 
 menu.onSingleplayer((playerName, map, purchases) => {
   showTutorial(() => startGame({ mode: 'singleplayer', botCount: 5, animalCount: 300, playerName, map, shopPurchases: purchases }));
-});
-
-document.getElementById('btn-test-mode').addEventListener('click', () => {
-  const playerName = menu.getPlayerName();
-  menu.hide();
-  showTutorial(() => startGame({ mode: 'test', botCount: 5, animalCount: 300, playerName, map: null }));
 });
 
 function getLobbyPlayerName() {
@@ -281,6 +283,16 @@ document.getElementById('btn-pause').addEventListener('click', () => {
   if (!game || !game.running) return;
   if (game.mode !== 'singleplayer' && game.mode !== 'test') return;
   game.togglePause();
+});
+
+document.getElementById('btn-hud-camera').addEventListener('click', () => {
+  if (!game || !game.player || !game.running) return;
+  game.player.toggleCamera();
+});
+
+document.getElementById('btn-hud-inventory').addEventListener('click', () => {
+  if (!game || !game.running) return;
+  game.toggleInventoryScreen();
 });
 
 document.getElementById('btn-repeat-tutorial').addEventListener('click', () => {

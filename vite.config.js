@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-  base: '/capyquake/',
+  base: './',
   root: '.',
   publicDir: 'public',
   server: {
