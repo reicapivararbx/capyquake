@@ -4,6 +4,8 @@ import { Network } from './network.js';
 import { setupDevice } from './device.js';
 import { MobileControls } from './controls-mobile.js';
 import { invalidateKeyBindings } from './keybindings.js';
+import { WEAPONS } from './weapon.js';
+import { ACHIEVEMENTS } from './achievements-data.js';
 
 const currentDevice = setupDevice();
 const menu = new Menu();
@@ -304,6 +306,135 @@ document.getElementById('btn-pause').addEventListener('click', () => {
   game.togglePause();
 });
 
+const _seqReset = [];
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+  if (!'reset'.includes(k) || k === '') { _seqReset.length = 0; return; }
+  _seqReset.push(k);
+  if (_seqReset.length > 5) _seqReset.shift();
+  if (_seqReset.join('') === 'reset') {
+    _seqReset.length = 0;
+    localStorage.setItem('capiquake_rebirth', '0');
+    localStorage.setItem('capiquake_rt', '0');
+    localStorage.setItem('capiquake_best_level', '1');
+    localStorage.setItem('capiquake_money', '0');
+    localStorage.setItem('capiquake_tokens', '0');
+    localStorage.setItem('capiquake_purchases', '{"items":[],"revive":0}');
+    const g = window.__game;
+    if (g) {
+      g.money = 0;
+      g.tokens = 0;
+      g.rebirthLevel = 0;
+      g.rebirthMultiplier = 1;
+      g.level = 1;
+      g.xp = 0;
+      g.playerMaxHealth = 200;
+      g.playerHealth = 200;
+      if (g.hud) {
+        g.hud.updateResources(g.tokens, g.money, g.armor);
+        g.hud.updateHealth(g.playerHealth, g.playerMaxHealth);
+      }
+      g.saveBalance && g.saveBalance();
+    }
+    showToastMessage('RESETADO!');
+  }
+});
+
+function showToastMessage(text) {
+  let toast = document.getElementById('easter-egg-toast');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'easter-egg-toast';
+    toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:2200;background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:12px 26px;border-radius:999px;font-family:\'Segoe UI\',system-ui,sans-serif;font-weight:800;letter-spacing:2px;font-size:15px;box-shadow:0 10px 30px rgba(124,58,237,.5);opacity:0;transition:opacity .3s;pointer-events:none;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = text;
+  toast.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+}
+
+const _seq7 = [];
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  if (e.key !== '7') { if (e.key !== '1' && e.key !== '2') _seq7.length = 0; return; }
+  _seq7.push(e.key);
+  if (_seq7.length > 3) _seq7.shift();
+  if (_seq7.length === 3) {
+    _seq7.length = 0;
+    openAdminPrompt();
+  }
+});
+
+function openAdminPrompt() {
+  let overlay = document.getElementById('admin-code-overlay');
+  if (overlay) { overlay.style.display = 'flex'; const inp = document.getElementById('admin-code-input'); if (inp) inp.focus(); return; }
+  overlay = document.createElement('div');
+  overlay.id = 'admin-code-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:2100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.8);';
+  overlay.innerHTML = '<div style="background:linear-gradient(180deg,#16121f,#0e0c13);border:1px solid #3f3a52;border-radius:16px;padding:28px 32px;width:min(380px,90vw);font-family:\'Segoe UI\',system-ui,sans-serif;text-align:center;">' +
+    '<h3 style="margin:0 0 14px;color:#a78bfa;font-size:15px;letter-spacing:2px;">DIGITE O CODIGO:</h3>' +
+    '<input id="admin-code-input" type="password" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px 18px;font-size:15px;text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:999px;color:#fff;outline:none;" />' +
+    '<div id="admin-code-error" style="color:#ff7b7b;font-size:12px;min-height:16px;margin-top:8px;"></div>' +
+    '<button id="admin-code-ok" style="margin-top:6px;width:100%;padding:12px;background:linear-gradient(160deg,#8b5cf6,#6d28d9);border:none;border-radius:10px;color:#fff;font-weight:800;font-family:inherit;font-size:14px;cursor:pointer;">CONFIRMAR</button>' +
+    '<button id="admin-code-cancel" style="margin-top:8px;width:100%;padding:9px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#9aa0b4;font-family:inherit;font-size:12px;cursor:pointer;">Cancelar</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  const input = document.getElementById('admin-code-input');
+  const err = document.getElementById('admin-code-error');
+  const close = () => { overlay.style.display = 'none'; input.value = ''; err.textContent = ''; };
+  document.getElementById('admin-code-cancel').addEventListener('click', close);
+  overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); });
+  const tryCode = () => {
+    if (input.value.trim() === 'IAMADMINOFGAME') {
+      close();
+      grantAdminPowers();
+    } else {
+      err.textContent = 'Codigo invalido.';
+      input.value = '';
+      input.focus();
+    }
+  };
+  document.getElementById('admin-code-ok').addEventListener('click', tryCode);
+  input.addEventListener('keydown', (ev) => {
+    ev.stopPropagation();
+    if (ev.key === 'Enter') tryCode();
+    if (ev.key === 'Escape') close();
+  });
+  setTimeout(() => input.focus(), 50);
+}
+
+function grantAdminPowers() {
+  const g = window.__game;
+  if (!g) return;
+  try {
+    if (g.weapon) {
+      for (const id of Object.keys(WEAPONS)) {
+        if (!g.weapon.inventory.includes(id)) g.weapon.addWeapon(id, 9999);
+      }
+      g.weapon.updateInventoryDisplay();
+      g.updateHotbar && g.updateHotbar();
+    }
+    if (ACHIEVEMENTS.length) {
+      for (const def of ACHIEVEMENTS) g.achievements.add(def.id);
+      localStorage.setItem('capiquake_achievements', JSON.stringify([...g.achievements]));
+    }
+    g.infiniteAmmo = true;
+    const infBtn = document.getElementById('btn-inf-ammo');
+    if (infBtn) infBtn.textContent = 'INFINITA: TRUE';
+    g.invincible = true;
+    g.invincibleTimer = Infinity;
+    g.playerHealth = g.playerMaxHealth;
+    if (g.hud) g.hud.updateHealth(g.playerHealth, g.playerMaxHealth);
+    g.level = 100;
+    g.xp = 0;
+    g.stats.level = 100;
+    g.checkAchievements && g.checkAchievements();
+  } catch (err) { console.warn(err); }
+  showToastMessage('MODO ADMIN ATIVADO');
+}
+
 const _seq = [];
 document.addEventListener('keydown', (e) => {
   if (e.repeat) return;
@@ -312,17 +443,7 @@ document.addEventListener('keydown', (e) => {
   if (_seq.length > 4) _seq.shift();
   if (_seq.length === 4 && _seq.join('') === '2112') {
     _seq.length = 0;
-    let toast = document.getElementById('easter-egg-toast');
-    if (!toast) {
-      toast = document.createElement('div');
-      toast.id = 'easter-egg-toast';
-      toast.style.cssText = 'position:fixed;top:24px;left:50%;transform:translateX(-50%);z-index:2000;background:linear-gradient(135deg,#7c3aed,#4c1d95);color:#fff;padding:12px 26px;border-radius:999px;font-family:\'Segoe UI\',system-ui,sans-serif;font-weight:800;letter-spacing:2px;font-size:15px;box-shadow:0 10px 30px rgba(124,58,237,.5);opacity:0;transition:opacity .3s;pointer-events:none;';
-      document.body.appendChild(toast);
-    }
-    toast.textContent = 'EASTER EGG!';
-    toast.style.opacity = '1';
-    clearTimeout(toast._t);
-    toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
+    showToastMessage('EASTER EGG!');
     const g = window.__game;
     if (g) {
       g.money += 1000000;
