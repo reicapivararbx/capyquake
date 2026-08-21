@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1600">
+  <title>Capiquake - Loja</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      overflow: hidden;
+      font-family: monospace;
+      color: #fff;
+      width: 1600px;
+      height: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #shop {
+      width: 850px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 25px 30px;
+      background: #080808;
+      border: 1px solid #222;
+    }
+    #shop::-webkit-scrollbar { width: 6px; }
+    #shop::-webkit-scrollbar-track { background: #111; }
+    #shop::-webkit-scrollbar-thumb { background: #333; }
+    #shop h2 {
+      text-align: center;
+      font-size: 28px;
+      margin: 0 0 15px;
+      color: #ff8c00;
+    }
+    .shop-balance {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      font-size: 16px;
+      margin-bottom: 12px;
+    }
+    .shop-balance #shop-tokens { color: #00ff55; }
+    .shop-balance #shop-money { color: #00ff55; }
+    .shop-convert {
+      display: block;
+      margin: 0 auto 20px;
+      padding: 8px 18px;
+      background: #111;
+      border: 1px solid #ffd000;
+      color: #ffd000;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .shop-section { margin: 20px 0; }
+    .shop-section h3 {
+      text-align: center;
+      font-size: 14px;
+      margin: 0 0 8px;
+      color: #ff8c00;
+    }
+    .shop-items {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .shop-item {
+      width: 100%;
+      min-height: 42px;
+      padding: 8px 12px;
+      background: #101d11;
+      border: 1px solid #19a52a;
+      color: #baffba;
+      font-family: monospace;
+      font-size: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .shop-item:hover { background: #17351b; border-color: #32ff4d; }
+    #btn-start-game-shop {
+      display: block;
+      margin: 25px auto 5px;
+      padding: 12px 35px;
+      background: #17100a;
+      border: 1px solid #ff8c00;
+      color: #ffb347;
+      font-family: monospace;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    #btn-start-game-shop:hover { background: #2a1808; }
+  </style>
+</head>
+<body>
+  <div id="shop">
+    <h2>LOJA</h2>
+    <div class="shop-balance">
+      <span id="shop-tokens">TOKENS: 25</span>
+      <span id="shop-money">R$: 12500</span>
+    </div>
+    <button class="shop-convert">Trocar $1.000 por 1 token</button>
+
+    <div class="shop-section">
+      <h3>ARMAS (R$)</h3>
+      <div class="shop-items">
+        <button class="shop-item">MINIGUN - R$5000</button>
+        <button class="shop-item">AK-47 - R$3000</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>ARMADURAS (R$)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Armadura Leve (+25) - R$2000</button>
+        <button class="shop-item">Armadura Pesada (+50) - R$4000</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>BOOSTS (TOKENS)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Velocidade 60s - 1 Token</button>
+        <button class="shop-item">+100 HP Max - 1 Token</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>MUNIÇÕES (R$)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Munição Bazuca - R$575</button>
+        <button class="shop-item">Munição Chicken - R$58</button>
+        <button class="shop-item">Munição Sniper - R$288</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>ARMADURAS COMPLETAS (R$)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Armadura Couro (+20) - R$1150</button>
+        <button class="shop-item">Armadura Ouro (+30) - R$2300</button>
+        <button class="shop-item">Armadura Ferro (+50) - R$5750</button>
+        <button class="shop-item">Armadura Diamante (+100) - R$11500</button>
+        <button class="shop-item">Armadura Void (+500) - R$57500</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>HABILIDADES (TOKENS)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Explosão Void - 10 Tokens</button>
+        <button class="shop-item">Teleporte - 8 Tokens</button>
+        <button class="shop-item">Rush de Velocidade - 15 Tokens</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>ENCANTAMENTOS (TOKENS)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Fogo - 12 Tokens</button>
+        <button class="shop-item">Gelado - 10 Tokens</button>
+        <button class="shop-item">Raio - 15 Tokens</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>SKINS DE JOGADOR (TOKENS)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Void - 50 Tokens</button>
+        <button class="shop-item">Flame - 45 Tokens</button>
+        <button class="shop-item">Steam - 40 Tokens</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>SKINS DE ARMAS (TOKENS)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Armadilha - 25 Tokens</button>
+        <button class="shop-item">Dourada - 30 Tokens</button>
+        <button class="shop-item">Criogênico - 35 Tokens</button>
+      </div>
+    </div>
+
+    <div class="shop-section">
+      <h3>REVIVES (R$)</h3>
+      <div class="shop-items">
+        <button class="shop-item">Revive - R$5750</button>
+      </div>
+    </div>
+
+    <button id="btn-start-game-shop">INICIAR PARTIDA</button>
+  </div>
+</body>
+</html>

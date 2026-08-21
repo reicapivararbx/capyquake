@@ -1,10 +1,15 @@
 import { Menu } from './menu.js';
 import { Game } from './game.js';
 import { Network } from './network.js';
+import { setupDevice } from './device.js';
+import { MobileControls } from './controls-mobile.js';
 
+const currentDevice = setupDevice();
 const menu = new Menu();
 const network = new Network();
 let game = null;
+let mobileControls = null;
+let shopPreviousScreen = 'menu';
 
 const TUTORIAL_STEPS = [
   'Bem-vindo ao CapiQuake! Use [W][A][S][D] para se mover e o MOUSE para atirar.',
@@ -58,9 +63,40 @@ document.getElementById('btn-tutorial-next').addEventListener('click', () => {
 });
 
 function startGame(opts) {
+  if (mobileControls) {
+    mobileControls.destroy();
+    mobileControls = null;
+  }
   game = new Game(opts);
   game.start();
+  if (document.body.dataset.device === 'mobile' && game.player) {
+    mobileControls = new MobileControls(game.player);
+  }
+  document.getElementById('btn-ingame-shop').style.display = 'block';
 }
+
+function hideAllScreens() {
+  document.getElementById('achievements-screen').style.display = 'none';
+  menu.hideStandaloneShop();
+}
+
+function showMenu() {
+  hideAllScreens();
+  menu.show();
+  document.getElementById('btn-ingame-shop').style.display = 'none';
+}
+
+window.returnToMainMenu = function() {
+  if (game) {
+    game.destroy();
+    game = null;
+  }
+  if (mobileControls) {
+    mobileControls.destroy();
+    mobileControls = null;
+  }
+  showMenu();
+};
 
 menu.onSingleplayer((playerName, map, purchases) => {
   showTutorial(() => startGame({ mode: 'singleplayer', botCount: 5, animalCount: 300, playerName, map, shopPurchases: purchases }));
@@ -172,6 +208,31 @@ document.getElementById('btn-repeat-tutorial').addEventListener('click', () => {
   showTutorial(null);
 });
 
+function saveSettings() {
+  const settings = {};
+  document.querySelectorAll('.key-bindings input').forEach(input => {
+    settings[input.id] = input.value;
+  });
+  localStorage.setItem('capiquake_settings', JSON.stringify(settings));
+}
+
+function loadSettings() {
+  const saved = localStorage.getItem('capiquake_settings');
+  if (saved) {
+    try {
+      const settings = JSON.parse(saved);
+      Object.keys(settings).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = settings[id];
+      });
+    } catch (e) {
+      console.warn('Erro ao carregar configurações:', e);
+    }
+  }
+}
+
+loadSettings();
+
 document.getElementById('btn-reset-keys').addEventListener('click', () => {
   const defaults = {
     'key-move-forward': 'W',
@@ -188,16 +249,179 @@ document.getElementById('btn-reset-keys').addEventListener('click', () => {
     'key-sniper': 'CTRL',
     'key-inventory': 'ESC',
     'key-drop': 'Z',
+    'key-grenade': 'G',
+    'key-speedrush': 'H',
+    'key-pause': 'F2',
   };
   Object.keys(defaults).forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = defaults[id];
   });
+  document.getElementById('key-conflict-warning').style.display = 'none';
+  saveSettings();
+  document.getElementById('settings-saved').style.display = 'block';
+  setTimeout(() => {
+    document.getElementById('settings-saved').style.display = 'none';
+  }, 2000);
+});
+
+document.getElementById('btn-settings-quit').addEventListener('click', () => {
+  saveSettings();
+  settingsScreen.style.display = 'none';
+});
+
+document.getElementById('btn-test-mode').addEventListener('click', () => {
+  settingsScreen.style.display = 'none';
+  const playerName = menu.getPlayerName();
+  menu.hide();
+  showTutorial(() => startGame({ mode: 'test', botCount: 5, animalCount: 50, playerName, map: null }));
 });
 
 document.getElementById('btn-play-again').addEventListener('click', () => {
   document.getElementById('celebration').style.display = 'none';
   if (game) game.destroy();
   game = null;
+  document.getElementById('btn-ingame-shop').style.display = 'none';
   menu.show();
 });
+
+document.getElementById('btn-shop-menu').addEventListener('click', () => {
+  shopPreviousScreen = 'menu';
+  window.__shopPreviousScreen = 'menu';
+  menu.hide();
+  menu.showStandaloneShop();
+});
+
+document.getElementById('btn-achievements-menu').addEventListener('click', () => {
+  menu.hide();
+  showAchievementsScreen();
+});
+
+document.getElementById('btn-ingame-shop').addEventListener('click', () => {
+  if (!game || !game.running) return;
+  shopPreviousScreen = game.mode;
+  window.__shopPreviousScreen = game.mode;
+  menu.showStandaloneShop();
+});
+
+document.getElementById('btn-close-achievements').addEventListener('click', () => {
+  document.getElementById('achievements-screen').style.display = 'none';
+  showMenu();
+});
+
+function showAchievementsScreen() {
+  const screen = document.getElementById('achievements-screen');
+  const list = document.getElementById('achievements-list');
+  const countEl = document.getElementById('achievements-count');
+  if (!screen || !list) return;
+
+  const saved = JSON.parse(localStorage.getItem('capiquake_achievements') || '[]');
+  const unlockedSet = new Set(saved);
+  const allAchievements = window.__ACHIEVEMENTS_DATA || [];
+  const unlockedCount = allAchievements.filter(a => unlockedSet.has(a.id)).length;
+  if (countEl) countEl.textContent = unlockedCount + ' / ' + allAchievements.length + ' DESBLOQUEADAS';
+
+  const rarityFilters = document.getElementById('achievements-rarity-filters');
+  if (rarityFilters && !rarityFilters.hasChildNodes()) {
+    const rarities = ['all', 'COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY', 'MYTHIC', 'DIVINE', 'CURSED'];
+    const rarityLabels = { all: 'TODAS', COMMON: 'Comum', UNCOMMON: 'Incomum', RARE: 'Raro', EPIC: 'Épico', LEGENDARY: 'Lendário', MYTHIC: 'Mítico', DIVINE: 'Divino', CURSED: 'Amaldiçoado' };
+    rarities.forEach(r => {
+      const btn = document.createElement('button');
+      btn.textContent = rarityLabels[r] || r;
+      btn.dataset.rarity = r;
+      if (r === 'all') btn.classList.add('active');
+      btn.addEventListener('click', () => {
+        rarityFilters.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderAchievements(unlockedSet, getActiveStatusFilter(), r === 'all' ? null : r);
+      });
+      rarityFilters.appendChild(btn);
+    });
+  }
+
+  const filtersEl = document.getElementById('achievements-filters');
+  if (filtersEl && !filtersEl._bound) {
+    filtersEl._bound = true;
+    filtersEl.querySelectorAll('button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        filtersEl.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const activeRarity = getActiveRarityFilter();
+        renderAchievements(unlockedSet, btn.dataset.filter, activeRarity);
+      });
+    });
+  }
+
+  renderAchievements(unlockedSet, 'all', null);
+  screen.style.display = 'flex';
+}
+
+function getActiveStatusFilter() {
+  const btn = document.querySelector('#achievements-filters button.active');
+  return btn ? btn.dataset.filter : 'all';
+}
+
+function getActiveRarityFilter() {
+  const btn = document.querySelector('#achievements-rarity-filters button.active');
+  if (!btn || btn.dataset.rarity === 'all') return null;
+  return btn.dataset.rarity;
+}
+
+function renderAchievements(unlockedSet, statusFilter, rarityFilter) {
+  const list = document.getElementById('achievements-list');
+  if (!list) return;
+  list.innerHTML = '';
+  const allAchievements = window.__ACHIEVEMENTS_DATA || [];
+  let filtered = allAchievements;
+
+  if (statusFilter === 'unlocked') filtered = filtered.filter(a => unlockedSet.has(a.id));
+  else if (statusFilter === 'locked') filtered = filtered.filter(a => !unlockedSet.has(a.id));
+  if (rarityFilter) filtered = filtered.filter(a => a.rarity === rarityFilter);
+
+  filtered.forEach(a => {
+    const unlocked = unlockedSet.has(a.id);
+    const card = document.createElement('div');
+    card.className = 'achievement-card' + (unlocked ? ' unlocked' : '');
+
+    const top = document.createElement('div');
+    top.className = 'achievement-top';
+    const name = document.createElement('span');
+    name.className = 'achievement-name';
+    name.textContent = a.name;
+    const rarity = document.createElement('span');
+    rarity.className = 'achievement-rarity rarity-' + (a.rarity || 'common').toLowerCase();
+    rarity.textContent = a.rarity || 'COMMON';
+    top.appendChild(name);
+    top.appendChild(rarity);
+    card.appendChild(top);
+
+    const desc = document.createElement('div');
+    desc.className = 'achievement-desc';
+    desc.textContent = a.description || '';
+    card.appendChild(desc);
+
+    if (a.target && a.target > 1) {
+      const saved = JSON.parse(localStorage.getItem('capiquake_achievement_progress') || '{}');
+      const progress = unlocked ? a.target : (saved[a.id] || 0);
+      const progressEl = document.createElement('div');
+      progressEl.className = 'achievement-progress';
+      progressEl.textContent = Math.min(progress, a.target) + ' / ' + a.target;
+      card.appendChild(progressEl);
+
+      const barBg = document.createElement('div');
+      barBg.className = 'achievement-progress-bar';
+      const barFill = document.createElement('div');
+      barFill.className = 'achievement-progress-fill';
+      barFill.style.width = Math.min(100, (progress / a.target) * 100) + '%';
+      barBg.appendChild(barFill);
+      card.appendChild(barBg);
+    }
+
+    const status = document.createElement('div');
+    status.className = 'achievement-status ' + (unlocked ? 'unlocked' : 'locked');
+    status.textContent = unlocked ? '✓ DESBLOQUEADA' : '🔒 BLOQUEADA';
+    card.appendChild(status);
+
+    list.appendChild(card);
+  });
+}

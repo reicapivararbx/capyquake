@@ -32,9 +32,10 @@ export class Menu {
       const name = this.getPlayerName();
       this.hide();
       this.showMapVote((map) => {
-        this.showShop((purchases) => {
-          cb(name, map, purchases);
-        });
+        this.loadPurchases();
+        this.readBalances();
+        this.shopPurchases = this.buildPurchases();
+        cb(name, map, this.shopPurchases);
       });
     });
   }
@@ -115,6 +116,24 @@ export class Menu {
     this.shopEl.style.display = 'none';
   }
 
+  showStandaloneShop(callback) {
+    this._shopCallback = callback || null;
+    this.loadPurchases();
+    this.readBalances();
+    this.updateShopBalance();
+    const btnClose = document.getElementById('btn-start-game-shop');
+    if (btnClose) btnClose.textContent = this._shopCallback ? 'INICIAR PARTIDA' : 'FECHAR';
+    this.shopEl.style.display = 'flex';
+    this.shopEl.querySelectorAll('.shop-item').forEach(btn => {
+      btn.classList.toggle('bought', this.isOwned(btn.dataset.item));
+    });
+    this.updateShopCart();
+  }
+
+  hideStandaloneShop() {
+    this.shopEl.style.display = 'none';
+  }
+
   setupShop() {
     document.getElementById('btn-convert-tokens').addEventListener('click', () => {
       this.readBalances();
@@ -172,7 +191,16 @@ export class Menu {
     document.getElementById('btn-start-game-shop').addEventListener('click', () => {
       this.shopPurchases = this.buildPurchases();
       this.hideShop();
-      if (this._shopCallback) this._shopCallback(this.shopPurchases);
+      if (this._shopCallback) {
+        this._shopCallback(this.shopPurchases);
+        this._shopCallback = null;
+      } else if (typeof window !== 'undefined' && typeof window.returnToMainMenu === 'function') {
+        const prev = window.__shopPreviousScreen || 'menu';
+        this.hideStandaloneShop();
+        if (prev === 'menu') {
+          this.show();
+        }
+      }
     });
   }
 

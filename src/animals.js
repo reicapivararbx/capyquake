@@ -36,6 +36,340 @@ const DORSAL_RIDGE_TYPES = new Set([
   'jacare', 'crocodilo', 'dragao_komodo', 'dinossauro', 'basilisco'
 ]);
 
+const ROSETTE_TYPES = new Set(['onca', 'jaguatirica', 'leopardo', 'pantera']);
+const DAPPLED_FUR_TYPES = new Set(['veado', 'cervo', 'gazela', 'camelo']);
+const SLITHER_TYPES = new Set(['sucuri', 'jiboia', 'boiuna', 'cobracoral', 'cascavel']);
+const ELONGATED_AQUATIC_TYPES = new Set(['tubarao', 'pirarucu']);
+
+const skinTextureCache = new Map();
+let groundShadowTexture = null;
+
+const realisticEyePupilGeometry = new THREE.SphereGeometry(1, 8, 6);
+const realisticEyeGlintGeometry = new THREE.SphereGeometry(1, 6, 4);
+const realisticEyePupilMaterial = new THREE.MeshBasicMaterial({ color: 0x030303 });
+const realisticEyeGlintMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+function createSeededRandom(seedText) {
+  let seed = 2166136261;
+  for (let i = 0; i < seedText.length; i++) {
+    seed ^= seedText.charCodeAt(i);
+    seed = Math.imul(seed, 16777619);
+  }
+  return () => {
+    seed = Math.imul(seed ^ (seed >>> 15), 2246822507);
+    seed = Math.imul(seed ^ (seed >>> 13), 3266489909);
+    return ((seed ^= seed >>> 16) >>> 0) / 4294967296;
+  };
+}
+
+function colorFromHSL(h, s, l) {
+  const color = new THREE.Color();
+  color.setHSL((h + 1) % 1, THREE.MathUtils.clamp(s, 0, 1), THREE.MathUtils.clamp(l, 0, 1));
+  return `#${color.getHexString()}`;
+}
+
+function rgbaFromHSL(h, s, l, a) {
+  const color = new THREE.Color();
+  color.setHSL((h + 1) % 1, THREE.MathUtils.clamp(s, 0, 1), THREE.MathUtils.clamp(l, 0, 1));
+  return `rgba(${Math.round(color.r * 255)}, ${Math.round(color.g * 255)}, ${Math.round(color.b * 255)}, ${a})`;
+}
+
+function paintHairNoise(ctx, hsl, random, density = 900) {
+  ctx.lineWidth = 1;
+  for (let octave = 0; octave < 3; octave++) {
+    const count = density >> octave;
+    const alpha = 0.08 / (octave + 1);
+    ctx.strokeStyle = rgbaFromHSL(hsl.h, hsl.s * 0.9, hsl.l + (octave - 1) * 0.12, alpha);
+    for (let i = 0; i < count; i++) {
+      const x = random() * 256;
+      const y = random() * 256;
+      const length = 3 + random() * (9 - octave * 2);
+      ctx.beginPath();
+      ctx.moveTo(x, y);
+      ctx.lineTo(x + (random() - 0.5) * 3, y + length);
+      ctx.stroke();
+    }
+  }
+}
+
+function paintRosettes(ctx, hsl, random) {
+  const dark = rgbaFromHSL(hsl.h, hsl.s + 0.18, hsl.l - 0.34, 0.9);
+  const center = rgbaFromHSL(hsl.h, hsl.s + 0.12, hsl.l - 0.24, 0.72);
+  ctx.lineWidth = 3;
+  for (let i = 0; i < 48; i++) {
+    const x = random() * 270 - 7;
+    const y = random() * 270 - 7;
+    const r = 5 + random() * 10;
+    ctx.strokeStyle = dark;
+    ctx.beginPath();
+    ctx.arc(x, y, r, random() * 0.6, Math.PI * 1.55 + random() * 0.7);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x + (random() - 0.5) * r * 0.4, y + (random() - 0.5) * r * 0.4, r * 0.28, 0, Math.PI * 2);
+    ctx.fillStyle = center;
+    ctx.fill();
+  }
+}
+
+function paintTigerStripes(ctx, hsl, random) {
+  ctx.strokeStyle = rgbaFromHSL(hsl.h, hsl.s + 0.1, hsl.l - 0.38, 0.92);
+  ctx.lineWidth = 5;
+  for (let x = -20; x < 280; x += 18 + random() * 16) {
+    ctx.beginPath();
+    ctx.moveTo(x, -8);
+    for (let y = 0; y <= 264; y += 28) {
+      ctx.lineTo(x + Math.sin(y * 0.05 + random() * 2) * 12 + (random() - 0.5) * 8, y);
+    }
+    ctx.stroke();
+  }
+}
+
+function paintZebraStripes(ctx, hsl, random) {
+  ctx.fillStyle = hsl.l > 0.5 ? '#f4f1e8' : '#171717';
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.strokeStyle = hsl.l > 0.5 ? '#111111' : '#f4f1e8';
+  ctx.lineWidth = 9;
+  for (let x = -28; x < 286; x += 22 + random() * 14) {
+    ctx.beginPath();
+    ctx.moveTo(x, -12);
+    for (let y = 0; y <= 268; y += 24) {
+      ctx.lineTo(x + Math.sin(y * 0.045) * 14 + (random() - 0.5) * 10, y);
+    }
+    ctx.stroke();
+  }
+}
+
+function paintGiraffeSpots(ctx, hsl, random) {
+  ctx.strokeStyle = rgbaFromHSL(hsl.h, hsl.s, hsl.l + 0.18, 0.42);
+  ctx.lineWidth = 2;
+  ctx.fillStyle = rgbaFromHSL(hsl.h - 0.04, hsl.s + 0.1, hsl.l - 0.2, 0.78);
+  for (let i = 0; i < 34; i++) {
+    const x = random() * 256;
+    const y = random() * 256;
+    const r = 12 + random() * 18;
+    const sides = 5 + Math.floor(random() * 3);
+    ctx.beginPath();
+    for (let j = 0; j < sides; j++) {
+      const angle = (j / sides) * Math.PI * 2 + random() * 0.25;
+      const radius = r * (0.72 + random() * 0.42);
+      const px = x + Math.cos(angle) * radius;
+      const py = y + Math.sin(angle) * radius;
+      if (j === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+  }
+}
+
+function paintDapples(ctx, hsl, random) {
+  for (let i = 0; i < 42; i++) {
+    const r = 3 + random() * 8;
+    const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, r);
+    gradient.addColorStop(0, rgbaFromHSL(hsl.h, hsl.s * 0.65, hsl.l + 0.2, 0.28));
+    gradient.addColorStop(1, rgbaFromHSL(hsl.h, hsl.s * 0.5, hsl.l + 0.05, 0));
+    ctx.save();
+    ctx.translate(random() * 256, random() * 256);
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
+function paintScaleGrid(ctx, hsl, random) {
+  const dark = rgbaFromHSL(hsl.h, hsl.s + 0.08, hsl.l - 0.18, 0.68);
+  const shine = rgbaFromHSL(hsl.h, hsl.s * 0.65, hsl.l + 0.28, 0.24);
+  for (let y = -8; y < 264; y += 18) {
+    for (let x = -8 + ((y / 18) % 2) * 9; x < 264; x += 18) {
+      ctx.strokeStyle = dark;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(x, y, 15 + random() * 3, 12 + random() * 3);
+      ctx.fillStyle = shine;
+      ctx.fillRect(x + 2, y + 2, 11, 2);
+    }
+  }
+}
+
+function paintSnakeSaddles(ctx, hsl, random, mode) {
+  if (mode === 'coral') {
+    const bands = ['#d81414', '#101010', '#f2d82a', '#101010'];
+    for (let x = 0; x < 256; x += 18) {
+      ctx.fillStyle = bands[Math.floor(x / 18) % bands.length];
+      ctx.fillRect(x, 0, 18, 256);
+    }
+    return;
+  }
+
+  ctx.fillStyle = rgbaFromHSL(hsl.h, hsl.s + 0.1, hsl.l - 0.22, 0.82);
+  for (let x = -24; x < 280; x += mode === 'diamond' ? 34 : 42) {
+    ctx.beginPath();
+    if (mode === 'diamond') {
+      ctx.moveTo(x + 17, 34);
+      ctx.lineTo(x + 34, 128);
+      ctx.lineTo(x + 17, 222);
+      ctx.lineTo(x, 128);
+    } else {
+      ctx.ellipse(x + 21, 128 + (random() - 0.5) * 22, 17, 86, 0, 0, Math.PI * 2);
+    }
+    ctx.closePath();
+    ctx.fill();
+  }
+}
+
+function paintShellPlates(ctx, hsl) {
+  ctx.strokeStyle = rgbaFromHSL(hsl.h, hsl.s + 0.15, hsl.l - 0.24, 0.86);
+  ctx.lineWidth = 4;
+  for (let y = 20; y < 256; y += 46) {
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(256, y + 16);
+    ctx.stroke();
+  }
+  for (let x = 22; x < 256; x += 48) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x + 18, 256);
+    ctx.stroke();
+  }
+}
+
+function paintAquaticScales(ctx, hsl, random, type) {
+  if (type === 'tubarao') {
+    const gradient = ctx.createLinearGradient(0, 0, 0, 256);
+    gradient.addColorStop(0, colorFromHSL(hsl.h, hsl.s, hsl.l - 0.12));
+    gradient.addColorStop(0.58, colorFromHSL(hsl.h, hsl.s * 0.75, hsl.l + 0.03));
+    gradient.addColorStop(1, colorFromHSL(hsl.h, hsl.s * 0.32, 0.86));
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 256, 256);
+  }
+  if (type === 'boto') {
+    ctx.fillStyle = rgbaFromHSL(0.97, 0.32, 0.72, 0.22);
+    ctx.fillRect(0, 0, 256, 256);
+  }
+  ctx.strokeStyle = rgbaFromHSL(hsl.h, hsl.s + 0.08, hsl.l + 0.2, 0.2);
+  ctx.lineWidth = 1;
+  for (let y = 8; y < 260; y += 14) {
+    for (let x = -7; x < 264; x += 14) {
+      ctx.beginPath();
+      ctx.arc(x + ((y / 14) % 2) * 7, y, 7 + random() * 1.5, 0.08 * Math.PI, 0.92 * Math.PI);
+      ctx.stroke();
+    }
+  }
+}
+
+function paintFeathers(ctx, hsl, random, type) {
+  const gradient = ctx.createLinearGradient(0, 0, 256, 256);
+  if (type === 'arara') {
+    gradient.addColorStop(0, '#1366d6');
+    gradient.addColorStop(0.55, colorFromHSL(hsl.h, hsl.s, hsl.l));
+    gradient.addColorStop(1, '#ffd22d');
+  } else if (type === 'fenix') {
+    gradient.addColorStop(0, '#ffcc21');
+    gradient.addColorStop(0.45, '#ff6a00');
+    gradient.addColorStop(1, '#c40000');
+  } else {
+    gradient.addColorStop(0, colorFromHSL(hsl.h, hsl.s, hsl.l + 0.08));
+    gradient.addColorStop(1, colorFromHSL(hsl.h, hsl.s, hsl.l - 0.12));
+  }
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 256, 256);
+  ctx.strokeStyle = rgbaFromHSL(hsl.h, hsl.s * 0.75, hsl.l - 0.22, 0.32);
+  ctx.lineWidth = 1;
+  for (let x = -20; x < 280; x += 12) {
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.bezierCurveTo(x + 22, 78, x - 16, 164, x + 12, 256);
+    ctx.stroke();
+  }
+  ctx.strokeStyle = rgbaFromHSL(hsl.h, hsl.s * 0.45, hsl.l + 0.3, 0.18);
+  for (let i = 0; i < 180; i++) {
+    const x = random() * 256;
+    const y = random() * 256;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 8 + random() * 16, y + (random() - 0.5) * 7);
+    ctx.stroke();
+  }
+}
+
+function createAnimalSkinTexture(type, color) {
+  if (typeof document === 'undefined') return null;
+
+  const colorHex = color.getHexString();
+  const cacheKey = `${type}:${colorHex}`;
+  if (skinTextureCache.has(cacheKey)) return skinTextureCache.get(cacheKey);
+
+  const random = createSeededRandom(cacheKey);
+  const canvas = document.createElement('canvas');
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext('2d');
+  const hsl = { h: 0, s: 0, l: 0 };
+  color.getHSL(hsl);
+
+  const base = colorFromHSL(hsl.h, hsl.s, hsl.l);
+  ctx.fillStyle = base;
+  ctx.fillRect(0, 0, 256, 256);
+
+  if (FLYING_TYPES.has(type)) {
+    paintFeathers(ctx, hsl, random, type);
+  } else if (AQUATIC_TYPES.has(type)) {
+    paintAquaticScales(ctx, hsl, random, type);
+  } else if (SCALED_TYPES.has(type)) {
+    if (type === 'cobracoral') paintSnakeSaddles(ctx, hsl, random, 'coral');
+    else if (type === 'cascavel') paintSnakeSaddles(ctx, hsl, random, 'diamond');
+    else if (type === 'sucuri' || type === 'jiboia' || type === 'boiuna') paintSnakeSaddles(ctx, hsl, random, 'saddle');
+    else if (type === 'tartaruga' || type === 'tatu') paintShellPlates(ctx, hsl);
+    else paintScaleGrid(ctx, hsl, random);
+  } else if (FURRED_TYPES.has(type)) {
+    if (ROSETTE_TYPES.has(type)) paintRosettes(ctx, hsl, random);
+    else if (type === 'tigre') paintTigerStripes(ctx, hsl, random);
+    else if (type === 'zebra') paintZebraStripes(ctx, hsl, random);
+    else if (type === 'girafa') paintGiraffeSpots(ctx, hsl, random);
+    else if (DAPPLED_FUR_TYPES.has(type)) paintDapples(ctx, hsl, random);
+    else paintHairNoise(ctx, hsl, random);
+  } else {
+    paintHairNoise(ctx, hsl, random, 420);
+  }
+
+  const vignette = ctx.createRadialGradient(128, 128, 30, 128, 128, 190);
+  vignette.addColorStop(0, 'rgba(255,255,255,0.08)');
+  vignette.addColorStop(1, 'rgba(0,0,0,0.16)');
+  ctx.fillStyle = vignette;
+  ctx.fillRect(0, 0, 256, 256);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  texture.needsUpdate = true;
+  skinTextureCache.set(cacheKey, texture);
+  return texture;
+}
+
+function getGroundShadowTexture() {
+  if (groundShadowTexture || typeof document === 'undefined') return groundShadowTexture;
+
+  const canvas = document.createElement('canvas');
+  canvas.width = 128;
+  canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  const gradient = ctx.createRadialGradient(64, 64, 4, 64, 64, 63);
+  gradient.addColorStop(0, 'rgba(0,0,0,1)');
+  gradient.addColorStop(0.55, 'rgba(0,0,0,0.45)');
+  gradient.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 128, 128);
+
+  groundShadowTexture = new THREE.CanvasTexture(canvas);
+  groundShadowTexture.colorSpace = THREE.SRGBColorSpace;
+  groundShadowTexture.anisotropy = 4;
+  groundShadowTexture.needsUpdate = true;
+  return groundShadowTexture;
+}
+
 export class Animal {
   constructor(scene, x, z, type, arena) {
     this.scene = scene;
@@ -2571,18 +2905,25 @@ export class Animal {
 
   getSurfaceSettings() {
     if (AQUATIC_TYPES.has(this.type)) {
-      return { roughness: 0.32, clearcoat: 0.7, clearcoatRoughness: 0.22 };
+      return { roughness: 0.32, clearcoat: 0.7, clearcoatRoughness: 0.22, envMapIntensity: 1.2 };
     }
     if (SCALED_TYPES.has(this.type)) {
-      return { roughness: 0.52, clearcoat: 0.32, clearcoatRoughness: 0.38 };
+      return { roughness: 0.52, clearcoat: 0.32, clearcoatRoughness: 0.38, envMapIntensity: 1.0 };
     }
     if (FURRED_TYPES.has(this.type)) {
-      return { roughness: 0.92, clearcoat: 0, clearcoatRoughness: 1 };
+      return {
+        roughness: 0.92,
+        clearcoat: 0,
+        clearcoatRoughness: 1,
+        envMapIntensity: 0.55,
+        sheen: 0.7,
+        sheenRoughness: 0.9
+      };
     }
     if (FLYING_TYPES.has(this.type)) {
-      return { roughness: 0.76, clearcoat: 0.04, clearcoatRoughness: 0.8 };
+      return { roughness: 0.76, clearcoat: 0.04, clearcoatRoughness: 0.8, envMapIntensity: 0.8 };
     }
-    return { roughness: 0.78, clearcoat: 0.05, clearcoatRoughness: 0.75 };
+    return { roughness: 0.78, clearcoat: 0.05, clearcoatRoughness: 0.75, envMapIntensity: 0.8 };
   }
 
   createRealisticMaterial(oldMaterial, surface, materialCache) {
@@ -2591,9 +2932,10 @@ export class Animal {
     if (materialCache.has(oldMaterial.uuid)) return materialCache.get(oldMaterial.uuid);
 
     const color = oldMaterial.color?.clone() || new THREE.Color(0xffffff);
+    const texture = oldMaterial.map || createAnimalSkinTexture(this.type, color);
     const common = {
       color,
-      map: oldMaterial.map || null,
+      map: texture,
       alphaMap: oldMaterial.alphaMap || null,
       aoMap: oldMaterial.aoMap || null,
       normalMap: oldMaterial.normalMap || null,
@@ -2607,11 +2949,12 @@ export class Animal {
       depthWrite: oldMaterial.depthWrite,
       vertexColors: oldMaterial.vertexColors,
       roughness: surface.roughness,
-      metalness: 0.01
+      metalness: 0.01,
+      envMapIntensity: surface.envMapIntensity
     };
 
-    const shouldUseClearcoat = AQUATIC_TYPES.has(this.type) || SCALED_TYPES.has(this.type);
-    const material = shouldUseClearcoat
+    const shouldUsePhysical = AQUATIC_TYPES.has(this.type) || SCALED_TYPES.has(this.type) || FURRED_TYPES.has(this.type);
+    const material = shouldUsePhysical
       ? new THREE.MeshPhysicalMaterial({
           ...common,
           clearcoat: surface.clearcoat,
@@ -2619,10 +2962,18 @@ export class Animal {
         })
       : new THREE.MeshStandardMaterial(common);
 
+    if (material.isMeshPhysicalMaterial && FURRED_TYPES.has(this.type)) {
+      const sheenColor = color.clone().lerp(new THREE.Color(0xfff4d6), 0.55);
+      material.sheen = surface.sheen;
+      material.sheenColor.copy(sheenColor);
+      material.sheenRoughness = surface.sheenRoughness;
+    }
+
     // Partes que eram MeshBasic continuam ligeiramente emissivas, como olhos e magia.
     if (oldMaterial.isMeshBasicMaterial) {
       material.emissive.copy(color).multiplyScalar(0.16);
       material.emissiveIntensity = 0.5;
+      material.userData.wasMeshBasicMaterial = true;
     } else if (oldMaterial.emissive) {
       material.emissive.copy(oldMaterial.emissive);
       material.emissiveIntensity = oldMaterial.emissiveIntensity ?? 1;
@@ -2680,7 +3031,8 @@ export class Animal {
         position: localPosition,
         volume,
         baseRotation: child.rotation.clone(),
-        baseScale: child.scale.clone()
+        baseScale: child.scale.clone(),
+        basePosition: child.position.clone()
       });
     });
 
@@ -2728,9 +3080,44 @@ export class Animal {
       .sort((a, b) => b.position.z - a.position.z);
 
     const state = { box, size, center, meshes, body, head, wings, legs, tails };
+    this.addRealisticEyes(state);
     this.addRealisticGroundShadow(state);
     this.addDorsalRidges(state, surface);
     return state;
+  }
+
+  addRealisticEyes(state) {
+    const bodyVolume = state.body?.volume || 1;
+    const eyes = state.meshes.filter((part) => {
+      const materials = Array.isArray(part.mesh.material) ? part.mesh.material : [part.mesh.material];
+      const wasBasic = materials.some((material) => material?.userData?.wasMeshBasicMaterial);
+      return wasBasic
+        && part.volume < bodyVolume * 0.015
+        && part.position.y > state.box.min.y + state.size.y * 0.5
+        && part.position.z > state.center.z + state.size.z * 0.08;
+    });
+
+    eyes.forEach((part) => {
+      if (part.mesh.userData.hasRealisticEyeDetails) return;
+
+      const eyeRadius = Math.max(0.018, Math.max(part.size.x, part.size.y, part.size.z) * 0.5);
+      const side = part.position.x >= state.center.x ? 1 : -1;
+      const pupil = new THREE.Mesh(realisticEyePupilGeometry, realisticEyePupilMaterial);
+      pupil.name = 'realistic-eye-pupil';
+      pupil.scale.setScalar(eyeRadius * 0.4);
+      pupil.position.set(0, 0, eyeRadius * 0.72);
+      pupil.renderOrder = 2;
+      part.mesh.add(pupil);
+
+      const glint = new THREE.Mesh(realisticEyeGlintGeometry, realisticEyeGlintMaterial);
+      glint.name = 'realistic-eye-glint';
+      glint.scale.setScalar(eyeRadius * 0.18);
+      glint.position.set(side * eyeRadius * 0.22, eyeRadius * 0.28, eyeRadius * 0.9);
+      glint.renderOrder = 3;
+      part.mesh.add(glint);
+
+      part.mesh.userData.hasRealisticEyeDetails = true;
+    });
   }
 
   addRealisticGroundShadow(state) {
@@ -2740,8 +3127,9 @@ export class Animal {
       new THREE.CircleGeometry(1, 32),
       new THREE.MeshBasicMaterial({
         color: 0x050505,
+        map: getGroundShadowTexture(),
         transparent: true,
-        opacity: 0.2,
+        opacity: 0.32,
         depthWrite: false,
         side: THREE.DoubleSide
       })
@@ -2796,7 +3184,10 @@ export class Animal {
     const urgency = this.chasing ? 1.5 : 1;
     this.animationTime += delta * pace * urgency;
 
+    const gait = this.animationTime * 5.2;
+    const speedFactor = THREE.MathUtils.clamp(movementSpeed / 3, 0, 1);
     const breath = Math.sin(this.animationTime * 2.1) * 0.014;
+    const bodyBob = movementSpeed > 0.1 ? Math.sin(gait) * 0.03 * speedFactor : 0;
     if (state.body) {
       const { mesh, baseScale, baseRotation } = state.body;
       mesh.scale.set(
@@ -2804,10 +3195,21 @@ export class Animal {
         baseScale.y * (1 + breath),
         baseScale.z * (1 + breath * 0.45)
       );
+      mesh.position.y = state.body.basePosition.y + bodyBob;
+      mesh.rotation.x = baseRotation.x;
+      mesh.rotation.y = baseRotation.y;
       mesh.rotation.z = baseRotation.z;
+
+      if (movementSpeed > 2.5 && !FLYING_TYPES.has(this.type) && !AQUATIC_TYPES.has(this.type)) {
+        mesh.rotation.x += THREE.MathUtils.clamp((movementSpeed - 2.5) / 9, 0, 1) * 0.03 + 0.03;
+      }
 
       if (AQUATIC_TYPES.has(this.type)) {
         mesh.rotation.z += Math.sin(this.animationTime * 2.5) * 0.035;
+      }
+
+      if (ELONGATED_AQUATIC_TYPES.has(this.type)) {
+        mesh.rotation.y += Math.sin(this.animationTime * 2.8) * 0.05;
       }
     }
 
@@ -2818,8 +3220,7 @@ export class Animal {
         state.head.baseRotation.y + Math.sin(this.animationTime * 1.15) * 0.018;
     }
 
-    const gait = this.animationTime * 5.2;
-    const legAmplitude = this.chasing ? 0.52 : 0.25;
+    const legAmplitude = 0.2 + speedFactor * 0.25 + (this.chasing ? 0.08 : 0);
     state.legs.forEach((part) => {
       const side = part.position.x >= state.center.x ? 1 : -1;
       const front = part.position.z >= state.center.z ? 1 : -1;
@@ -2827,17 +3228,39 @@ export class Animal {
       part.mesh.rotation.x = part.baseRotation.x + Math.sin(gait + phase) * legAmplitude;
     });
 
-    state.tails.forEach((part, index) => {
-      const amount = 0.035 + index * 0.025;
-      part.mesh.rotation.y =
-        part.baseRotation.y + Math.sin(this.animationTime * 2.4 - index * 0.45) * amount;
-    });
+    if (SLITHER_TYPES.has(this.type)) {
+      const snakeParts = state.meshes
+        .filter((part) => part !== state.body && part !== state.head && !state.wings.includes(part))
+        .sort((a, b) => b.position.z - a.position.z);
+      const total = Math.max(1, snakeParts.length - 1);
+      snakeParts.forEach((part, index) => {
+        const tailFade = 1 - index / total * 0.45;
+        part.mesh.rotation.y =
+          part.baseRotation.y + Math.sin(this.animationTime * 3 + index * 0.55) * 0.12 * tailFade;
+      });
+    } else {
+      state.tails.forEach((part, index) => {
+        const amount = 0.035 + index * 0.025;
+        const swimWave = ELONGATED_AQUATIC_TYPES.has(this.type)
+          ? Math.sin(this.animationTime * 2.8 - index * 0.65) * 0.05
+          : 0;
+        part.mesh.rotation.y =
+          part.baseRotation.y + Math.sin(this.animationTime * 2.4 - index * 0.45) * amount + swimWave;
+      });
+    }
 
+    let wingCounterFlap = 0;
     state.wings.forEach((part) => {
       const side = part.position.x >= state.center.x ? 1 : -1;
-      const flap = 0.2 + Math.sin(this.animationTime * 7.2) * 0.3;
+      const flapAmplitude = this.chasing ? 0.45 : 0.3;
+      const flap = 0.2 + Math.sin(this.animationTime * 7.2) * flapAmplitude;
+      wingCounterFlap += flap * side;
       part.mesh.rotation.z = part.baseRotation.z - side * flap;
     });
+
+    if (state.body && state.wings.length > 0) {
+      state.body.mesh.rotation.z += -wingCounterFlap / state.wings.length * 0.15;
+    }
   }
 
   update(delta, playerPos) {

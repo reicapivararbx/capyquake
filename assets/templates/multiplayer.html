@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Capiquake - Multiplayer</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      color: #e0d0a0;
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+    }
+    .arena-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse at 50% 55%, rgba(80,50,20,0.3) 0%, transparent 60%),
+        radial-gradient(ellipse at 25% 35%, rgba(60,40,15,0.2) 0%, transparent 50%),
+        radial-gradient(ellipse at 75% 40%, rgba(50,35,18,0.15) 0%, transparent 40%),
+        linear-gradient(180deg, #0a0a0a 0%, #1a1208 50%, #0d0d0d 100%);
+    }
+    .arena-floor {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 45%;
+      background:
+        linear-gradient(0deg, #1a1208 0%, transparent 100%);
+      opacity: 0.5;
+    }
+    /* Arena structures */
+    .structure { position: absolute; background: linear-gradient(180deg, #2a1a0a, #1a1008); border: 1px solid #3a2a1a; }
+    .s1 { bottom: 180px; left: 80px; width: 100px; height: 200px; }
+    .s2 { bottom: 220px; right: 150px; width: 70px; height: 280px; }
+    .s3 { bottom: 160px; left: 700px; width: 50px; height: 160px; }
+    .s4 { bottom: 300px; right: 500px; width: 90px; height: 120px; }
+    /* Dynamic lighting */
+    .light1 { position: absolute; top: 0; left: 30%; width: 500px; height: 700px; background: radial-gradient(ellipse at top, rgba(255,102,0,0.05) 0%, transparent 70%); pointer-events: none; }
+    .light2 { position: absolute; top: 0; right: 20%; width: 400px; height: 600px; background: radial-gradient(ellipse at top, rgba(255,150,0,0.04) 0%, transparent 70%); pointer-events: none; }
+
+    /* Capybara characters - represented as styled figures */
+    .player {
+      position: absolute;
+      text-align: center;
+    }
+    .player-name {
+      font-size: 12px;
+      color: #ffcc66;
+      text-shadow: 1px 1px 0 #000;
+      margin-bottom: 4px;
+      white-space: nowrap;
+    }
+    .player-hp {
+      width: 50px;
+      height: 4px;
+      background: #333;
+      margin: 0 auto 4px;
+    }
+    .player-hp-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #cc0000, #ff2200);
+    }
+    .player-body {
+      width: 40px;
+      height: 50px;
+      background: radial-gradient(ellipse, #8B6914 0%, #6B4F12 50%, #4A3510 100%);
+      border-radius: 35% 35% 30% 30%;
+      position: relative;
+      margin: 0 auto;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    }
+    .player-body.enemy { background: radial-gradient(ellipse, #5a3a1a 0%, #3a2a10 50%, #2a1a08 100%); }
+    .player-body::before {
+      content: '';
+      position: absolute;
+      top: 8px; left: 50%;
+      transform: translateX(-50%);
+      width: 30px; height: 14px;
+      background: radial-gradient(ellipse, #a07828 0%, #8B6914 100%);
+      border-radius: 50%;
+    }
+
+    /* Combat effects */
+    .projectile {
+      position: absolute;
+      height: 4px;
+      border-radius: 2px;
+    }
+    .proj-orange { width: 20px; background: #ff6600; box-shadow: 0 0 8px #ff6600, 0 0 16px #ff660066; }
+    .proj-yellow { width: 15px; background: #ffcc00; box-shadow: 0 0 8px #ffcc00, 0 0 12px #ffcc0066; }
+    .proj-blue { width: 18px; background: #4488ff; box-shadow: 0 0 8px #4488ff, 0 0 14px #4488ff66; }
+    .impact {
+      position: absolute;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+    }
+    .impact-orange { background: radial-gradient(circle, #ffcc66 0%, #ff6600 40%, transparent 70%); }
+    .impact-blue { background: radial-gradient(circle, #88ccff 0%, #4488ff 40%, transparent 70%); }
+
+    /* Smoke particles */
+    .smoke {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(150,130,100,0.3) 0%, transparent 70%);
+    }
+
+    /* HUD overlays */
+    #kill-feed {
+      position: absolute;
+      top: 20px; left: 20px;
+      font-size: 14px;
+      max-width: 400px;
+    }
+    .kill-entry {
+      padding: 3px 8px;
+      margin-bottom: 4px;
+      background: rgba(0,0,0,0.6);
+      color: #ddd;
+      text-shadow: 1px 1px 0 #000;
+    }
+    .kill-entry .killer { color: #ffcc66; }
+    .kill-entry .victim { color: #ff4444; }
+    #match-timer {
+      position: absolute;
+      top: 20px; left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      color: #ffcc66;
+      text-shadow: 2px 2px 0 #000;
+    }
+    #player-count {
+      position: absolute;
+      top: 20px; right: 20px;
+      font-size: 14px;
+      color: #88cc44;
+      text-shadow: 1px 1px 0 #000;
+    }
+  </style>
+</head>
+<body>
+  <div class="arena-bg">
+    <div class="arena-floor"></div>
+    <div class="structure s1"></div>
+    <div class="structure s2"></div>
+    <div class="structure s3"></div>
+    <div class="structure s4"></div>
+    <div class="light1"></div>
+    <div class="light2"></div>
+  </div>
+
+  <!-- Player capybaras -->
+  <div class="player" style="bottom: 280px; left: 350px;">
+    <div class="player-name">Jogador</div>
+    <div class="player-hp"><div class="player-hp-fill" style="width:85%"></div></div>
+    <div class="player-body"></div>
+  </div>
+
+  <div class="player" style="bottom: 320px; left: 700px;">
+    <div class="player-name" style="color:#44aaff;">UmLegalGaucho</div>
+    <div class="player-hp"><div class="player-hp-fill" style="width:60%"></div></div>
+    <div class="player-body"></div>
+  </div>
+
+  <div class="player" style="bottom: 250px; right: 400px;">
+    <div class="player-name" style="color:#ff4444;">Bot_Mineiro</div>
+    <div class="player-hp"><div class="player-hp-fill" style="width:45%"></div></div>
+    <div class="player-body enemy"></div>
+  </div>
+
+  <div class="player" style="bottom: 350px; right: 250px;">
+    <div class="player-name" style="color:#ff4444;">Bot_Paulista</div>
+    <div class="player-hp"><div class="player-hp-fill" style="width:70%"></div></div>
+    <div class="player-body enemy"></div>
+  </div>
+
+  <div class="player" style="bottom: 200px; left: 900px;">
+    <div class="player-name" style="color:#44ff88;">Bot_Carioca</div>
+    <div class="player-hp"><div class="player-hp-fill" style="width:90%"></div></div>
+    <div class="player-body"></div>
+  </div>
+
+  <div class="player" style="bottom: 280px; right: 550px;">
+    <div class="player-name" style="color:#ff88ff;">Bot_Baiano</div>
+    <div class="player-hp"><div class="player-hp-fill" style="width:30%"></div></div>
+    <div class="player-body enemy"></div>
+  </div>
+
+  <!-- Projectiles -->
+  <div class="projectile proj-orange" style="top: 520px; left: 500px;"></div>
+  <div class="projectile proj-yellow" style="top: 480px; left: 750px;"></div>
+  <div class="projectile proj-blue" style="top: 550px; right: 380px;"></div>
+  <div class="projectile proj-orange" style="top: 490px; left: 600px;"></div>
+
+  <!-- Impacts -->
+  <div class="impact impact-orange" style="top: 460px; right: 300px;"></div>
+  <div class="impact impact-blue" style="top: 530px; left: 850px;"></div>
+
+  <!-- Smoke -->
+  <div class="smoke" style="top: 500px; left: 480px; width: 30px; height: 20px;"></div>
+  <div class="smoke" style="top: 470px; right: 320px; width: 25px; height: 18px;"></div>
+
+  <!-- HUD -->
+  <div id="match-timer">5:17</div>
+  <div id="player-count">👥 6 JOGADORES</div>
+  <div id="kill-feed">
+    <div class="kill-entry"><span class="killer">Jogador</span> eliminated <span class="victim">Bot_Mineiro</span></div>
+    <div class="kill-entry"><span class="killer">UmLegalGaucho</span> eliminated <span class="victim">Bot_Baiano</span></div>
+    <div class="kill-entry"><span class="killer">Bot_Paulista</span> eliminated <span class="victim">Bot_Carioca</span></div>
+    <div class="kill-entry"><span class="killer">Jogador</span> eliminated <span class="victim">Bot_Paulista</span></div>
+  </div>
+</body>
+</html>

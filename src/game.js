@@ -11,74 +11,11 @@ import { Audio } from './audio.js';
 import { Chest } from './chest.js';
 import { Boss, MiniBoss } from './boss.js';
 
-const MATCH_DURATION = 600;
+import { ACHIEVEMENTS } from './achievements-data.js';
 
-const ACHIEVEMENTS = [
-  { id: 'kills_1', name: 'Primeiro Abate', test: g => g.stats.kills >= 1 },
-  { id: 'kills_10', name: 'Dez Vidas', test: g => g.stats.kills >= 10 },
-  { id: 'kills_50', name: 'Caçador', test: g => g.stats.kills >= 50 },
-  { id: 'kills_100', name: 'Centuria', test: g => g.stats.kills >= 100 },
-  { id: 'kills_250', name: 'Exterminador', test: g => g.stats.kills >= 250 },
-  { id: 'kills_500', name: 'Lenda Viva', test: g => g.stats.kills >= 500 },
-  { id: 'kills_1000', name: 'Mil Abates', test: g => g.stats.kills >= 1000 },
-  { id: 'kills_2500', name: 'A Morte', test: g => g.stats.kills >= 2500 },
-  { id: 'kills_5000', name: 'Deus da Guerra', test: g => g.stats.kills >= 5000 },
-  { id: 'money_500', name: 'Trocados', test: g => g.stats.moneyEarned >= 500 },
-  { id: 'money_1000', name: 'Mil reais', test: g => g.stats.moneyEarned >= 1000 },
-  { id: 'money_5000', name: 'Rico', test: g => g.stats.moneyEarned >= 5000 },
-  { id: 'money_10000', name: 'Investidor', test: g => g.stats.moneyEarned >= 10000 },
-  { id: 'money_50000', name: 'Barão', test: g => g.stats.moneyEarned >= 50000 },
-  { id: 'money_100000', name: 'Milionario?', test: g => g.stats.moneyEarned >= 100000 },
-  { id: 'money_500000', name: 'Magnata', test: g => g.stats.moneyEarned >= 500000 },
-  { id: 'money_1000000', name: 'Bilionario', test: g => g.stats.moneyEarned >= 1000000 },
-  { id: 'tokens_1', name: 'Primeiro Token', test: g => g.stats.tokensEarned >= 1 },
-  { id: 'tokens_10', name: 'Dez Tokens', test: g => g.stats.tokensEarned >= 10 },
-  { id: 'tokens_50', name: 'Colecionador', test: g => g.stats.tokensEarned >= 50 },
-  { id: 'tokens_100', name: 'Cem Tokens', test: g => g.stats.tokensEarned >= 100 },
-  { id: 'tokens_500', name: 'Token Lord', test: g => g.stats.tokensEarned >= 500 },
-  { id: 'tokens_1000', name: 'Mil Tokens', test: g => g.stats.tokensEarned >= 1000 },
-  { id: 'tokens_5000', name: 'Token Master', test: g => g.stats.tokensEarned >= 5000 },
-  { id: 'wave_5', name: 'Cinco Ondas', test: g => g.stats.waves >= 5 },
-  { id: 'wave_10', name: 'Dez Ondas', test: g => g.stats.waves >= 10 },
-  { id: 'wave_15', name: 'Quinze Ondas', test: g => g.stats.waves >= 15 },
-  { id: 'wave_20', name: 'Vinte Ondas', test: g => g.stats.waves >= 20 },
-  { id: 'wave_30', name: 'Trinta Ondas', test: g => g.stats.waves >= 30 },
-  { id: 'wave_50', name: 'Cinquenta Ondas', test: g => g.stats.waves >= 50 },
-  { id: 'level_5', name: 'Nivel 5', test: g => g.level >= 5 },
-  { id: 'level_10', name: 'Nivel 10', test: g => g.level >= 10 },
-  { id: 'level_25', name: 'Nivel 25', test: g => g.level >= 25 },
-  { id: 'level_50', name: 'Nivel 50', test: g => g.level >= 50 },
-  { id: 'level_75', name: 'Nivel 75', test: g => g.level >= 75 },
-  { id: 'level_100', name: 'Nivel 100', test: g => g.level >= 100 },
-  { id: 'boss_1', name: 'Primeiro Chefe', test: g => g.stats.bosses >= 1 },
-  { id: 'boss_5', name: 'Cinco Chefes', test: g => g.stats.bosses >= 5 },
-  { id: 'boss_10', name: 'Dez Chefes', test: g => g.stats.bosses >= 10 },
-  { id: 'boss_25', name: 'Vinte e Cinco Chefes', test: g => g.stats.bosses >= 25 },
-  { id: 'miniboss_1', name: 'Mini Chefe', test: g => g.stats.minibosses >= 1 },
-  { id: 'miniboss_5', name: 'Cinco Minis', test: g => g.stats.minibosses >= 5 },
-  { id: 'miniboss_10', name: 'Dez Minis', test: g => g.stats.minibosses >= 10 },
-  { id: 'miniboss_25', name: 'Vinte e Cinco Minis', test: g => g.stats.minibosses >= 25 },
-  { id: 'weapons_1', name: 'Armado', test: g => g.weapon.inventory.length >= 1 },
-  { id: 'weapons_2', name: 'Duas Armas', test: g => g.weapon.inventory.length >= 2 },
-  { id: 'weapons_4', name: 'Arsenal', test: g => g.weapon.inventory.length >= 4 },
-  { id: 'weapons_6', name: 'Colecao', test: g => g.weapon.inventory.length >= 6 },
-  { id: 'weapons_7', name: 'Todas as Armas', test: g => g.weapon.inventory.length >= 7 },
-  { id: 'armors_1', name: 'Primeira Armadura', test: g => g.stats.armorsOwned >= 1 },
-  { id: 'armors_2', name: 'Duas Armaduras', test: g => g.stats.armorsOwned >= 2 },
-  { id: 'armors_3', name: 'Tres Armaduras', test: g => g.stats.armorsOwned >= 3 },
-  { id: 'armors_4', name: 'Quatro Armaduras', test: g => g.stats.armorsOwned >= 4 },
-  { id: 'armors_5', name: 'Cinto de Ferro', test: g => g.stats.armorsOwned >= 5 },
-  { id: 'revive_1', name: 'Renascido', test: g => g.stats.revivesUsed >= 1 },
-  { id: 'revive_3', name: 'Gato de Sete Vidas', test: g => g.stats.revivesUsed >= 3 },
-  { id: 'revive_5', name: 'Imortal', test: g => g.stats.revivesUsed >= 5 },
-  { id: 'rebirth_1', name: 'Primeiro Rebirth', test: g => g.stats.rebirths >= 1 },
-  { id: 'rebirth_2', name: 'Segundo Rebirth', test: g => g.stats.rebirths >= 2 },
-  { id: 'rebirth_3', name: 'Terceiro Rebirth', test: g => g.stats.rebirths >= 3 },
-  { id: 'rebirth_5', name: 'Cinco Rebirths', test: g => g.stats.rebirths >= 5 },
-  { id: 'dmg_100000', name: 'Cem Mil de Dano', test: g => (g.stats.damageDealt || 0) >= 100000 },
-  { id: 'dmg_1000000', name: 'Um Milhao de Dano', test: g => (g.stats.damageDealt || 0) >= 1000000 },
-  { id: 'dmg_5000000', name: 'Cinco Milhoes de Dano', test: g => (g.stats.damageDealt || 0) >= 5000000 }
-];
+window.__ACHIEVEMENTS_DATA = ACHIEVEMENTS;
+
+const MATCH_DURATION = 600;
 
 export class Game {
   static readBalance(key) {
@@ -180,13 +117,12 @@ export class Game {
     this.reviveCount = (this.shopPurchases.revive || 0);
     this.usedRevives = 0;
     
-    // Achievements
     this.achievements = new Set((() => {
       const raw = localStorage.getItem('capiquake_achievements');
-      if (!raw) return new Set();
-      const arr = JSON.parse(raw);
-      return new Set(arr);
+      if (!raw) return [];
+      try { return JSON.parse(raw); } catch (e) { return []; }
     })());
+    this.loadAchievementProgress();
     
     // Death screen elements (dynamically created)
     this.deathScreenEl = null;
@@ -214,12 +150,16 @@ export class Game {
 
     this.arena = new Arena(this.scene, this.map);
     this.scene.add(this.camera);
-    this.player = new Player(this.camera, this.renderer.domElement, this.scene, this.arena);
+    const isMobile = document.body.dataset.device === 'mobile';
+    this.player = new Player(this.camera, this.renderer.domElement, this.scene, this.arena, isMobile);
     this.weapon = new Weapon(this.scene, this.camera, this.arena);
     this.hud = new HUD();
 
+    this.gameStartTime = Date.now();
+
     this.stats = {
       kills: 0,
+      deaths: 0,
       moneyEarned: 0,
       tokensEarned: 0,
       waves: 1,
@@ -230,7 +170,27 @@ export class Game {
       revivesUsed: 0,
       rebirths: this.rebirthLevel,
       level: 1,
-      damageDealt: 0
+      damageDealt: 0,
+      matchesPlayed: 0,
+      matchesWon: 0,
+      matchesLost: 0,
+      headshots: 0,
+      dropsCollected: 0,
+      meleeKills: 0,
+      moneySpent: 0,
+      killStreak: 0,
+      emptyShots: 0,
+      survivalTime: 0,
+      perfectWaves: 0,
+      maxBossDamage: 0,
+      bossSoloKills: 0,
+      earlyDeaths: 0,
+      poorWaves: 0,
+      deathStreak: 0,
+      brokeEnds: 0,
+      zeroDmgMatches: 0,
+      idleTime: 0,
+      speedBoostsUsed: 0
     };
 
     if (this.shopPurchases.minigun) {
@@ -843,6 +803,10 @@ export class Game {
         if (this.playerHealth <= 0) {
           this.playerHealth = 0;
           this.playerDead = true;
+          this.stats.deaths = (this.stats.deaths || 0) + 1;
+          this.stats.deathStreak = (this.stats.deathStreak || 0) + 1;
+          this.stats.killStreak = 0;
+          this.checkAchievements();
           this.hud.updateHealth(0, this.playerMaxHealth);
           this.hud.addKillEntry('VENENO', this.playerName);
           this.hud.showMessage('ENVENENADO!');
@@ -1136,6 +1100,8 @@ export class Game {
         this.createCoinPickup(hit.mesh ? hit.mesh.position : null, dropMoney, dropTokens, true);
       }
       this.stats.kills = (this.stats.kills || 0) + 1;
+      this.stats.killStreak = (this.stats.killStreak || 0) + 1;
+      this.stats.deathStreak = 0;
       this.stats.moneyEarned = (this.stats.moneyEarned || 0) + dropMoney;
       this.stats.tokensEarned = (this.stats.tokensEarned || 0) + dropTokens;
       this.addXp(points * 10);
@@ -1331,31 +1297,22 @@ export class Game {
   }
 
   showDeathScreen() {
-    let el = document.getElementById('death-screen');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = 'death-screen';
-      el.style.cssText = 'position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);z-index:1000;color:#fff;font-family:sans-serif;';
-      el.innerHTML = '<h2>VOCE MORREU!</h2>' +
-        '<p>Reviver custa <span id="revive-price">R$5750</span> ou use revives comprados.</p>' +
-        '<p>Revives disponiveis: <span id="revive-count">0</span></p>' +
-        '<div id="death-shop" style="display:none;margin:10px 0;"></div>' +
-        '<button id="btn-revive" style="margin:4px;padding:8px 16px;">Reviver (R$5750)</button>' +
-        '<button id="btn-death-shop" style="margin:4px;padding:8px 16px;">Loja de Emergencia</button>' +
-        '<button id="btn-death-menu" style="margin:4px;padding:8px 16px;">Voltar ao Menu</button>';
-      document.body.appendChild(el);
-    }
+    const el = document.getElementById('death-screen');
+    if (!el) return;
     el.style.display = 'flex';
     this.deathScreenEl = el;
+
     const remaining = Math.max(0, this.reviveCount - this.usedRevives);
     const countEl = document.getElementById('revive-count');
-    if (countEl) countEl.textContent = remaining;
+    if (countEl) countEl.textContent = 'REVIVES DISPONÍVEIS: ' + remaining;
     const priceEl = document.getElementById('revive-price');
-    if (priceEl) priceEl.textContent = 'R$5750';
+    if (priceEl) priceEl.textContent = remaining > 0 ? 'USE SEU REVIVE' : 'PREÇO DO REVIVE: $5750';
+
     const btnRevive = document.getElementById('btn-revive');
     if (btnRevive) {
-      btnRevive.onclick = () => this.revivePlayer();
       btnRevive.disabled = this.reviveCooldown > 0;
+      btnRevive.textContent = remaining > 0 ? 'REVIVER (GRÁTIS)' : 'REVIVER ($5750)';
+      btnRevive.onclick = () => this.revivePlayer();
     }
     const btnShop = document.getElementById('btn-death-shop');
     if (btnShop) btnShop.onclick = () => this.toggleDeathShop();
@@ -1402,7 +1359,18 @@ export class Game {
     this.playerDead = false;
     this.killedByBoss = false;
     this.playerHealth = this.playerMaxHealth;
+    this.stats.deathStreak = 0;
+    this.stats.killStreak = 0;
     this.reviveCooldown = 300;
+    if (this.player) {
+      this.player.velocity.set(0, 0, 0);
+      this.player.keys = { forward: false, backward: false, left: false, right: false, jump: false, sprint: false };
+      this.player.mouseHeld = false;
+      if (this.player.isMobile && this.player.cameraAnchor) {
+        this.player.cameraAnchor.set(start.x, 1.7, start.z);
+        this.player.playerPos.set(start.x, 1.7, start.z);
+      }
+    }
     this.hud.updateHealth(this.playerHealth, this.playerMaxHealth);
     this.hud.showMessage('REVIVEU! Vida cheia!');
     const btn = document.getElementById('btn-revive');
@@ -1462,9 +1430,12 @@ export class Game {
   returnToMenu() {
     this.hideDeathScreen();
     this.endGame();
-    if (typeof window !== 'undefined' && typeof window.showMainMenu === 'function') window.showMainMenu();
-    else if (typeof window !== 'undefined' && typeof window.menuShow === 'function') window.menuShow();
-    else location.reload();
+    this.destroy();
+    if (typeof window !== 'undefined' && typeof window.returnToMainMenu === 'function') {
+      window.returnToMainMenu();
+    } else {
+      location.reload();
+    }
   }
 
   nextWave() {
@@ -1831,22 +1802,61 @@ export class Game {
     }
   }
 
+  loadAchievementProgress() {
+    try {
+      const raw = localStorage.getItem('capiquake_achievement_progress');
+      this.achievementProgress = raw ? JSON.parse(raw) : {};
+    } catch (e) {
+      this.achievementProgress = {};
+    }
+  }
+
+  saveAchievementProgress() {
+    localStorage.setItem('capiquake_achievement_progress', JSON.stringify(this.achievementProgress));
+  }
+
+  getStatValue(stat) {
+    if (stat === 'level') return this.level || 0;
+    if (stat === 'weaponsOwned') return this.weapon ? this.weapon.inventory.length : 0;
+    return (this.stats && this.stats[stat]) || 0;
+  }
+
+  showAchievementNotification(def) {
+    const notif = document.getElementById('achievement-notification');
+    const nameEl = document.getElementById('achievement-notif-name');
+    if (!notif || !nameEl) return;
+    nameEl.textContent = def.name + (def.rarity ? ' [' + def.rarity + ']' : '');
+    notif.classList.add('show');
+    setTimeout(() => notif.classList.remove('show'), 4000);
+  }
+
   unlockAchievement(id) {
-    if (this.mode === 'test') return; // modo teste: conquistas nao contam
+    if (this.mode === 'test') return;
     if (this.achievements.has(id)) return;
     const def = ACHIEVEMENTS.find(a => a.id === id);
     if (!def) return;
     this.achievements.add(id);
     localStorage.setItem('capiquake_achievements', JSON.stringify([...this.achievements]));
-    this.hud.showMessage(`BOA GURIZÃO! CONQUISTA DESBLOQUEADA: ${def.name}!`);
+    this.showAchievementNotification(def);
   }
 
   checkAchievements() {
     for (const def of ACHIEVEMENTS) {
-      if (!this.achievements.has(def.id) && def.test(this)) {
-        this.unlockAchievement(def.id);
+      if (this.achievements.has(def.id)) continue;
+
+      if (def.type === 'instant' && typeof def.test === 'function') {
+        if (def.test(this)) {
+          this.unlockAchievement(def.id);
+        }
+      } else if (def.type === 'cumulative' && def.stat && def.target) {
+        const current = this.getStatValue(def.stat);
+        this.achievementProgress[def.id] = current;
+        if (current >= def.target) {
+          this.unlockAchievement(def.id);
+        }
       }
     }
+    this.saveAchievementProgress();
   }
 
   pickBossSpawn() {
@@ -1943,6 +1953,13 @@ endGame() {
   }
   this.renderer.render();
 
+  this.stats.matchesPlayed = (this.stats.matchesPlayed || 0) + 1;
+  if (this.playerDead) {
+    this.stats.matchesLost = (this.stats.matchesLost || 0) + 1;
+  } else {
+    this.stats.matchesWon = (this.stats.matchesWon || 0) + 1;
+  }
+  this.stats.survivalTime = Math.floor((Date.now() - this.gameStartTime) / 1000);
   this.saveStats();
 
   if (this.playerDead) {
@@ -2146,6 +2163,10 @@ endGame() {
           if (dead) {
             this.playerHealth = 0;
             this.playerDead = true;
+            this.stats.deaths = (this.stats.deaths || 0) + 1;
+            this.stats.deathStreak = (this.stats.deathStreak || 0) + 1;
+            this.stats.killStreak = 0;
+            this.checkAchievements();
             this.hud.updateHealth(0, this.playerMaxHealth);
             const killerName = target.config ? target.config.name : 'ANIMAL';
             this.hud.addKillEntry(killerName, this.playerName);
@@ -2165,6 +2186,10 @@ endGame() {
           this.playerHealth = 0;
           this.playerDead = true;
           this.killedByBoss = true;
+          this.stats.deaths = (this.stats.deaths || 0) + 1;
+          this.stats.deathStreak = (this.stats.deathStreak || 0) + 1;
+          this.stats.killStreak = 0;
+          this.checkAchievements();
           this.hud.updateHealth(0, this.playerMaxHealth);
           this.hud.addKillEntry('GOVERNO FEDERAL', this.playerName);
           this.hud.showMessage('CARA... TU MORREU!!');

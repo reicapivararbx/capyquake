@@ -1,12 +1,14 @@
 import * as THREE from 'three';
 import { Audio } from './audio.js';
+import { MiniBoss } from './boss.js';
 
 export class Player {
-  constructor(camera, domElement, scene, arena) {
+  constructor(camera, domElement, scene, arena, isMobile = false) {
     this.camera = camera;
     this.domElement = domElement;
     this.scene = scene;
     this.arena = arena;
+    this.isMobile = isMobile;
     this.velocity = new THREE.Vector3();
     this.direction = new THREE.Vector3();
     this.moveSpeed = 15;
@@ -43,7 +45,7 @@ export class Player {
 
   setupControls() {
     this.domElement.addEventListener('click', () => {
-      if (!this.locked) {
+      if (!this.locked && !this.isMobile) {
         this.domElement.requestPointerLock();
       }
     });
@@ -228,6 +230,14 @@ export class Player {
   setSpeedMultiplier(mult) {
     this.speedMultiplier = mult;
     this.moveSpeed = 12,5 * mult;
+  }
+
+  rotateCamera(deltaX, deltaY) {
+    this.euler.setFromQuaternion(this.camera.quaternion);
+    this.euler.y -= deltaX * this.sensitivity;
+    this.euler.x -= deltaY * this.sensitivity;
+    this.euler.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.euler.x));
+    this.camera.quaternion.setFromEuler(this.euler);
   }
 
   lock() {

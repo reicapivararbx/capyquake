@@ -26,6 +26,51 @@ export class HUD {
 
   show() {
     this.hudEl.style.display = 'block';
+    if (document.body.dataset.device === 'mobile') {
+      this.adaptForMobile();
+    }
+  }
+
+  adaptForMobile() {
+    // Scale down HUD elements for smaller screens
+    if (this.healthBar) {
+      this.healthBar.style.height = '8px';
+    }
+    if (this.healthText) {
+      this.healthText.style.fontSize = '10px';
+    }
+    if (this.staminaBar) {
+      this.staminaBar.style.height = '6px';
+    }
+    if (this.killCountEl) {
+      this.killCountEl.style.fontSize = '12px';
+    }
+    if (this.capyCountEl) {
+      this.capyCountEl.style.fontSize = '12px';
+    }
+    if (this.timerEl) {
+      this.timerEl.style.fontSize = '12px';
+    }
+    if (this.messageEl) {
+      this.messageEl.style.fontSize = '14px';
+    }
+    if (this.killFeed) {
+      this.killFeed.style.fontSize = '10px';
+    }
+    if (this.tokensEl) {
+      this.tokensEl.style.fontSize = '10px';
+    }
+    if (this.moneyEl) {
+      this.moneyEl.style.fontSize = '10px';
+    }
+    if (this.armorEl) {
+      this.armorEl.style.fontSize = '10px';
+    }
+    if (this.bossBarLabel) {
+      this.bossBarLabel.style.fontSize = '12px';
+    }
+    // Hide crosshair on mobile (touch aiming handles this differently)
+    this.setCrosshairVisible(false);
   }
 
   hide() {

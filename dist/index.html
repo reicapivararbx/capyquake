@@ -487,98 +487,7 @@
       background: #ff6600;
       color: #1a1a1a;
     }
-    #shop {
-      display: none;
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(10, 10, 10, 0.95);
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 200;
-      font-family: 'Courier New', monospace;
-      color: #ffcc66;
-      gap: 8px;
-      overflow-y: auto;
-      padding: 20px;
-    }
-    #shop h2 {
-      color: #ff6600;
-      font-size: 36px;
-      margin: 0;
-    }
-    #shop h3 {
-      color: #ff6600;
-      margin: 5px 0;
-      font-size: 16px;
-    }
-    .shop-balance {
-      display: flex;
-      gap: 20px;
-      font-size: 18px;
-    }
-    .shop-balance #shop-tokens { color: #ffdd44; }
-    .shop-balance #shop-money { color: #44ff88; }
-    .shop-convert {
-      padding: 8px 16px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      background: #2a2a1a;
-      color: #ffdd44;
-      border: 1px solid #ffdd44;
-      cursor: pointer;
-    }
-    .shop-convert:hover { background: #ffdd44; color: #1a1a1a; }
-    .shop-convert-error {
-      color: #ff6666;
-      font-size: 13px;
-      margin-top: 6px;
-      min-height: 18px;
-      padding: 4px 8px;
-      background: rgba(255, 60, 60, 0.12);
-      border: 1px solid #ff6666;
-    }
-    .shop-convert-error[hidden] { display: none; }
-    .shop-section {
-      width: 100%;
-      max-width: 500px;
-      text-align: center;
-    }
-    .shop-items {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 6px;
-    }
-    .shop-item {
-      padding: 10px 16px;
-      font-family: 'Courier New', monospace;
-      font-size: 14px;
-      background: #1a2a1a;
-      color: #88ff88;
-      border: 1px solid #44aa44;
-      cursor: pointer;
-      text-align: left;
-    }
-    .shop-item:hover { background: #44aa44; color: #1a1a1a; }
-    .shop-item.bought { background: #333; color: #666; border-color: #444; cursor: default; }
-    #shop-cart {
-      color: #aaffaa;
-      font-size: 14px;
-      min-height: 20px;
-    }
-    #btn-start-game-shop {
-      padding: 14px 40px;
-      font-size: 20px;
-      font-family: 'Courier New', monospace;
-      background: #3a2a1a;
-      color: #ffcc66;
-      border: 2px solid #ff6600;
-      cursor: pointer;
-      text-transform: uppercase;
-      margin-top: 10px;
-    }
-    #btn-start-game-shop:hover { background: #ff6600; color: #1a1a1a; }
+
 
     /* SETTINGS SCREEN */
     #settings-screen {
@@ -662,69 +571,6 @@
     .quit-btn:hover {
       background: #cc4400;
       color: #1a1a1a;
-    }
-
-    /* DEATH SCREEN */
-    #death-screen {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.95);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 400;
-    }
-    .death-overlay {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .death-panel {
-      background: rgba(26, 10, 10, 0.95);
-      border: 3px solid #ff4400;
-      padding: 30px;
-      text-align: center;
-      font-family: 'Courier New', monospace;
-      min-width: 350px;
-    }
-    .death-panel h2 {
-      color: #ff4444;
-      font-size: 42px;
-      margin-bottom: 25px;
-      text-shadow: 2px 2px 0 #000;
-    }
-    .death-panel div {
-      color: #ffcc66;
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-    .death-buttons {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
-    .death-buttons button {
-      padding: 12px 24px;
-      font-family: 'Courier New', monospace;
-      font-size: 16px;
-      background: #3a2a1a;
-      color: #ffcc66;
-      border: 2px solid #ff6600;
-      cursor: pointer;
-      text-transform: uppercase;
-    }
-    .death-buttons button:hover:not(:disabled) {
-      background: #ff6600;
-      color: #1a1a1a;
-    }
-    .death-buttons button:disabled {
-      background: #333;
-      color: #666;
-      border-color: #444;
-      cursor: default;
     }
 
     /* ADMIN PANEL */
@@ -982,16 +828,626 @@
       border-radius: 50%;
       z-index: 10;
     }
+
+    /* ============================================
+       DEATH SCREEN
+       ============================================ */
+    #death-screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 1000;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    .death-overlay {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .death-panel {
+      background: #111;
+      border: 2px solid #cc0000;
+      padding: 30px 40px;
+      text-align: center;
+      min-width: 300px;
+      max-width: 90vw;
+    }
+
+    .death-panel h2 {
+      color: #ff2222;
+      font-size: 32px;
+      margin: 0 0 15px;
+    }
+
+    #revive-count, #revive-price {
+      font-size: 14px;
+      color: #ccc;
+      margin: 5px 0;
+    }
+
+    .death-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .death-buttons button {
+      padding: 10px 24px;
+      font-family: monospace;
+      font-size: 14px;
+      cursor: pointer;
+      border: 1px solid #666;
+      background: #1a1a1a;
+      color: #fff;
+      transition: 0.15s;
+    }
+
+    .death-buttons button:hover:not(:disabled) {
+      background: #333;
+      border-color: #fff;
+    }
+
+    .death-buttons button:disabled {
+      opacity: 0.4;
+      cursor: default;
+    }
+
+    #btn-revive {
+      background: #1a3311;
+      border-color: #44cc44;
+      color: #44ff44;
+    }
+
+    #btn-revive:hover:not(:disabled) {
+      background: #224418;
+      border-color: #66ff66;
+    }
+
+    #btn-death-shop {
+      background: #1a1508;
+      border-color: #ff8c00;
+      color: #ffb347;
+    }
+
+    #btn-death-menu {
+      background: #1a1a1a;
+      border-color: #888;
+      color: #ccc;
+    }
+
+    #death-shop {
+      display: none;
+      margin: 15px 0;
+      padding: 10px;
+      border: 1px solid #444;
+      background: #0a0a0a;
+      text-align: center;
+    }
+
+    #death-shop button {
+      display: block;
+      margin: 6px auto;
+      padding: 8px 16px;
+      font-family: monospace;
+      font-size: 13px;
+      cursor: pointer;
+      border: 1px solid #555;
+      background: #1a1a1a;
+      color: #ddd;
+      width: 100%;
+      max-width: 280px;
+    }
+
+    #death-shop button:hover {
+      background: #333;
+      border-color: #aaa;
+    }
+
+    /* ============================================
+       IN-GAME SHOP BUTTON
+       ============================================ */
+    #btn-ingame-shop {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 45;
+      padding: 8px 14px;
+      background: rgba(26, 21, 8, 0.85);
+      border: 1px solid #ff8c00;
+      color: #ffb347;
+      font-family: monospace;
+      font-size: 12px;
+      cursor: pointer;
+      display: none;
+    }
+
+    #btn-ingame-shop:hover {
+      background: rgba(42, 24, 8, 0.95);
+    }
+
+    body[data-device="mobile"] #btn-ingame-shop {
+      right: 15px;
+      bottom: 230px;
+      padding: 6px 10px;
+      font-size: 11px;
+    }
+
+    /* ============================================
+       ACHIEVEMENT NOTIFICATION
+       ============================================ */
+    #achievement-notification {
+      position: fixed;
+      top: 60px;
+      right: 20px;
+      z-index: 1100;
+      background: linear-gradient(135deg, #1a1508, #2a2010);
+      border: 1px solid #ffcc00;
+      padding: 12px 20px;
+      color: #fff;
+      font-family: monospace;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+      max-width: 320px;
+    }
+
+    #achievement-notification.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .achievement-notif-icon {
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .achievement-notif-text h4 {
+      margin: 0;
+      color: #ffcc00;
+      font-size: 13px;
+    }
+
+    .achievement-notif-text p {
+      margin: 2px 0 0;
+      color: #ccc;
+      font-size: 11px;
+    }
+
+    /* ============================================
+       ACHIEVEMENTS SCREEN
+       ============================================ */
+    #achievements-screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.92);
+      z-index: 900;
+      color: #fff;
+      font-family: monospace;
+    }
+
+    .achievements-panel {
+      width: 90vw;
+      max-width: 800px;
+      height: 85vh;
+      background: #0a0a0a;
+      border: 1px solid #444;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .achievements-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid #333;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .achievements-header h2 {
+      margin: 0;
+      color: #ffcc00;
+      font-size: 22px;
+    }
+
+    .achievements-header .achievements-count {
+      color: #aaa;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .achievements-filters {
+      display: flex;
+      gap: 8px;
+      padding: 10px 20px;
+      border-bottom: 1px solid #222;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .achievements-filters button {
+      padding: 5px 12px;
+      background: #1a1a1a;
+      border: 1px solid #444;
+      color: #aaa;
+      font-family: monospace;
+      font-size: 11px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .achievements-filters button:hover,
+    .achievements-filters button.active {
+      background: #2a2a2a;
+      border-color: #ffcc00;
+      color: #ffcc00;
+    }
+
+    .achievements-rarity-filters {
+      display: flex;
+      gap: 4px;
+      padding: 6px 20px;
+      border-bottom: 1px solid #222;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    .achievements-rarity-filters button {
+      padding: 3px 8px;
+      background: #111;
+      border: 1px solid #333;
+      color: #888;
+      font-family: monospace;
+      font-size: 10px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+
+    .achievements-rarity-filters button:hover,
+    .achievements-rarity-filters button.active {
+      border-color: #fff;
+      color: #fff;
+    }
+
+    .achievements-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px 20px;
+    }
+
+    .achievement-card {
+      border: 1px solid #333;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background: #111;
+      transition: 0.15s;
+    }
+
+    .achievement-card.unlocked {
+      border-color: #44cc44;
+      background: #0a1a0a;
+    }
+
+    .achievement-card .achievement-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .achievement-card .achievement-name {
+      font-size: 14px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .achievement-card .achievement-rarity {
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+    }
+
+    .achievement-card .achievement-desc {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .achievement-card .achievement-progress {
+      margin-top: 6px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    .achievement-card .achievement-progress-bar {
+      height: 4px;
+      background: #222;
+      margin-top: 4px;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .achievement-card .achievement-progress-fill {
+      height: 100%;
+      background: #44cc44;
+      transition: width 0.3s;
+    }
+
+    .achievement-card .achievement-status {
+      margin-top: 6px;
+      font-size: 11px;
+    }
+
+    .achievement-card .achievement-status.unlocked {
+      color: #44cc44;
+    }
+
+    .achievement-card .achievement-status.locked {
+      color: #666;
+    }
+
+    /* Rarity colors */
+    .rarity-common { background: #888; color: #fff; }
+    .rarity-uncommon { background: #2ecc71; color: #fff; }
+    .rarity-rare { background: #3498db; color: #fff; }
+    .rarity-epic { background: #9b59b6; color: #fff; }
+    .rarity-legendary { background: #e67e22; color: #fff; }
+    .rarity-mythic { background: #e74c3c; color: #fff; }
+    .rarity-divine { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; }
+    .rarity-cursed { background: #2c3e50; color: #e74c3c; border: 1px solid #e74c3c; }
+
+    .achievements-close {
+      padding: 10px;
+      text-align: center;
+      border-top: 1px solid #333;
+      flex-shrink: 0;
+    }
+
+    .achievements-close button {
+      padding: 8px 24px;
+      background: #1a1a1a;
+      border: 1px solid #666;
+      color: #fff;
+      font-family: monospace;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .achievements-close button:hover {
+      background: #333;
+    }
+
+    body[data-device="mobile"] .achievements-panel {
+      width: 95vw;
+      height: 90vh;
+    }
+
+    body[data-device="mobile"] .achievement-card {
+      padding: 8px 10px;
+    }
+
+    body[data-device="mobile"] .achievement-card .achievement-name {
+      font-size: 13px;
+    }
+
+    /* ============================================
+       RESPONSIVE: MOBILE CONTROLS
+       ============================================ */
+    #mobile-controls {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 220px;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    #mobile-joystick {
+      position: absolute;
+      bottom: 40px;
+      left: 40px;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      pointer-events: auto;
+    }
+
+    #mobile-joystick-knob {
+      position: absolute;
+      top: 35px;
+      left: 35px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      pointer-events: none;
+    }
+
+    .mobile-btn {
+      position: absolute;
+      border-radius: 50%;
+      border: 2px solid rgba(255, 255, 255, 0.5);
+      color: white;
+      font-weight: bold;
+      font-family: monospace;
+      pointer-events: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-shadow: 1px 1px 2px black;
+    }
+
+    #mobile-attack {
+      bottom: 120px;
+      right: 30px;
+      width: 70px;
+      height: 70px;
+      background: rgba(220, 50, 50, 0.6);
+      font-size: 11px;
+    }
+
+    #mobile-jump {
+      bottom: 40px;
+      right: 30px;
+      width: 70px;
+      height: 70px;
+      background: rgba(50, 120, 220, 0.6);
+      font-size: 11px;
+    }
+
+    #mobile-sprint {
+      bottom: 40px;
+      right: 110px;
+      width: 55px;
+      height: 55px;
+      background: rgba(220, 180, 50, 0.6);
+      font-size: 10px;
+    }
+
+    #mobile-ability {
+      bottom: 110px;
+      right: 110px;
+      width: 55px;
+      height: 55px;
+      background: rgba(150, 50, 220, 0.6);
+      font-size: 10px;
+    }
+
+    /* ============================================
+       RESPONSIVE: MOBILE HUD
+       ============================================ */
+    body[data-device="mobile"] #hud > div {
+      padding: 4px 8px;
+    }
+
+    body[data-device="mobile"] #crosshair {
+      display: none !important;
+    }
+
+    body[data-device="mobile"] #crosshair-dot {
+      display: none !important;
+    }
+
+    /* ============================================
+       RESPONSIVE: MOBILE MENU
+       ============================================ */
+    body[data-device="mobile"] #menu {
+      padding: 10px;
+    }
+
+    body[data-device="mobile"] #menu h1 {
+      font-size: 28px;
+    }
+
+    body[data-device="mobile"] .menu-btn {
+      width: 100%;
+      max-width: 280px;
+      padding: 14px 20px;
+      font-size: 16px;
+    }
+
+    body[data-device="mobile"] #player-name {
+      width: 100%;
+      max-width: 280px;
+      font-size: 16px;
+    }
+
+    /* ============================================
+       RESPONSIVE: MOBILE LOBBY
+       ============================================ */
+    body[data-device="mobile"] #lobby {
+      padding: 15px;
+    }
+
+    body[data-device="mobile"] #lobby h2 {
+      font-size: 20px;
+    }
+
+    /* ============================================
+       RESPONSIVE: MOBILE MAP VOTE
+       ============================================ */
+    body[data-device="mobile"] #map-vote {
+      padding: 10px;
+    }
+
+    body[data-device="mobile"] .map-card {
+      width: 100%;
+      max-width: 250px;
+    }
+
+    /* ============================================
+       RESPONSIVE: ORIENTATION HANDLING
+       ============================================ */
+    @media (orientation: landscape) and (max-height: 500px) {
+      #mobile-controls {
+        height: 160px;
+      }
+
+      #mobile-joystick {
+        width: 100px;
+        height: 100px;
+        bottom: 30px;
+        left: 20px;
+      }
+
+      .mobile-btn {
+        transform: scale(0.85);
+      }
+    }
+
+    /* ============================================
+       RESPONSIVE: WINDOW RESIZE
+       ============================================ */
+    @media (max-width: 768px) {
+      #shop {
+        width: 95vw !important;
+        padding: 10px !important;
+      }
+    }
+
+    /* ============================================
+       RESPONSIVE: PC LARGE SCREEN - SHOP
+       ============================================ */
+    @media (min-width: 1200px) {
+      body[data-device="pc"] #shop {
+        width: 900px;
+      }
+
+      body[data-device="pc"] .shop-items {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
   </style>
-  <script type="module" crossorigin src="/assets/index-CAsMIXgP.js"></script>
+  <script type="module" crossorigin src="/assets/index-yK-3261-.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-CXM3Q1Q8.css">
 </head>
 <body>
   <div id="menu">
     <h1>CAPIQUAKE</h1>
-    <div class="subtitle">A Grande Caçada de Capivaras</div>
+    <div class="subtitle">A Grande Caçada</div>
     <input type="text" id="player-name" placeholder="Seu nome" maxlength="12">
     <button id="btn-singleplayer">Singleplayer</button>
     <button id="btn-multiplayer">Multiplayer</button>
+    <button id="btn-shop-menu">Loja</button>
+    <button id="btn-achievements-menu">Conquistas</button>
     <button id="btn-test-mode">MODO TESTE</button>
     <button id="btn-settings">⚙</button>
   </div>
@@ -1157,6 +1613,8 @@
     </div>
     <button id="btn-pause" style="position:absolute; top:20px; right:150px; z-index:46; padding:6px 12px; background:rgba(58,42,26,0.85); color:#ffcc66; border:1px solid #ff6600; font-family:'Courier New', monospace; cursor:pointer; text-transform:uppercase;">Pausar</button>
 
+    <button id="btn-ingame-shop" style="position:fixed; right:20px; bottom:20px; z-index:45; padding:8px 14px; background:rgba(26,21,8,0.85); border:1px solid #ff8c00; color:#ffb347; font-family:monospace; font-size:12px; cursor:pointer;">&#128722; LOJA</button>
+
     <div id="chat">
       <div id="chat-messages"></div>
       <input type="text" id="chat-input" placeholder="Digite para conversar..." style="display:none;">
@@ -1183,6 +1641,7 @@
     <div class="settings-overlay">
       <div class="settings-panel">
         <h2>CONFIGURAÇÕES</h2>
+        <div id="settings-saved" style="display:none; color:#44ff44; text-align:center; margin-bottom:10px;">✓ Configurações salvas!</div>
         <div class="settings-section">
           <h3>CONTROLES</h3>
           <div class="key-bindings">
@@ -1265,6 +1724,7 @@
           <button id="btn-death-shop">LOJA</button>
           <button id="btn-death-menu">MENU PRINCIPAL</button>
         </div>
+        <div id="death-shop" style="display:none;"></div>
       </div>
     </div>
   </div>
@@ -1308,6 +1768,33 @@
           <button id="btn-skip-tutorial">PULAR TUTORIAL</button>
           <button id="btn-tutorial-next">PRÓXIMO</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="achievement-notification">
+    <div class="achievement-notif-icon">&#127942;</div>
+    <div class="achievement-notif-text">
+      <h4>CONQUISTA DESBLOQUEADA</h4>
+      <p id="achievement-notif-name"></p>
+    </div>
+  </div>
+
+  <div id="achievements-screen">
+    <div class="achievements-panel">
+      <div class="achievements-header">
+        <h2>&#127942; CONQUISTAS</h2>
+        <div class="achievements-count" id="achievements-count">0 / 0 DESBLOQUEADAS</div>
+      </div>
+      <div class="achievements-filters" id="achievements-filters">
+        <button class="active" data-filter="all">TODAS</button>
+        <button data-filter="unlocked">DESBLOQUEADAS</button>
+        <button data-filter="locked">BLOQUEADAS</button>
+      </div>
+      <div class="achievements-rarity-filters" id="achievements-rarity-filters"></div>
+      <div class="achievements-list" id="achievements-list"></div>
+      <div class="achievements-close">
+        <button id="btn-close-achievements">FECHAR</button>
       </div>
     </div>
   </div>

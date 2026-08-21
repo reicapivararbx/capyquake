@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Capiquake - Gameplay</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      color: #e0d0a0;
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+    }
+    /* Arena background - dark 3D environment simulation */
+    .arena-bg {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background:
+        radial-gradient(ellipse at 50% 60%, rgba(60,40,20,0.4) 0%, transparent 60%),
+        radial-gradient(ellipse at 30% 40%, rgba(40,30,15,0.3) 0%, transparent 50%),
+        radial-gradient(ellipse at 70% 30%, rgba(50,35,18,0.2) 0%, transparent 40%),
+        linear-gradient(180deg, #0a0a0a 0%, #1a1208 40%, #0d0d0d 100%);
+    }
+    .arena-floor {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 50%;
+      background: linear-gradient(0deg, #1a1208 0%, transparent 100%);
+      opacity: 0.6;
+    }
+    .arena-structure1 {
+      position: absolute;
+      bottom: 200px; left: 100px;
+      width: 120px; height: 180px;
+      background: linear-gradient(180deg, #2a1a0a, #1a1008);
+      border: 1px solid #3a2a1a;
+    }
+    .arena-structure2 {
+      position: absolute;
+      bottom: 250px; right: 200px;
+      width: 80px; height: 250px;
+      background: linear-gradient(180deg, #2a1a0a, #1a1008);
+      border: 1px solid #3a2a1a;
+    }
+    .arena-pillar {
+      position: absolute;
+      bottom: 150px; right: 600px;
+      width: 40px; height: 300px;
+      background: linear-gradient(180deg, #3a2a1a, #1a1008);
+      border: 1px solid #4a3a2a;
+    }
+    /* Dynamic lighting */
+    .light-spot {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 400px; height: 600px;
+      background: radial-gradient(ellipse at top, rgba(255,102,0,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* HUD Elements - exact positions from game */
+    #crosshair {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px; height: 20px;
+    }
+    #crosshair::before, #crosshair::after {
+      content: '';
+      position: absolute;
+      background: #ff6600;
+    }
+    #crosshair::before {
+      top: 50%; left: 0;
+      width: 100%; height: 2px;
+      transform: translateY(-50%);
+    }
+    #crosshair::after {
+      top: 0; left: 50%;
+      width: 2px; height: 100%;
+      transform: translateX(-50%);
+    }
+    #match-timer {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 28px;
+      color: #ffcc66;
+      text-shadow: 2px 2px 0 #000;
+    }
+    #kill-feed {
+      position: absolute;
+      top: 20px; left: 20px;
+      font-size: 14px;
+      max-width: 350px;
+    }
+    .kill-entry {
+      padding: 3px 8px;
+      margin-bottom: 4px;
+      background: rgba(0,0,0,0.6);
+      color: #ddd;
+      text-shadow: 1px 1px 0 #000;
+    }
+    .kill-entry .killer { color: #ffcc66; }
+    .kill-entry .victim { color: #ff4444; }
+    #stats {
+      position: absolute;
+      bottom: 20px; left: 20px;
+      font-size: 18px;
+      text-shadow: 2px 2px 0 #000;
+    }
+    #stats .kills { color: #ff6600; font-size: 24px; }
+    #stats .remaining { color: #88cc44; }
+    #player-resources {
+      position: absolute;
+      bottom: 80px; left: 20px;
+      font-size: 14px;
+      text-shadow: 2px 2px 0 #000;
+      display: flex;
+      gap: 12px;
+    }
+    #tokens-display { color: #ffdd44; }
+    #money-display { color: #44ff88; }
+    #armor-display { color: #66ccff; }
+    #weapon-display {
+      position: absolute;
+      bottom: 20px; right: 20px;
+      font-size: 16px;
+      color: #ffcc66;
+      text-shadow: 2px 2px 0 #000;
+      text-align: right;
+    }
+    #health-bar-container {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 20px;
+      background: #1a0000;
+      border: 2px solid #660000;
+    }
+    #health-bar {
+      width: 87%;
+      height: 100%;
+      background: linear-gradient(90deg, #cc0000, #ff2200);
+    }
+    #health-text {
+      position: absolute;
+      bottom: 82px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      color: #ff4444;
+      text-shadow: 1px 1px 0 #000;
+    }
+    #stamina-bar-container {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 10px;
+      background: #0a0a1a;
+      border: 1px solid #334466;
+    }
+    #stamina-bar {
+      width: 72%;
+      height: 100%;
+      background: linear-gradient(90deg, #2266cc, #44aaff);
+    }
+    #hotbar {
+      position: absolute;
+      bottom: 110px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 4px;
+    }
+    .hotbar-slot {
+      width: 40px;
+      height: 40px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: #888;
+    }
+    .hotbar-slot.active {
+      border: 2px solid #ff6600;
+      background: rgba(255,102,0,0.15);
+      color: #ffcc66;
+    }
+    .hotbar-slot .slot-icon {
+      font-size: 18px;
+    }
+    #boss-bar-label {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #ff4444;
+      font-size: 14px;
+      font-weight: bold;
+      text-shadow: 1px 1px 0 #000;
+      z-index: 60;
+    }
+    #boss-bar-container {
+      position: absolute;
+      top: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 400px;
+      height: 24px;
+      background: #1a0a0a;
+      border: 2px solid #880000;
+      z-index: 60;
+    }
+    #boss-bar {
+      width: 75%;
+      height: 100%;
+      background: linear-gradient(90deg, #cc0000, #ff4400);
+    }
+    /* Wave display */
+    #wave-display {
+      position: absolute;
+      top: 75px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 16px;
+      color: #ff6600;
+      text-shadow: 2px 2px 0 #000;
+    }
+    /* Paused button */
+    #btn-pause {
+      position: absolute;
+      top: 20px; right: 150px;
+      padding: 6px 12px;
+      background: rgba(58,42,26,0.85);
+      color: #ffcc66;
+      border: 1px solid #ff6600;
+      font-family: 'Courier New', monospace;
+      cursor: pointer;
+      text-transform: uppercase;
+    }
+    /* In-game shop button */
+    #btn-ingame-shop {
+      position: fixed;
+      right: 20px; bottom: 20px;
+      padding: 8px 14px;
+      background: rgba(26,21,8,0.85);
+      border: 1px solid #ff8c00;
+      color: #ffb347;
+      font-family: monospace;
+      font-size: 12px;
+      cursor: pointer;
+    }
+    /* Enemy silhouettes */
+    .enemy {
+      position: absolute;
+      width: 50px;
+      height: 60px;
+      background: radial-gradient(ellipse, #4a2a1a 0%, #2a1a0a 60%, transparent 100%);
+      border-radius: 30% 30% 40% 40%;
+      opacity: 0.7;
+    }
+    .enemy-health {
+      position: absolute;
+      top: -8px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 40px;
+      height: 4px;
+      background: #333;
+    }
+    .enemy-health-fill {
+      width: 60%;
+      height: 100%;
+      background: #cc0000;
+    }
+    /* Projectile effect */
+    .projectile {
+      position: absolute;
+      width: 8px;
+      height: 4px;
+      background: #ff6600;
+      border-radius: 2px;
+      box-shadow: 0 0 6px #ff6600, 0 0 12px #ff660066;
+    }
+    /* Impact spark */
+    .impact {
+      position: absolute;
+      width: 12px; height: 12px;
+      background: radial-gradient(circle, #ffcc66 0%, #ff6600 40%, transparent 70%);
+      border-radius: 50%;
+    }
+  </style>
+</head>
+<body>
+  <div class="arena-bg">
+    <div class="arena-floor"></div>
+    <div class="arena-structure1"></div>
+    <div class="arena-structure2"></div>
+    <div class="arena-pillar"></div>
+    <div class="light-spot"></div>
+  </div>
+
+  <!-- Enemies in arena -->
+  <div class="enemy" style="top: 350px; left: 400px;">
+    <div class="enemy-health"><div class="enemy-health-fill"></div></div>
+  </div>
+  <div class="enemy" style="top: 280px; left: 650px;">
+    <div class="enemy-health"><div class="enemy-health-fill" style="width:40%"></div></div>
+  </div>
+  <div class="enemy" style="top: 400px; right: 350px;">
+    <div class="enemy-health"><div class="enemy-health-fill" style="width:80%"></div></div>
+  </div>
+
+  <!-- Projectile -->
+  <div class="projectile" style="top: 530px; left: 800px;"></div>
+  <div class="projectile" style="top: 525px; left: 900px;"></div>
+
+  <!-- Impact -->
+  <div class="impact" style="top: 370px; left: 420px;"></div>
+
+  <!-- HUD -->
+  <div id="crosshair"></div>
+  <div id="match-timer">7:32</div>
+
+  <div id="boss-bar-label">Chefe Final | HP 750/1000</div>
+  <div id="boss-bar-container"><div id="boss-bar"></div></div>
+
+  <div id="wave-display">ONDA 15</div>
+
+  <div id="kill-feed">
+    <div class="kill-entry"><span class="killer">Jogador</span> eliminated <span class="victim">Bot_Mineiro</span></div>
+    <div class="kill-entry"><span class="killer">Bot_Paulista</span> eliminated <span class="victim">Bot_Carioca</span></div>
+    <div class="kill-entry"><span class="killer">Jogador</span> eliminated <span class="victim">Bot_Baiano</span></div>
+  </div>
+
+  <div id="stats">
+    <div class="kills">KILLS: 47</div>
+    <div class="remaining">ANIMAIS: 12</div>
+  </div>
+
+  <div id="player-resources">
+    <span id="tokens-display">TOKENS: 12</span>
+    <span id="money-display">R$: 3450</span>
+    <span id="armor-display">ARMADURA: 25</span>
+  </div>
+
+  <div id="health-text">VIDA: 87</div>
+  <div id="health-bar-container"><div id="health-bar"></div></div>
+  <div id="stamina-bar-container"><div id="stamina-bar"></div></div>
+
+  <div id="hotbar">
+    <div class="hotbar-slot"><span class="slot-icon">🪵</span></div>
+    <div class="hotbar-slot active"><span class="slot-icon">🔫</span></div>
+    <div class="hotbar-slot"><span class="slot-icon">🗡️</span></div>
+    <div class="hotbar-slot"><span class="slot-icon">🏹</span></div>
+    <div class="hotbar-slot"></div>
+    <div class="hotbar-slot"></div>
+    <div class="hotbar-slot"></div>
+    <div class="hotbar-slot"></div>
+  </div>
+
+  <div id="weapon-display">AK-47</div>
+
+  <button id="btn-pause">Pausar</button>
+  <button id="btn-ingame-shop">🛒 LOJA</button>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1600">
+  <title>Capiquake - Menu Principal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a1a1a;
+      overflow: hidden;
+      font-family: 'Courier New', monospace;
+      color: #e0d0a0;
+      width: 1600px;
+      height: 900px;
+    }
+    #menu {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #0d0d0d 0%, #2a1a0a 100%);
+      z-index: 100;
+    }
+    #menu h1 {
+      font-size: 72px;
+      color: #ff6600;
+      text-shadow: 4px 4px 0px #3a1a00, 0 0 20px #ff660066;
+      margin-bottom: 10px;
+      letter-spacing: 4px;
+    }
+    #menu .subtitle {
+      font-size: 18px;
+      color: #aa8844;
+      margin-bottom: 30px;
+    }
+    #menu input {
+      padding: 10px 20px;
+      font-size: 18px;
+      font-family: 'Courier New', monospace;
+      background: #1a1a1a;
+      color: #ffcc66;
+      border: 2px solid #ff6600;
+      margin-bottom: 20px;
+      text-align: center;
+      width: 300px;
+    }
+    #menu button {
+      display: block;
+      width: 300px;
+      padding: 15px;
+      margin: 8px;
+      font-size: 20px;
+      font-family: 'Courier New', monospace;
+      background: #3a2a1a;
+      color: #ffcc66;
+      border: 2px solid #ff6600;
+      cursor: pointer;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      transition: all 0.1s;
+    }
+    #menu button:hover {
+      background: #ff6600;
+      color: #1a1a1a;
+      transform: scale(1.05);
+    }
+    /* Decorative background elements - dark arena atmosphere */
+    .bg-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(255,102,0,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .bg-vignette {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.5) 100%);
+      pointer-events: none;
+    }
+    .bg-grid {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 40%;
+      background: linear-gradient(0deg, rgba(255,102,0,0.03) 1px, transparent 1px),
+                  linear-gradient(90deg, rgba(255,102,0,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="menu">
+    <div class="bg-vignette"></div>
+    <div class="bg-glow"></div>
+    <div class="bg-grid"></div>
+    <h1>CAPIQUAKE</h1>
+    <div class="subtitle">A Grande Caçada</div>
+    <input type="text" placeholder="Seu nome" maxlength="12">
+    <button>Singleplayer</button>
+    <button>Multiplayer</button>
+    <button>Loja</button>
+    <button>Conquistas</button>
+    <button>MODO TESTE</button>
+    <button>⚙</button>
+  </div>
+</body>
+</html>

@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1920">
+  <title>Capiquake - Banner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      overflow: hidden;
+      font-family: 'Orbitron', sans-serif;
+      width: 1920px;
+      height: 1080px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    /* Dramatic arena background */
+    .bg-layer {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+    }
+    .bg-base {
+      background: linear-gradient(180deg, #050505 0%, #0d0d0d 30%, #1a1208 60%, #0d0d0d 100%);
+    }
+    .bg-arena {
+      background:
+        radial-gradient(ellipse at 50% 70%, rgba(80,45,15,0.25) 0%, transparent 50%),
+        radial-gradient(ellipse at 30% 50%, rgba(60,35,10,0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 45%, rgba(70,40,12,0.15) 0%, transparent 40%);
+    }
+    .bg-dramatic-light {
+      background: radial-gradient(ellipse at 50% 30%, rgba(255,102,0,0.12) 0%, transparent 50%);
+    }
+    .bg-vignette {
+      background: radial-gradient(ellipse at center, transparent 30%, rgba(0,0,0,0.7) 100%);
+    }
+    .bg-floor {
+      position: absolute;
+      bottom: 0; left: 0;
+      width: 100%; height: 45%;
+      background: linear-gradient(0deg, rgba(30,20,8,0.4) 0%, transparent 100%);
+    }
+    /* Atmospheric particles */
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,102,0,0.6) 0%, transparent 70%);
+    }
+    /* Capybara silhouette - combat pose */
+    .capy-silhouette {
+      position: absolute;
+      bottom: 180px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 200px;
+      height: 180px;
+      opacity: 0.15;
+    }
+    .capy-body {
+      position: absolute;
+      bottom: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 160px; height: 100px;
+      background: radial-gradient(ellipse, #8B6914 0%, #5a4510 60%, #3a2a08 100%);
+      border-radius: 45% 45% 35% 35%;
+    }
+    .capy-head {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 80px; height: 60px;
+      background: radial-gradient(ellipse, #a07828 0%, #8B6914 100%);
+      border-radius: 50% 50% 40% 40%;
+    }
+    .capy-arm {
+      position: absolute;
+      bottom: 50px; left: 30px;
+      width: 60px; height: 12px;
+      background: #6B4F12;
+      border-radius: 6px;
+      transform: rotate(-15deg);
+    }
+    .capy-arm-right {
+      position: absolute;
+      bottom: 50px; right: 20px;
+      width: 50px; height: 10px;
+      background: #6B4F12;
+      border-radius: 5px;
+      transform: rotate(-30deg);
+    }
+    /* Orange glow behind silhouette */
+    .capy-glow {
+      position: absolute;
+      bottom: 120px; left: 50%;
+      transform: translateX(-50%);
+      width: 400px; height: 300px;
+      background: radial-gradient(ellipse, rgba(255,102,0,0.1) 0%, transparent 60%);
+    }
+    /* Title */
+    .title-container {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+    }
+    .title {
+      font-size: 96px;
+      font-weight: 900;
+      color: #ff6600;
+      text-shadow:
+        4px 4px 0px #3a1a00,
+        0 0 30px #ff660088,
+        0 0 60px #ff660044;
+      letter-spacing: 8px;
+      margin-bottom: 16px;
+    }
+    .subtitle {
+      font-size: 24px;
+      font-weight: 700;
+      color: #ffcc66;
+      text-shadow: 2px 2px 0px #3a1a00;
+      letter-spacing: 6px;
+    }
+    .tagline {
+      font-size: 14px;
+      color: #aa8844;
+      margin-top: 20px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+    }
+    /* Decorative lines */
+    .line-left, .line-right {
+      position: absolute;
+      top: 50%;
+      width: 200px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #ff660066, transparent);
+    }
+    .line-left { right: calc(50% + 350px); }
+    .line-right { left: calc(50% + 350px); }
+  </style>
+</head>
+<body>
+  <div class="bg-layer bg-base"></div>
+  <div class="bg-layer bg-arena"></div>
+  <div class="bg-layer bg-dramatic-light"></div>
+  <div class="bg-layer bg-vignette"></div>
+  <div class="bg-floor"></div>
+
+  <!-- Particles -->
+  <div class="particle" style="top: 200px; left: 300px; width: 4px; height: 4px;"></div>
+  <div class="particle" style="top: 350px; left: 500px; width: 3px; height: 3px;"></div>
+  <div class="particle" style="top: 280px; right: 400px; width: 5px; height: 5px;"></div>
+  <div class="particle" style="top: 400px; right: 300px; width: 3px; height: 3px;"></div>
+  <div class="particle" style="top: 180px; left: 800px; width: 4px; height: 4px;"></div>
+  <div class="particle" style="top: 450px; left: 600px; width: 3px; height: 3px;"></div>
+  <div class="particle" style="top: 300px; right: 600px; width: 2px; height: 2px;"></div>
+  <div class="particle" style="top: 500px; left: 400px; width: 3px; height: 3px;"></div>
+
+  <!-- Capybara silhouette -->
+  <div class="capy-glow"></div>
+  <div class="capy-silhouette">
+    <div class="capy-head"></div>
+    <div class="capy-body"></div>
+    <div class="capy-arm"></div>
+    <div class="capy-arm-right"></div>
+  </div>
+
+  <!-- Title -->
+  <div class="title-container">
+    <div class="line-left"></div>
+    <div class="line-right"></div>
+    <div class="title">CAPIQUAKE</div>
+    <div class="subtitle">A Grande Caçada</div>
+    <div class="tagline">Sobreviva. Evolua. Domine.</div>
+  </div>
+</body>
+</html>
