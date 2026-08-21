@@ -199,6 +199,6 @@ Este projeto é de uso educacional. Os assets e código são fornecidos "como es
 
 <div align="center">
 
-Feito com ❤️ e muitas capivaras
+Feito com ❤️Amor❤️ e muitas capivaras
 
 </div>
