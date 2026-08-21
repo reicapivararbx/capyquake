@@ -210,6 +210,7 @@ function refreshRebirthPanel() {
   const level = Number.parseInt(localStorage.getItem('capiquake_rebirth'), 10) || 0;
   const mult = rbMultipliers(level);
   document.getElementById('rb-current').textContent = level;
+  document.getElementById('rb-rt').textContent = Number.parseInt(localStorage.getItem('capiquake_rt'), 10) || 0;
   document.getElementById('rb-mult-money').textContent = mult.money;
   document.getElementById('rb-mult-tokens').textContent = mult.tokens;
   document.getElementById('rb-mult-xp').textContent = mult.xp;
@@ -258,7 +259,9 @@ document.getElementById('btn-do-rebirth').addEventListener('click', function() {
   }
   rbConfirmPending = false;
   const level = (Number.parseInt(localStorage.getItem('capiquake_rebirth'), 10) || 0) + 1;
+  const rt = (Number.parseInt(localStorage.getItem('capiquake_rt'), 10) || 0) + 1;
   localStorage.setItem('capiquake_rebirth', String(level));
+  localStorage.setItem('capiquake_rt', String(rt));
   localStorage.setItem('capiquake_tokens', '0');
   localStorage.setItem('capiquake_money', '0');
   refreshRebirthPanel();

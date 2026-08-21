@@ -14,60 +14,163 @@
       color: #e0d0a0;
     }
     canvas { display: block; }
+    /* ===== MENU PRINCIPAL ===== */
     #menu {
       position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
+      inset: 0;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(180deg, #0d0d0d 0%, #2a1a0a 100%);
+      gap: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 122, 0, 0.18), transparent 60%),
+        radial-gradient(ellipse 60% 40% at 85% 110%, rgba(124, 58, 237, 0.12), transparent 60%),
+        linear-gradient(180deg, #0b0b10 0%, #12100e 55%, #1a120a 100%);
       z-index: 100;
+      font-family: 'Segoe UI', system-ui, sans-serif;
     }
+    #btn-settings {
+      position: absolute;
+      top: 22px;
+      right: 26px;
+      width: 46px;
+      height: 46px;
+      font-size: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      color: #cfcfd8;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    #btn-settings:hover {
+      background: rgba(255, 255, 255, 0.12);
+      transform: rotate(45deg);
+    }
+    .menu-hero { text-align: center; margin-bottom: 34px; }
     #menu h1 {
-      font-size: 72px;
-      color: #ff6600;
-      text-shadow: 4px 4px 0px #3a1a00, 0 0 20px #ff660066;
-      margin-bottom: 10px;
-      letter-spacing: 4px;
+      font-size: clamp(52px, 9vw, 96px);
+      font-weight: 900;
+      letter-spacing: 6px;
+      margin: 0;
+      line-height: 1;
+      color: #f5f5f7;
+      text-shadow: 0 8px 40px rgba(255, 122, 0, 0.35);
+    }
+    #menu h1 span {
+      background: linear-gradient(100deg, #ffb347 10%, #ff6600 60%, #ff3d00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
     #menu .subtitle {
-      font-size: 18px;
-      color: #aa8844;
-      margin-bottom: 30px;
-    }
-    #menu input {
-      padding: 10px 20px;
-      font-size: 18px;
-      font-family: 'Courier New', monospace;
-      background: #1a1a1a;
-      color: #ffcc66;
-      border: 2px solid #ff6600;
-      margin-bottom: 20px;
-      text-align: center;
-      width: 300px;
-    }
-    #menu button {
-      display: block;
-      width: 300px;
-      padding: 15px;
-      margin: 8px;
-      font-size: 20px;
-      font-family: 'Courier New', monospace;
-      background: #3a2a1a;
-      color: #ffcc66;
-      border: 2px solid #ff6600;
-      cursor: pointer;
+      margin-top: 10px;
+      font-size: clamp(12px, 1.6vw, 15px);
+      font-weight: 600;
+      letter-spacing: 8px;
+      color: #8d8d99;
       text-transform: uppercase;
+    }
+    #player-name {
+      width: min(340px, 84vw);
+      padding: 13px 22px;
+      font-size: 16px;
+      font-family: inherit;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.05);
+      color: #f5f5f7;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 999px;
+      outline: none;
+      margin-bottom: 26px;
+      transition: 0.2s;
+    }
+    #player-name::placeholder { color: #6b6b78; }
+    #player-name:focus {
+      border-color: #ff8c00;
+      box-shadow: 0 0 0 3px rgba(255, 140, 0, 0.18);
+      background: rgba(255, 140, 0, 0.06);
+    }
+    .menu-primary {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .menu-primary button {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 250px;
+      padding: 14px 20px;
+      background: linear-gradient(160deg, #ff9430, #ff6a00);
+      border: none;
+      border-radius: 16px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 17px;
+      font-weight: 800;
+      text-align: left;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(255, 106, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+      transition: transform 0.16s ease, box-shadow 0.16s ease;
+    }
+    .menu-primary button.alt {
+      background: linear-gradient(160deg, #8b5cf6, #6d28d9);
+      box-shadow: 0 8px 24px rgba(109, 40, 217, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    }
+    .menu-primary button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 32px rgba(255, 106, 0, 0.45);
+    }
+    .menu-primary button.alt:hover { box-shadow: 0 14px 32px rgba(109, 40, 217, 0.5); }
+    .mb-icon { font-size: 22px; }
+    .mb-text { display: flex; flex-direction: column; line-height: 1.15; }
+    .mb-text small { font-size: 11px; font-weight: 500; opacity: 0.85; }
+    .menu-secondary { display: flex; gap: 10px; margin-bottom: 22px; }
+    .menu-secondary button {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.13);
+      border-radius: 999px;
+      color: #cfcfd8;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.18s;
+    }
+    .menu-secondary button:hover {
+      background: rgba(255, 140, 0, 0.12);
+      border-color: rgba(255, 140, 0, 0.55);
+      color: #ffb347;
+      transform: translateY(-2px);
+    }
+    #btn-test-mode {
+      padding: 9px 26px;
+      background: transparent;
+      border: 1px dashed rgba(255, 255, 255, 0.25);
+      border-radius: 999px;
+      color: #8d8d99;
+      font-family: inherit;
+      font-size: 12px;
+      font-weight: 600;
       letter-spacing: 2px;
-      transition: all 0.1s;
+      cursor: pointer;
+      transition: 0.18s;
     }
-    #menu button:hover {
-      background: #ff6600;
-      color: #1a1a1a;
-      transform: scale(1.05);
+    #btn-test-mode:hover {
+      border-color: #ff8c00;
+      color: #ffb347;
+      background: rgba(255, 140, 0, 0.07);
     }
+    body[data-device="mobile"] .menu-primary { flex-direction: column; }
+    body[data-device="mobile"] .menu-primary button { width: min(320px, 86vw); }
+    body[data-device="mobile"] .menu-secondary { flex-wrap: wrap; justify-content: center; }
+
     #map-vote {
       position: fixed;
       top: 0; left: 0;
@@ -525,6 +628,13 @@
     }
     .rb-level { font-size: 15px; margin-bottom: 12px; }
     .rb-level b { color: #c084fc; font-size: 18px; }
+    .rb-rt {
+      font-size: 13px;
+      margin-bottom: 12px;
+      color: #9aa0b4;
+    }
+    .rb-rt b { color: #ffd000; font-size: 16px; }
+    .rb-rt small { color: #6b6b78; }
     .rb-buffs {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1498,16 +1608,22 @@
 </head>
 <body>
   <div id="menu">
-    <h1>CAPIQUAKE</h1>
-    <div class="subtitle">A Grande Caçada</div>
-    <input type="text" id="player-name" placeholder="Seu nome" maxlength="12">
-    <button id="btn-singleplayer">Singleplayer</button>
-    <button id="btn-multiplayer">Multiplayer</button>
-    <button id="btn-shop-menu">Loja</button>
-    <button id="btn-achievements-menu">Conquistas</button>
-    <button id="btn-test-mode">MODO TESTE</button>
-    <button id="btn-rebirth-menu">🔄 REBIRTH</button>
-    <button id="btn-settings">⚙</button>
+    <button id="btn-settings" title="Configurações">⚙</button>
+    <div class="menu-hero">
+      <h1>CAPI<span>QUAKE</span></h1>
+      <div class="subtitle">A GRANDE CAÇADA</div>
+    </div>
+    <input type="text" id="player-name" placeholder="Digite seu nome..." maxlength="12" autocomplete="off">
+    <div class="menu-primary">
+      <button id="btn-singleplayer"><span class="mb-icon">▶</span><span class="mb-text">Singleplayer<small>Sobreviva às ondas</small></span></button>
+      <button id="btn-multiplayer" class="alt"><span class="mb-icon">🌐</span><span class="mb-text">Multiplayer<small>Até 6 jogadores</small></span></button>
+    </div>
+    <div class="menu-secondary">
+      <button id="btn-shop-menu">🛒<span>Loja</span></button>
+      <button id="btn-achievements-menu">🏆<span>Conquistas</span></button>
+      <button id="btn-rebirth-menu">🔄<span>Rebirth</span></button>
+    </div>
+    <button id="btn-test-mode">🧪 MODO TESTE</button>
   </div>
 
   <div id="map-vote">
@@ -1619,6 +1735,7 @@
     <div class="rebirth-panel">
       <h2>🔄 REBIRTH</h2>
       <div class="rb-level">Nível de Rebirth: <b id="rb-current">0</b></div>
+      <div class="rb-rt">Rebirth Tokens: <b id="rb-rt">0</b> RT <small>(1 RT = 1.000.000 tokens)</small></div>
       <div class="rb-buffs">
         <div>💰 Dinheiro: <span id="rb-mult-money">x1</span></div>
         <div>🪙 Tokens: <span id="rb-mult-tokens">x1</span></div>

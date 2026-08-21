@@ -1818,6 +1818,8 @@ export class Game {
     if (this.level >= 100 && this.tokens >= 10000 && this.money >= 1000000) {
       this.rebirthLevel++;
       localStorage.setItem('capiquake_rebirth', this.rebirthLevel);
+      const rt = (Number.parseInt(localStorage.getItem('capiquake_rt'), 10) || 0) + 1;
+      localStorage.setItem('capiquake_rt', String(rt));
       this.level = 1;
       this.xp = 0;
       this.tokens = 0;
@@ -2035,7 +2037,11 @@ endGame() {
     const btn = document.getElementById('btn-rebirth');
     if (btn) btn.onclick = () => {
       this.rebirthLevel++;
-      if (this.mode !== 'test') localStorage.setItem('capiquake_rebirth', this.rebirthLevel);
+      if (this.mode !== 'test') {
+        localStorage.setItem('capiquake_rebirth', this.rebirthLevel);
+        const rtNow = (Number.parseInt(localStorage.getItem('capiquake_rt'), 10) || 0) + 1;
+        localStorage.setItem('capiquake_rt', String(rtNow));
+      }
       this.tokens = 0;
       this.money = 0;
       this.saveBalance();
