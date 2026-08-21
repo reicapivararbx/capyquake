@@ -547,18 +547,127 @@ export class Weapon {
         break;
       }
       default: {
-        const shaft = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 1.0, 5), mat2);
-        shaft.position.set(0.32, -0.15, -0.4);
-        shaft.rotation.x = Math.PI / 2 + 0.1;
-        group.add(shaft);
-        const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.3, 5), leatherMat);
-        grip.position.set(0.32, -0.16, -0.02);
-        grip.rotation.x = Math.PI / 2 + 0.1;
-        group.add(grip);
-        const cap = new THREE.Mesh(new THREE.SphereGeometry(0.045, 6, 4), brassMat);
-        cap.position.set(0.32, -0.15, 0.15);
-        group.add(cap);
+        this.buildCatalogModel(id, w, group, { mat1, mat2, darkMat, leatherMat, brassMat });
       }
+    }
+    return group;
+  }
+
+  hashWeaponHue(id) {
+    let h = 0;
+    for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 360;
+    return h;
+  }
+
+  weaponCategory(w) {
+    const n = (w.name || '').toLowerCase();
+    if (/sniper|awp|kar98|m24|barrett|dragunov/.test(n) || w.range >= 100) return 'sniper';
+    if (/escopeta|shotgun|spas|m870|double barrel|aa-12|s12k/.test(n)) return 'shotgun';
+    if (/smg|uzi|mp5|p90|vector/.test(n) || (w.cooldown || 1) <= 0.1) return 'smg';
+    if (/pistol|glock|eagle|golden gun|hand cannon/.test(n)) return 'pistol';
+    if (/rocket|bazuca|launcher|grenade|mini rocket/.test(n) || w.type === 'projectile') return 'launcher';
+    if (/railgun|plasma|laser|energy|void|thunder|ice gun|hyper|lightning|cannon/.test(n)) return 'energy';
+    if (/crossbow|besta|bow/.test(n)) return 'bow';
+    if (/flamethrower|flame|fogo/.test(n)) return 'special';
+    return 'rifle';
+  }
+
+  buildCatalogModel(id, w, group, mats) {
+    const cat = this.weaponCategory(w);
+    const hue = this.hashWeaponHue(id);
+    const accent = new THREE.MeshLambertMaterial({ color: new THREE.Color().setHSL(hue / 360, 0.75, 0.5) });
+    const glow = new THREE.MeshBasicMaterial({ color: new THREE.Color().setHSL(hue / 360, 0.9, 0.65) });
+    const bodyMat = new THREE.MeshLambertMaterial({ color: new THREE.Color().setHSL(hue / 360, 0.25, 0.22) });
+    const metal = mats.mat1;
+    const dark = mats.darkMat;
+    const wood = mats.mat2;
+    const X = 0.3;
+
+    const box = (wd, ht, dp, mat, px, py, pz, rx = 0) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(wd, ht, dp), mat);
+      m.position.set(px, py, pz);
+      m.rotation.x = rx;
+      group.add(m);
+      return m;
+    };
+    const tube = (r1, r2, len, mat, px, py, pz) => {
+      const m = new THREE.Mesh(new THREE.CylinderGeometry(r1, r2, len, 8), mat);
+      m.position.set(px, py, pz);
+      m.rotation.x = Math.PI / 2;
+      group.add(m);
+      return m;
+    };
+
+    if (cat === 'pistol') {
+      box(0.07, 0.09, 0.3, bodyMat, X, -0.2, -0.28);
+      tube(0.02, 0.02, 0.24, metal, X, -0.19, -0.52);
+      box(0.06, 0.16, 0.08, dark, X, -0.3, -0.12, 0.25);
+      box(0.05, 0.03, 0.06, accent, X, -0.13, -0.4);
+    } else if (cat === 'smg') {
+      box(0.08, 0.11, 0.42, bodyMat, X, -0.2, -0.34);
+      tube(0.022, 0.022, 0.2, metal, X, -0.18, -0.62);
+      box(0.05, 0.22, 0.07, accent, X, -0.33, -0.36);
+      box(0.06, 0.14, 0.09, dark, X, -0.28, -0.08, 0.2);
+      box(0.05, 0.05, 0.16, dark, X, -0.17, 0.06);
+    } else if (cat === 'rifle') {
+      box(0.08, 0.12, 0.55, bodyMat, X, -0.2, -0.38);
+      tube(0.024, 0.024, 0.34, metal, X, -0.18, -0.78);
+      box(0.05, 0.24, 0.08, accent, X, -0.34, -0.34);
+      box(0.07, 0.13, 0.2, wood, X, -0.22, 0.02, 0.12);
+      box(0.03, 0.05, 0.03, dark, X, -0.1, -0.9);
+      box(0.05, 0.04, 0.1, dark, X, -0.11, -0.28);
+    } else if (cat === 'shotgun') {
+      tube(0.045, 0.045, 0.7, bodyMat, X, -0.18, -0.55);
+      tube(0.03, 0.03, 0.55, metal, X, -0.13, -0.58);
+      box(0.07, 0.1, 0.26, wood, X, -0.22, 0.0, 0.15);
+      box(0.06, 0.06, 0.16, accent, X, -0.13, -0.5);
+      box(0.07, 0.12, 0.1, dark, X, -0.24, -0.85);
+    } else if (cat === 'sniper') {
+      box(0.07, 0.11, 0.6, bodyMat, X, -0.2, -0.42);
+      tube(0.022, 0.018, 0.55, metal, X, -0.18, -0.95);
+      tube(0.035, 0.035, 0.22, dark, X, -0.08, -0.4);
+      tube(0.04, 0.04, 0.03, glow, X, -0.08, -0.52);
+      box(0.05, 0.2, 0.07, dark, X, -0.32, -0.3);
+      box(0.07, 0.14, 0.22, wood, X, -0.24, 0.04, 0.18);
+    } else if (cat === 'launcher') {
+      tube(0.07, 0.07, 0.72, bodyMat, X, -0.18, -0.5);
+      tube(0.085, 0.07, 0.1, accent, X, -0.18, -0.88);
+      tube(0.05, 0.05, 0.08, dark, X, -0.18, -0.1);
+      box(0.05, 0.16, 0.07, dark, X, -0.3, -0.3, 0.2);
+      box(0.04, 0.04, 0.12, metal, X, -0.05, -0.35);
+    } else if (cat === 'energy') {
+      box(0.09, 0.13, 0.48, bodyMat, X, -0.2, -0.36);
+      tube(0.028, 0.01, 0.3, glow, X, -0.18, -0.72);
+      tube(0.05, 0.05, 0.05, glow, X, -0.18, -0.3);
+      tube(0.05, 0.05, 0.05, glow, X, -0.18, -0.44);
+      box(0.06, 0.18, 0.08, dark, X, -0.32, -0.16, 0.2);
+      box(0.1, 0.03, 0.14, accent, X, -0.11, -0.3);
+    } else if (cat === 'bow') {
+      const limb = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.02, 6, 12, Math.PI), wood);
+      limb.position.set(X, -0.2, -0.45);
+      limb.rotation.y = Math.PI / 2;
+      group.add(limb);
+      const stringLine = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.004, 0.56, 4), mats.stringMat || mats.leatherMat);
+      stringLine.position.set(X, -0.2, -0.45);
+      group.add(stringLine);
+      tube(0.015, 0.015, 0.4, metal, X, -0.2, -0.3);
+      box(0.05, 0.1, 0.08, accent, X, -0.24, -0.45);
+    } else if (cat === 'special') {
+      box(0.1, 0.14, 0.5, bodyMat, X, -0.2, -0.36);
+      tube(0.05, 0.035, 0.4, metal, X, -0.18, -0.68);
+      const tank = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), accent);
+      tank.position.set(X, -0.12, -0.05);
+      group.add(tank);
+      const flameTip = new THREE.Mesh(new THREE.ConeGeometry(0.035, 0.1, 6), glow);
+      flameTip.position.set(X, -0.18, -0.92);
+      flameTip.rotation.x = -Math.PI / 2;
+      group.add(flameTip);
+      box(0.06, 0.16, 0.08, dark, X, -0.31, -0.2, 0.22);
+    } else {
+      box(0.08, 0.12, 0.5, bodyMat, X, -0.2, -0.36);
+      tube(0.024, 0.024, 0.3, metal, X, -0.18, -0.72);
+      box(0.05, 0.2, 0.08, accent, X, -0.32, -0.3);
+      box(0.07, 0.13, 0.18, wood, X, -0.22, 0.02, 0.12);
     }
     return group;
   }
