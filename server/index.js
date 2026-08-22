@@ -89,7 +89,7 @@ class GameRoom {
   }
 
   broadcastLobby() {
-    const playerList = Array.from(this.players.values()).map(p => ({ name: p.name }));
+    const playerList = Array.from(this.players.values()).map(p => ({ name: p.name, kills: p.kills || 0 }));
     const hostName = this.host && this.players.get(this.host) ? this.players.get(this.host).name : '';
     for (const [socket] of this.players) {
       if (socket.readyState !== 1) continue;
@@ -323,6 +323,9 @@ wss.on('connection', (ws) => {
         break;
       case 'chat':
         if (currentRoom) currentRoom.handleChat(ws, msg);
+        break;
+      case 'ping':
+        ws.send(JSON.stringify({ type: 'pong', t: msg.t }));
         break;
       case 'testMode':
         ws.send(JSON.stringify({ type: 'testModeAck', ok: true }));

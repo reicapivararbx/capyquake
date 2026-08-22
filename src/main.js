@@ -217,50 +217,129 @@ network.onClose(() => {
   if (setup && setup.style.display === 'flex') setMpStatus('Servidor offline - rode node server/index.js', 'offline');
 });
 
+function hueFromString(s) {
+  let h = 0;
+  for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) % 360;
+  return h;
+}
+
 network.onLobby((state) => {
   document.getElementById('mp-setup').style.display = 'none';
   document.getElementById('lobby').style.display = 'flex';
   document.getElementById('lobby-code').textContent = state.code;
-  const dot = document.getElementById('lobby-dot');
-  if (dot) dot.classList.add('online');
 
   const list = document.getElementById('players-list');
   list.replaceChildren();
   const countEl = document.getElementById('lobby-count');
   if (countEl) countEl.textContent = `${state.players.length}/${state.maxPlayers}`;
+
   for (let i = 0; i < state.maxPlayers; i++) {
     const slot = document.createElement('div');
     slot.className = 'player-slot';
     const avatar = document.createElement('span');
     avatar.className = 'slot-avatar';
+    const info = document.createElement('span');
+    info.className = 'slot-info';
     const nameSpan = document.createElement('span');
     nameSpan.className = 'slot-name';
-    if (state.players[i]) {
+    const sub = document.createElement('span');
+    sub.className = 'slot-sub';
+    const tag = document.createElement('span');
+    tag.className = 'slot-tag';
+
+    const p = state.players[i];
+    if (p) {
+      const isHost = p.name === state.hostName;
       slot.classList.add('filled');
-      avatar.style.background = '#7c3aed';
-      avatar.textContent = state.players[i].name.charAt(0).toUpperCase();
-      nameSpan.textContent = state.players[i].name + (state.players[i].name === state.hostName ? ' 👑' : '');
+      const hue = hueFromString(p.name);
+      avatar.style.background = `hsl(${hue}, 45%, 38%)`;
+      avatar.textContent = p.name.charAt(0).toUpperCase();
+      nameSpan.textContent = p.name;
+      if (isHost) {
+        sub.textContent = 'host · pronto pra cacar';
+        tag.textContent = 'HOST';
+        tag.classList.add('host');
+      } else {
+        sub.textContent = 'pronto · na sala';
+        tag.textContent = 'READY';
+        tag.classList.add('ready');
+      }
     } else {
       avatar.textContent = '?';
-      nameSpan.textContent = 'Aguardando...';
+      nameSpan.textContent = 'Slot aberto';
+      sub.textContent = i % 2 === 0 ? 'aguardando capivara' : 'convite por codigo';
+      tag.textContent = 'VAZIO';
+      tag.classList.add('empty');
     }
+    info.appendChild(nameSpan);
+    info.appendChild(sub);
     slot.appendChild(avatar);
-    slot.appendChild(nameSpan);
+    slot.appendChild(info);
+    slot.appendChild(tag);
     list.appendChild(slot);
+  }
+
+  const sb = document.getElementById('lobby-scoreboard');
+  if (sb) {
+    sb.replaceChildren();
+    for (const p of state.players) {
+      const entry = document.createElement('div');
+      entry.className = 'lr-score-entry';
+      const nm = document.createElement('span');
+      nm.textContent = p.name.toUpperCase().slice(0, 10);
+      const sc = document.createElement('b');
+      sc.textContent = String(p.kills || 0).padStart(2, '0');
+      entry.appendChild(nm);
+      entry.appendChild(sc);
+      sb.appendChild(entry);
+    }
+    const me = state.players.find(pp => pp.name === network.playerName);
+    const fragEl = document.getElementById('hud-frag');
+    if (fragEl && me) fragEl.textContent = String(me.kills || 0).padStart(2, '0');
   }
 
   const hostControls = document.getElementById('host-controls');
   const guestWaiting = document.getElementById('guest-waiting');
-  const startBtn = document.getElementById('btn-start-game');
   if (state.youAreHost) {
     hostControls.style.display = 'flex';
     guestWaiting.style.display = 'none';
-    startBtn.disabled = false;
   } else {
     hostControls.style.display = 'none';
     guestWaiting.style.display = 'block';
   }
 });
+
+setInterval(() => {
+  const pingEl = document.getElementById('hud-ping');
+  if (pingEl && network.connected && network.ping !== null) {
+    pingEl.textContent = network.ping;
+  }
+  const fpsEl = document.getElementById('hud-fps');
+  if (fpsEl && window.__fpsValue) fpsEl.textContent = window.__fpsValue;
+}, 1000);
+
+(function fpsMeter() {
+  let last = performance.now();
+  let frames = 0;
+  function tick(now) {
+    frames++;
+    if (now - last >= 500) {
+      window.__fpsValue = Math.round(frames * 1000 / (now - last));
+      frames = 0;
+      last = now;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+})();
+
+const hostMapSelLive = document.getElementById('host-map-select');
+if (hostMapSelLive) {
+  hostMapSelLive.addEventListener('change', () => {
+    const prev = document.getElementById('lobby-map-preview');
+    if (prev) prev.textContent = 'Mapa: ' + hostMapSelLive.value;
+  });
+}
 
 const hostMapSelect = document.getElementById('host-map-select');
 if (hostMapSelect && !hostMapSelect.options.length) {

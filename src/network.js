@@ -10,6 +10,8 @@ export class Network {
     this._serverUrl = null;
     this._shouldReconnect = true;
     this._reconnectTimer = null;
+    this.ping = null;
+    this._pingInterval = null;
   }
 
   connect(name) {
@@ -30,6 +32,11 @@ export class Network {
 
     this.ws.onopen = () => {
       this.connected = true;
+      if (!this._pingInterval) {
+        this._pingInterval = setInterval(() => {
+          if (this.ws && this.ws.readyState === 1) this.send('ping', { t: Date.now() });
+        }, 4000);
+      }
       if (this.callbacks.open) this.callbacks.open();
 
     };
@@ -47,6 +54,9 @@ export class Network {
           this.currentCode = msg.code;
           this.isHost = !!msg.youAreHost;
           if (this.callbacks.lobby) this.callbacks.lobby(msg);
+          break;
+        case 'pong':
+          if (msg.t) this.ping = Date.now() - msg.t;
           break;
         case 'lobbyError':
           if (this.callbacks.lobbyError) this.callbacks.lobbyError(msg.message || 'Erro no lobby');
