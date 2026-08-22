@@ -115,10 +115,11 @@ export class Player {
     if (!this.locked) return;
 
     this.direction.set(0, 0, 0);
-    if (this.keys.forward) this.direction.z -= 1;
-    if (this.keys.backward) this.direction.z += 1;
-    if (this.keys.left) this.direction.x -= 1;
-    if (this.keys.right) this.direction.x += 1;
+    const inv = this.reverseControls ? -1 : 1;
+    if (this.keys.forward) this.direction.z -= 1 * inv;
+    if (this.keys.backward) this.direction.z += 1 * inv;
+    if (this.keys.left) this.direction.x -= 1 * inv;
+    if (this.keys.right) this.direction.x += 1 * inv;
     this.direction.normalize();
 
     const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this.camera.quaternion);
@@ -127,6 +128,11 @@ export class Player {
     const right = new THREE.Vector3(1, 0, 0).applyQuaternion(this.camera.quaternion);
     right.y = 0;
     right.normalize();
+
+    if (this.infiniteStamina) {
+      this.stamina = this.maxStamina;
+      this.exhausted = false;
+    }
 
     const isSprinting = this.keys.sprint && this.stamina > 0 && !this.exhausted && this.direction.length() > 0;
 

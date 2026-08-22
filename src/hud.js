@@ -83,6 +83,9 @@ export class HUD {
 
   updateRemaining(count) {
     this.capyCountEl.textContent = count;
+    if (this.capyCountEl) {
+      this.capyCountEl.classList.toggle('low', count <= 15 && count > 0);
+    }
   }
 
   updateHealth(current, max) {
@@ -210,6 +213,17 @@ export class HUD {
   hideBossBar() {
     if (this.bossBarContainer) this.bossBarContainer.style.display = 'none';
     if (this.bossBarLabel) this.bossBarLabel.style.display = 'none';
+  }
+
+  updateLevel(level, xp) {
+    const num = document.getElementById('level-num');
+    const bar = document.getElementById('xp-bar');
+    if (num) num.textContent = level;
+    if (bar) {
+      const needed = Math.max(1, level * 100);
+      const pct = Math.min(100, Math.round(((xp || 0) / needed) * 100));
+      bar.style.width = pct + '%';
+    }
   }
 
   updateResources(tokens, money, armor) {

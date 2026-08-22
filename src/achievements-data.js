@@ -222,6 +222,22 @@ export const ACHIEVEMENTS = [
   { id: 'money_0_end', name: 'Quebrado', description: 'Termine uma partida com R$0.', rarity: 'CURSED', type: 'instant', test: g => (g.stats.brokeEnds || 0) >= 1 },
   { id: 'dmg_0_match', name: 'Inofensivo', description: 'Termine uma partida com 0 de dano.', rarity: 'CURSED', type: 'instant', test: g => (g.stats.zeroDmgMatches || 0) >= 1 },
   { id: 'death_100', name: 'Lenda das Mortes', description: 'Morra 100 vezes.', rarity: 'CURSED', type: 'cumulative', stat: 'deaths', target: 100 },
+
+// ===== CONQUISTAS DOS MODOS DE JOGO =====
+  { id: 'mode_normal', name: 'Modo Normal', description: 'Jogue uma partida no modo Normal.', rarity: 'COMMON', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.normal >= 1) },
+  { id: 'mode_reverse', name: 'Modo Reverse', description: 'Jogue uma partida no modo Reverse.', rarity: 'UNCOMMON', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.reverse >= 1) },
+  { id: 'mode_turbo', name: 'Modo Turbo', description: 'Jogue uma partida no modo Turbo.', rarity: 'UNCOMMON', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.turbo >= 1) },
+  { id: 'mode_mini', name: 'Modo Mini', description: 'Jogue uma partida no modo Mini.', rarity: 'RARE', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.mini >= 1) },
+  { id: 'mode_giant', name: 'Modo Gigante', description: 'Jogue uma partida no modo Gigante.', rarity: 'RARE', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.giant >= 1) },
+  { id: 'mode_moon', name: 'Modo Gravidade Zero', description: 'Jogue uma partida no modo Gravidade Zero.', rarity: 'RARE', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.moon >= 1) },
+  { id: 'mode_vampire', name: 'Modo Vampiro', description: 'Jogue uma partida no modo Vampiro.', rarity: 'EPIC', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.vampire >= 1) },
+  { id: 'mode_gold', name: 'Modo Dourado', description: 'Jogue uma partida no modo Dourado.', rarity: 'EPIC', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.gold >= 1) },
+  { id: 'mode_ghost', name: 'Modo Fantasma', description: 'Jogue uma partida no modo Fantasma.', rarity: 'EPIC', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.ghost >= 1) },
+  { id: 'mode_horde', name: 'Modo Horda', description: 'Jogue uma partida no modo Horda.', rarity: 'LEGENDARY', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.horde >= 1) },
+  { id: 'mode_chaos', name: 'Modo Chaos Mode', description: 'Jogue uma partida no modo Chaos Mode.', rarity: 'LEGENDARY', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.chaos >= 1) },
+  { id: 'mode_oneshot', name: 'Modo One Shot', description: 'Jogue uma partida no modo One Shot.', rarity: 'MYTHIC', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.oneshot >= 1) },
+  { id: 'mode_bossrush', name: 'Modo Boss Rush', description: 'Jogue uma partida no modo Boss Rush.', rarity: 'DIVINE', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.bossrush >= 1) },
+  { id: 'mode_all', name: 'Colecionador de Modos', description: 'Jogue pelo menos uma partida em TODOS os 13 modos.', rarity: 'DIVINE', type: 'instant', test: g => { if (!(g.stats && g.stats.modePlays)) return false; const ids = ['normal','reverse','turbo','mini','giant','moon','vampire','gold','ghost','horde','chaos','oneshot','bossrush']; return ids.every(id => (g.stats.modePlays[id] || 0) >= 1); } },
 ];
 
 const RARITY_REWARDS = {

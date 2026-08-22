@@ -13,6 +13,7 @@ import { Chest } from './chest.js';
 import { Boss, MiniBoss } from './boss.js';
 
 import { ACHIEVEMENTS } from './achievements-data.js';
+import { getGameMode } from './game-modes.js';
 
 window.__ACHIEVEMENTS_DATA = ACHIEVEMENTS;
 
@@ -143,6 +144,8 @@ export class Game {
     this._lastHotbarLen = -1;
     this.stats = null;
     this.purchaseFlags = {};
+    this.gameModeId = options.gameMode || 'normal';
+    this.modeCfg = getGameMode(this.gameModeId).apply || {};
   }
 
   start() {
@@ -310,6 +313,7 @@ export class Game {
       this.hasVoidAbility = true;
     }
 
+    this.applyModeEffects();
     this.applySkinVisuals();
 
     const start = this.arena.getPlayerStart();
@@ -325,10 +329,14 @@ export class Game {
     this.hud.updateHealth(this.playerHealth, this.playerMaxHealth);
     this.hud.updateResources(this.tokens, this.money, this.armor);
     this.hud.updateTimer(this.timeRemaining);
+    if (this.hud.updateLevel) this.hud.updateLevel(this.level, this.xp);
     this.weapon.updateDisplay();
     this.weapon.updateInventoryDisplay();
     this.updateHotbar();
     this.stats.weaponsOwned = this.weapon.inventory.length;
+    if (!this.stats.modePlays) this.stats.modePlays = {};
+    this.stats.modePlays[this.gameModeId] = (this.stats.modePlays[this.gameModeId] || 0) + 1;
+
     this.createWaveDisplay();
     this.updateWaveDisplay();
     this.checkAchievements();
@@ -464,6 +472,48 @@ export class Game {
     });
   }
 
+  applyModeEffects() {
+    const cfg = this.modeCfg || {};
+    if (cfg.speedMul && this.player) {
+      const base = this.player.moveSpeed || 15;
+      this.player.moveSpeed = base * cfg.speedMul;
+    }
+    if (cfg.gravity && this.player) this.player.gravity = cfg.gravity;
+    if (cfg.jumpMul && this.player) this.player.jumpSpeed = (this.player.jumpSpeed || 9) * cfg.jumpMul;
+    if (cfg.infiniteStamina && this.player) this.player.infiniteStamina = true;
+    if (cfg.reverseControls && this.player) this.player.reverseControls = true;
+    if (cfg.playerHp) {
+      this.playerMaxHealth = cfg.playerHp;
+      this.playerHealth = this.playerMaxHealth;
+    } else if (cfg.playerHpMul) {
+      this.playerMaxHealth = Math.round(200 * cfg.playerHpMul);
+      this.playerHealth = this.playerMaxHealth;
+    }
+  }
+
+  applyModeToAnimal(animal) {
+    const cfg = this.modeCfg || {};
+    if (cfg.scale) {
+      animal.mesh.scale.multiplyScalar(cfg.scale);
+      animal.hitRadius = (animal.hitRadius || 1) * cfg.scale;
+      animal.hitHeight = (animal.hitHeight || 0.5) * cfg.scale;
+    }
+    if (cfg.hpMul) animal.health *= cfg.hpMul;
+    if (cfg.animalSpeedMul) {
+      animal.speed *= cfg.animalSpeedMul;
+      animal.chaseSpeed *= cfg.animalSpeedMul;
+    }
+    if (cfg.oneShotAnimals) animal.health = 1;
+    if (cfg.invisible) {
+      animal.mesh.traverse((child) => {
+        if (child.isMesh && child.material && !child.material.userData.wasMeshBasicMaterial) {
+          child.material.transparent = true;
+          child.material.opacity = 0.12;
+        }
+      });
+    }
+  }
+
   spawnChests() {
     const map = this.arena.map;
     const rows = map.length;
@@ -522,6 +572,7 @@ export class Game {
         const type = animalTypes[(roomId + i) % animalTypes.length];
         const sp = this.arena.getRandomSpawnInRoom(roomId);
         const animal = new Animal(this.scene, sp.x, sp.z, type, this.arena);
+        this.applyModeToAnimal(animal);
         animal.dormant = true;
         animal.roomId = roomId;
         this.targets.push(animal);
@@ -1127,6 +1178,18 @@ export class Game {
       this.stats.kills = (this.stats.kills || 0) + 1;
       this.stats.killStreak = (this.stats.killStreak || 0) + 1;
       this.stats.deathStreak = 0;
+      if (this.modeCfg && this.modeCfg.lifesteal) {
+        this.playerHealth = Math.min(this.playerMaxHealth, this.playerHealth + this.modeCfg.lifesteal);
+        this.hud.updateHealth(this.playerHealth, this.playerMaxHealth);
+      }
+      if (this.modeCfg && this.modeCfg.moneyMul) {
+        dropMoney *= this.modeCfg.moneyMul;
+      }
+      if (this.modeCfg && this.modeCfg.tokenPerKill) {
+        this.tokens += this.modeCfg.tokenPerKill;
+        this.saveBalance();
+        this.hud.updateResources(this.tokens, this.money, this.armor);
+      }
       this.stats.moneyEarned = (this.stats.moneyEarned || 0) + dropMoney;
       this.stats.tokensEarned = (this.stats.tokensEarned || 0) + dropTokens;
       this.addXp(points * 10);
@@ -1467,10 +1530,11 @@ export class Game {
     if (this.playerDead || this.bossActive) return;
     this.wave++;
     this.stats.waves = this.wave;
+    this.addXp(50 + this.wave * 10);
     this.updateWaveDisplay();
     this.hud.showMessage(`WAVE ${this.wave}`);
     this.checkAchievements();
-    if (this.wave % 10 === 0) {
+    if ((this.modeCfg && this.modeCfg.bossRush) || this.wave % 10 === 0) {
       this.spawnWaveBoss();
     } else if (this.wave % 5 === 0) {
       this.spawnMiniBoss();
@@ -1491,6 +1555,7 @@ export class Game {
       const sp = this.arena.getRandomSpawnInRoom(roomId);
       const type = types[Math.floor(Math.random() * types.length)];
       const animal = new Animal(this.scene, sp.x, sp.z, type, this.arena);
+      this.applyModeToAnimal(animal);
       animal.dormant = false;
       animal.roomId = roomId;
       if (typeof animal.maxHealth === 'number') {
@@ -1743,6 +1808,7 @@ export class Game {
       const roomId = roomIds[Math.floor(Math.random() * roomIds.length)];
       const sp = this.arena.getRandomSpawnInRoom(roomId);
       const animal = new Animal(this.scene, sp.x, sp.z, type, this.arena);
+      this.applyModeToAnimal(animal);
       animal.dormant = false;
       this.targets.push(animal);
     }
@@ -1802,6 +1868,7 @@ export class Game {
       leveled = true;
     }
     if (this.level >= 100) this.xp = Math.min(this.xp, 99 * 100);
+    if (this.hud && this.hud.updateLevel) this.hud.updateLevel(this.level, this.xp);
     if (leveled) {
       this.hud.showMessage(`NIVEL ${this.level}!`);
       this.stats.level = this.level;
@@ -2063,6 +2130,10 @@ endGame() {
         this.speedBoost = false;
         this.player.setSpeedMultiplier(1.0);
       }
+    }
+    if (this.modeCfg && this.modeCfg.regen && !this.playerDead && this.playerHealth < this.playerMaxHealth) {
+      this.playerHealth = Math.min(this.playerMaxHealth, this.playerHealth + this.modeCfg.regen * delta);
+      this.hud.updateHealth(this.playerHealth, this.playerMaxHealth);
     }
     if (this.invincible) {
       this.invincibleTimer -= delta;

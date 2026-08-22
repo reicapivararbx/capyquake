@@ -517,6 +517,25 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+const _seqMg = [];
+const MG_WORD = 'minigun';
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+  if (!MG_WORD.includes(k) || k === '') { _seqMg.length = 0; return; }
+  _seqMg.push(k);
+  if (_seqMg.length > MG_WORD.length) _seqMg.shift();
+  if (_seqMg.join('') === MG_WORD) {
+    _seqMg.length = 0;
+    const g = window.__game;
+    if (g && g.weapon) {
+      if (!g.weapon.inventory.includes('minigun')) g.weapon.addWeapon('minigun', 9999);
+      g.updateHotbar && g.updateHotbar();
+    }
+    showToastMessage('MINIGUN!');
+  }
+});
+
 const _seq7 = [];
 document.addEventListener('keydown', (e) => {
   if (e.repeat) return;

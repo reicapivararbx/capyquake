@@ -31,10 +31,7 @@ export class Network {
     this.ws.onopen = () => {
       this.connected = true;
       if (this.callbacks.open) this.callbacks.open();
-      if (!this.joined) {
-        this.joined = true;
-        this.sendJoin(intendedPlayerName);
-      }
+
     };
 
     this.ws.onmessage = (event) => {
@@ -42,6 +39,17 @@ export class Network {
       switch (msg.type) {
         case 'players':
           if (this.callbacks.playersUpdate) this.callbacks.playersUpdate(msg.players);
+          break;
+        case 'lobbyCreated':
+          this.currentCode = msg.code;
+          break;
+        case 'lobby':
+          this.currentCode = msg.code;
+          this.isHost = !!msg.youAreHost;
+          if (this.callbacks.lobby) this.callbacks.lobby(msg);
+          break;
+        case 'lobbyError':
+          if (this.callbacks.lobbyError) this.callbacks.lobbyError(msg.message || 'Erro no lobby');
           break;
         case 'gameStart':
           if (this.callbacks.gameStart) this.callbacks.gameStart(msg.data);
@@ -129,6 +137,26 @@ export class Network {
 
   onOpen(cb) {
     this.callbacks.open = cb;
+  }
+
+  onLobby(cb) {
+    this.callbacks.lobby = cb;
+  }
+
+  onLobbyError(cb) {
+    this.callbacks.lobbyError = cb;
+  }
+
+  createLobby(name) {
+    this.send('createLobby', { name });
+  }
+
+  joinLobby(code, name) {
+    this.send('joinLobby', { code, name });
+  }
+
+  startGameAsHost(map, gameMode) {
+    this.send('startGame', { map, animalCount: 20, gameMode });
   }
 
   onClose(cb) {

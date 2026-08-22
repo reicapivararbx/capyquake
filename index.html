@@ -268,6 +268,37 @@
     }
     #stats .kills { color: #ff6600; font-size: 24px; }
     #stats .remaining { color: #88cc44; }
+    #animal-count.low {
+      color: #ff4444;
+      text-shadow: 0 0 10px rgba(255, 68, 68, 0.8);
+      animation: pulseRed 0.7s infinite;
+    }
+    @keyframes pulseRed {
+      50% { opacity: 0.45; }
+    }
+    #level-display {
+      font-size: 13px;
+      font-weight: 800;
+      color: #c4b5fd;
+      text-shadow: 0 0 8px rgba(139, 92, 246, 0.6);
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+    #xp-bar-container {
+      width: 130px;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 3px;
+    }
+    #xp-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #a78bfa, #7c3aed);
+      border-radius: 999px;
+      transition: width 0.25s ease;
+    }
     #player-resources {
       position: absolute;
       bottom: 80px; left: 20px;
@@ -2107,6 +2138,8 @@
     <div id="stats">
       <div class="kills">KILLS: <span id="kill-count">0</span></div>
       <div class="remaining">ANIMAIS: <span id="animal-count">0</span></div>
+      <div id="level-display">LV <span id="level-num">1</span></div>
+      <div id="xp-bar-container" title="XP"><div id="xp-bar"></div></div>
     </div>
     <div id="player-resources">
       <span id="tokens-display">TOKENS: 0</span>
