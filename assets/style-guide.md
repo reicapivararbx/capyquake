@@ -1,178 +1,107 @@
 # Capiquake Visual Style Guide
 
-> Foundation document for all README visual assets. Every template and prompt references this guide.
+> Documento de referência da identidade visual atual do jogo. Todos os templates e prompts derivam daqui.
 
-## Color Palette
+## Identidade Geral
 
-### Backgrounds
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Background Dark | `#0D0D0D` | Menu bg top, deep backgrounds |
-| Background Body | `#1A1A1A` | Body bg, input bg |
-| Background Panel Shop | `#080808` | Shop panel bg |
-| Background Panel | `#0A0A0A` | Achievements panel bg |
-| Background Button | `#3A2A1A` | Menu/lobby buttons |
-| Background Shop Item | `#101D11` | Shop item buttons |
-| Background Brown | `#2A1A0A` | Menu bg bottom, lobby, celebration |
-| Background Card Unlocked | `#0A1A0A` | Unlocked achievement card |
+- **Estética**: dark + neon. Fundos quase pretos levemente azulados/arroxeados, acentos laranja (núcleo do jogo) e roxo (multiplayer/energia), detalhes verde-dinheiro e dourado-token.
+- **Formas**: cantos arredondados em tudo (8–18px), cards com borda discreta + glow no hover, cápsulas (border-radius 999px) para chips e botões secundários.
+- **Tipografia**: `'Segoe UI', system-ui, sans-serif` em TODAS as telas de UI. Monospace ('Courier New') apenas para números/preços/códigos.
 
-### Primary Colors
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Primary Orange | `#FF6600` | Title, borders, crosshair, menu accents |
-| Shop Orange | `#FF8C00` | Shop h2/h3 titles |
-| Gold Text | `#FFCC66` | Button text, input text, weapon display, timer |
-| Gold Dark | `#AA8844` | Subtitle, inventory display |
-| Achievement Gold | `#FFCC00` | Achievement header h2 |
+## Paleta de Cores
 
-### UI Element Colors
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Text Light | `#E0D0A0` | Body default text |
-| Text Red | `#FF4444` | Health text, victim names, boss label |
-| Text Green | `#88CC44` | Animal count |
-| Text Blue | `#66CCFF` | Armor display |
-| Text Token Yellow | `#FFDD44` | Tokens display |
-| Text Money Green | `#44FF88` | Money display |
-| Text Stamina Blue | `#44AAFF` | Stamina bar fill |
+### Fundos
+| Token | Hex | Uso |
+|-------|-----|-----|
+| Background Base | `#0b0b10` | Menu, lobby, modos (topo) |
+| Background Deep | `#12151c` / `#0c0e13` | Painéis (stats, admin) |
+| Background Card | `#17171f → #121218` | Cards (gradiente 180deg) |
+| Background Hover | `rgba(255,255,255,.05)` | Superfícies interativas |
+| Overlay | `rgba(0,0,0,.75–.85)` | Modais |
 
-### Shop Colors
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Shop Item Border | `#19A52A` | Shop item border |
-| Shop Item Text | `#BAFFBA` | Shop item text |
-| Shop Item Hover Border | `#32FF4D` | Shop item hover border |
-| Shop Convert Gold | `#FFD000` | Token convert button |
+### Laranja (identidade principal)
+| Token | Hex | Uso |
+|-------|-----|-----|
+| Orange Gradient | `#ffb347 → #ff6600` | Logo QUAKE, títulos, botão Singleplayer |
+| Orange Solid | `#ff8c00` | Bordas de hover, ícones, mira |
+| Orange Glow | `rgba(255,140,0,.2–.5)` | Box-shadows de destaque |
 
-### Bar Colors
-| Token | Gradient | Usage |
-|-------|----------|-------|
-| Health Bar | `#CC0000` → `#FF2200` | Health bar fill |
-| Stamina Bar | `#2266CC` → `#44AAFF` | Stamina bar fill |
-| Boss Bar | `#CC0000` → `#FF4400` | Boss bar fill |
+### Roxo (multiplayer/energia)
+| Token | Hex | Uso |
+|-------|-----|-----|
+| Purple Gradient | `#8b5cf6 → #6d28d9` | Botão Multiplayer, INICIAR PARTIDA |
+| Purple Light | `#a78bfa` / `#c084fc` | Códigos, textos de rebirth |
+| Purple Glow | `rgba(109,40,217,.4)` | Sombras roxas |
 
-### Achievement Progress
-| Token | Hex | Usage |
-|-------|-----|-------|
-| Progress Fill | `#44CC44` | Progress bar fill, unlocked border |
-| Progress BG | `#222222` | Progress bar background |
+### Semânticas
+| Token | Hex | Uso |
+|-------|-----|-----|
+| Money Green | `#4ade80` | Preços R$, ONLINE, READY, vitória |
+| Token Gold | `#ffd000` | Preços 🪙, RT, valores destacados |
+| Stamina Cyan | `#38bdf8` | Barra de stamina, inventário |
+| Danger Red | `#ef4444` / `#ff7b7b` | Morte, erros, highlight ≤15 animais |
+| Text Primary | `#f5f5f7` / `#e8e8ef` | Títulos e corpo |
+| Text Muted | `#9aa0b4` / `#6b6b78` | Labels, descrições |
 
-## Achievement Rarity Colors
+## Tipografia
 
-| Rarity | Background | Text | Border |
-|--------|-----------|------|--------|
-| COMMON | `#888888` | `#FFFFFF` | none |
-| UNCOMMON | `#2ECC71` | `#FFFFFF` | none |
-| RARE | `#3498DB` | `#FFFFFF` | none |
-| EPIC | `#9B59B6` | `#FFFFFF` | none |
-| LEGENDARY | `#E67E22` | `#FFFFFF` | none |
-| MYTHIC | `#E74C3C` | `#FFFFFF` | none |
-| DIVINE | `linear-gradient(135deg, #F1C40F, #E67E22)` | `#000000` | none |
-| CURSED | `#2C3E50` | `#E74C3C` | `1px solid #E74C3C` |
+| Elemento | Estilo |
+|----------|--------|
+| Título do menu | clamp(52–96px), weight 900, "CAPI" branco + "QUAKE" gradiente laranja |
+| Labels de seção | 11–13px, weight 700–800, CAIXA ALTA, letter-spacing 2–3px, `#9aa0b4` |
+| Títulos de painel | 20–26px, weight 900, gradiente no texto (laranja/roxo/azul conforme tela) |
+| Corpo/descrições | 11.5–14px, `#8b90a3` |
+| Números/preços | 'Courier New', monospace, bold |
 
-## Typography
+## Componentes
 
-### Fonts
-- **Primary (Game UI)**: `'Courier New', monospace` — used in ALL game UI screens (menu, shop, HUD, achievements, lobby)
-- **Display (Banner only)**: `Orbitron` from Google Fonts — used ONLY for the promotional banner title
-- **UI Alternative**: `Share Tech Mono` from Google Fonts — acceptable for template UI when Courier New feels too plain
-
-### Font Sizes (per-element, NOT systematic)
-| Element | Size | Weight | Color |
-|---------|------|--------|-------|
-| Menu Title | 72px | bold | `#FF6600` |
-| Banner Title | 96px | bold | `#FF6600` |
-| Menu Subtitle | 18px | normal | `#AA8844` |
-| Shop/Settings h2 | 28-36px | bold | `#FF8C00` / `#FF6600` |
-| Shop h3 | 14px | bold | `#FF8C00` |
-| Match Timer | 28px | normal | `#FFCC66` |
-| Celebration h1 | 56px | bold | `#FF6600` |
-| Achievement h2 | 22px | bold | `#FFCC00` |
-| Menu Button | 20px | normal | `#FFCC66` |
-| Input Text | 18px | normal | `#FFCC66` |
-| Health/Stamina Text | 14px | normal | `#FF4444` |
-| Stats Kills | 24px | bold | `#FF6600` |
-| Resources | 14px | normal | per-element |
-| Kill Feed | 14px | normal | `#DDD` |
-| Weapon Display | 16px | normal | `#FFCC66` |
-| Boss Label | 14px | bold | `#FF4444` |
-| Shop Item | 12px | normal | `#BAFFBA` |
-| Achievement Name | 14px | bold | `#FFFFFF` |
-| Achievement Desc | 11px | normal | `#999999` |
-| Achievement Count | 13px | normal | `#AAAAAA` |
-| Filter Button | 11px | normal | `#AAAAAA` |
-| Rarity Filter | 10px | normal | `#888888` |
-
-## Button Styles
-
-### Menu/Lobby Button
+### Botão primário (ação principal)
 ```css
-width: 300px;
-padding: 15px;
-margin: 8px;
-font-size: 20px;
-font-family: 'Courier New', monospace;
-background: #3A2A1A;
-color: #FFCC66;
-border: 2px solid #FF6600;
-text-transform: uppercase;
-letter-spacing: 2px;
+padding: 14px;
+background: linear-gradient(160deg, <cor-clara>, <cor-escura>);
+border: none; border-radius: 12px; color: #fff; font-weight: 800;
+box-shadow: 0 8px 24px rgba(<cor>, .35);
+/* hover: translateY(-2px) + shadow maior */
 ```
-Hover: `background: #FF6600; color: #1A1A1A; transform: scale(1.05);`
 
-### Shop Item Button
+### Card de item/modo
 ```css
-min-height: 42px;
-padding: 8px 12px;
-background: #101D11;
-border: 1px solid #19A52A;
-color: #BAFFBA;
-font-family: monospace;
-font-size: 12px;
+background: linear-gradient(180deg, #17171f, #121218);
+border: 1px solid #2a2a38; border-radius: 12px;
+/* hover: border-color accent + translateY(-2/-3px) + glow */
 ```
-Hover: `background: #17351B; border-color: #32FF4D;`
 
-### Achievement Filter Button
+### Chip / cápsula
 ```css
-padding: 5px 12px;
-background: #1A1A1A;
-border: 1px solid #444;
-color: #AAA;
-font-family: monospace;
-font-size: 11px;
+padding: 8px 16px; border-radius: 999px;
+background: rgba(<accent>, .09); border: 1px solid rgba(<accent>, .45);
 ```
-Active: `background: #2A2A2A; border-color: #FFCC00; color: #FFCC00;`
 
-## Panel Styles
+### Inputs
+```css
+background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.14);
+border-radius: 999px (texto) ou 10px (select); color: #f5f5f7;
+/* focus: border-color accent + box-shadow 0 0 0 3px rgba(accent,.18) */
+```
 
-### Shop Panel
-- Width: 850px (max 90vw)
-- Background: `#080808`
-- Border: `1px solid #222`
-- Padding: `25px 30px`
+## Telas — Tema por Tela
 
-### Achievements Panel
-- Width: 90vw (max 800px)
-- Height: 85vh
-- Background: `#0A0A0A`
-- Border: `1px solid #444`
+| Tela | Accent | Notas |
+|------|--------|-------|
+| Menu | Laranja | Radial glow laranja no topo, roxo discreto embaixo |
+| Modos de Jogo | Laranja | Grid auto-fill de cards com ícone/nome/desc |
+| Loja | Laranja + verde/dourado nos preços | Fullscreen, header sticky, grid auto-fill 240px |
+| Multiplayer/Lobby | Roxo | 2 colunas: sala+slots / preview da arena neon |
+| Conquistas | Âmbar `#ffcc00` | Painel modal com filtros duplos |
+| Rebirth | Violeta `#7c3aed` | Checklist de requisitos com estado done ✓ |
+| Stats & Ranking | Azul `#3b82f6` | Tabela TOP 10 + grid de números |
+| Morte | Vermelho `#dc2626` | Painel escuro avermelhado |
+| Celebração | Dourado festivo | Placar em vidro |
+| Configurações | Violeta slate | Sliders accent-color roxo |
 
-## Dimensions
+## Dimensões de Referência
 
-| Asset | Width | Height | Aspect |
-|-------|-------|--------|--------|
-| Banner | 1920px | 1080px | 16:9 |
-| Gameplay HUD | 1920px | 1080px | 16:9 |
-| Multiplayer | 1920px | 1080px | 16:9 |
-| Shop | 1600px | 900px | 16:9 |
-| Achievements | 1600px | 900px | 16:9 |
-| Menu | 1600px | 900px | 16:9 |
-
-## Spacing
-
-No strict grid system. Game uses ad-hoc spacing per element:
-- Menu buttons: 8px margin
-- Shop sections: 20px margin
-- Achievement cards: 8px margin-bottom
-- Panel padding: 16-30px
-- HUD elements: positioned absolutely with per-element offsets
+| Asset | Resolução |
+|-------|-----------|
+| Banner / Gameplay / Multiplayer | 1920×1080 |
+| Menu / Shop / Conquistas / Modos | 1600×900 |
