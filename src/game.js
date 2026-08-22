@@ -1438,6 +1438,10 @@ export class Game {
   }
 
   showDeathScreen() {
+    document.getElementById('achievements-screen').style.display = 'none';
+    const notifEl = document.getElementById('achievement-notification');
+    if (notifEl) notifEl.classList.remove('show');
+
     const el = document.getElementById('death-screen');
     if (!el) return;
     el.style.display = 'flex';
@@ -1988,16 +1992,8 @@ export class Game {
     return parts.join(' | ');
   }
 
-  showAchievementNotification(def, rewardText) {
-    const notif = document.getElementById('achievement-notification');
-    const nameEl = document.getElementById('achievement-notif-name');
-    if (!notif || !nameEl) return;
-    let text = def.name + (def.rarity ? ' [' + def.rarity + ']' : '');
-    if (rewardText) text += ' — ' + rewardText;
-    nameEl.textContent = text;
-    notif.classList.add('show');
-    clearTimeout(this._achNotifTimeout);
-    this._achNotifTimeout = setTimeout(() => notif.classList.remove('show'), 4500);
+  showAchievementNotification() {
+    // Popups de conquista desativados durante o jogo (pedido do usuario).
   }
 
   unlockAchievement(id) {
