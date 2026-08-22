@@ -5,6 +5,7 @@ import { Network } from './network.js';
 import { setupDevice } from './device.js';
 import { MobileControls } from './controls-mobile.js';
 import { invalidateKeyBindings } from './keybindings.js';
+import { Audio } from './audio.js';
 import { MAPS } from './maps.js';
 import { GAME_MODES } from './game-modes.js';
 import { WEAPONS } from './weapon.js';
@@ -551,6 +552,27 @@ document.getElementById('btn-stats-close').addEventListener('click', () => {
 document.getElementById('btn-rebirth-menu').addEventListener('click', () => {
   refreshRebirthPanel();
   document.getElementById('rebirth-screen').style.display = 'flex';
+});
+
+document.getElementById('btn-rt-exchange').addEventListener('click', function() {
+  const rt = Number.parseInt(localStorage.getItem('capiquake_rt'), 10) || 0;
+  if (rt < 1) {
+    this.textContent = 'Voce nao tem RT para trocar';
+    setTimeout(() => { this.textContent = '💱 Trocar 1 RT por 1.000.000 tokens'; }, 2000);
+    return;
+  }
+  localStorage.setItem('capiquake_rt', String(rt - 1));
+  const tokens = (Number.parseInt(localStorage.getItem('capiquake_tokens'), 10) || 0) + 1000000;
+  localStorage.setItem('capiquake_tokens', String(tokens));
+  const g = window.__game;
+  if (g) {
+    g.tokens = tokens;
+    g.saveBalance && g.saveBalance();
+    if (g.hud) g.hud.updateResources(g.tokens, g.money, g.armor);
+  }
+  refreshRebirthPanel();
+  this.textContent = '✓ +1.000.000 tokens!';
+  setTimeout(() => { this.textContent = '💱 Trocar 1 RT por 1.000.000 tokens'; }, 2000);
 });
 
 document.getElementById('btn-rebirth-close').addEventListener('click', () => {

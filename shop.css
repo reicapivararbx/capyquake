@@ -88,6 +88,26 @@
   border: 1px solid rgba(74, 222, 128, 0.45);
 }
 
+.shop-convert-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding: 0 20px;
+}
+.shop-convert-row .shop-convert { margin: 0; }
+.shop-convert.token-to-money {
+  background: rgba(167, 139, 250, 0.08);
+  border-color: rgba(167, 139, 250, 0.5);
+  color: #a78bfa;
+}
+.shop-convert.token-to-money:hover {
+  background: #a78bfa;
+  color: #14101f;
+  box-shadow: 0 0 18px rgba(167, 139, 250, 0.35);
+}
+
 .shop-convert {
   display: block;
   margin: 16px auto 4px;
