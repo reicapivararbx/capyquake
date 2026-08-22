@@ -266,6 +266,27 @@ export class Menu {
       this.updateShopBalance();
     });
 
+    document.getElementById('btn-convert-rt').addEventListener('click', () => {
+      const rt = Number.parseInt(localStorage.getItem('capiquake_rt'), 10) || 0;
+      if (rt < 1) {
+        this.showConvertError('Você não tem RT (Rebirth Token). Faça um rebirth para conseguir.');
+        return;
+      }
+      localStorage.setItem('capiquake_rt', String(rt - 1));
+      this.readBalances();
+      const newTokens = (this.tokens || 0) + 1000000;
+      this.tokens = newTokens;
+      localStorage.setItem('capiquake_tokens', String(newTokens));
+      const g = window.__game;
+      if (g) {
+        g.tokens = newTokens;
+        if (g.saveBalance) g.saveBalance();
+        if (g.hud) g.hud.updateResources(g.tokens, g.money, g.armor);
+      }
+      this.clearConvertError();
+      this.updateShopBalance();
+    });
+
 
     document.getElementById('btn-start-game-shop').addEventListener('click', () => {
       this.shopPurchases = this.buildPurchases();

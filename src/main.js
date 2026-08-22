@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Menu } from './menu.js';
-import { Game } from './game.js';
+import { Game, rebirthMultiplier } from './game.js';
 import { Network } from './network.js';
 import { setupDevice } from './device.js';
 import { MobileControls } from './controls-mobile.js';
@@ -436,12 +436,8 @@ document.addEventListener('keydown', (e) => {
 });
 
 function rbMultipliers(level) {
-  return {
-    money: 'x' + (1 + level),
-    tokens: 'x' + (1 + level * 0.5),
-    xp: 'x' + (1 + level),
-    hp: 'x' + Math.pow(2, level)
-  };
+  const m = 'x' + rebirthMultiplier(level).toLocaleString('pt-BR');
+  return { money: m, tokens: m, xp: m, hp: m, dano: m, balas: '+' + (500 * level).toLocaleString('pt-BR') + '/recarga' };
 }
 
 function readRbBalances() {
@@ -461,6 +457,8 @@ function refreshRebirthPanel() {
   document.getElementById('rb-mult-tokens').textContent = mult.tokens;
   document.getElementById('rb-mult-xp').textContent = mult.xp;
   document.getElementById('rb-mult-hp').textContent = mult.hp;
+  document.getElementById('rb-mult-dano').textContent = mult.dano;
+  document.getElementById('rb-mult-balas').textContent = mult.balas;
 
   const bal = readRbBalances();
   const bestLevel = Number.parseInt(localStorage.getItem('capiquake_best_level'), 10) || 1;
@@ -1168,8 +1166,8 @@ function showAchievementsScreen() {
 
   const rarityFilters = document.getElementById('achievements-rarity-filters');
   if (rarityFilters && !rarityFilters.hasChildNodes()) {
-    const rarities = ['all', 'COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY', 'MYTHIC', 'DIVINE', 'CURSED'];
-    const rarityLabels = { all: 'TODAS', COMMON: 'Comum', UNCOMMON: 'Incomum', RARE: 'Raro', EPIC: 'Épico', LEGENDARY: 'Lendário', MYTHIC: 'Mítico', DIVINE: 'Divino', CURSED: 'Amaldiçoado' };
+    const rarities = ['all', 'COMMON', 'UNCOMMON', 'RARE', 'EPIC', 'LEGENDARY', 'MYTHIC', 'DIVINE', 'CURSED', '???'];
+    const rarityLabels = { all: 'TODAS', COMMON: 'Comum', UNCOMMON: 'Incomum', RARE: 'Raro', EPIC: 'Épico', LEGENDARY: 'Lendário', MYTHIC: 'Mítico', DIVINE: 'Divino', CURSED: 'Amaldiçoado', '???': '???' };
     rarities.forEach(r => {
       const btn = document.createElement('button');
       btn.textContent = rarityLabels[r] || r;

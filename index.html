@@ -1502,6 +1502,22 @@
     .rarity-mythic { background: rgba(239,68,68,.12); color: #f87171; border: 1px solid rgba(239,68,68,.5); }
     .rarity-divine { background: linear-gradient(135deg, #ffd000, #ffaa00); color: #1a1200; border: 1px solid #ffe27a; box-shadow: 0 0 10px rgba(255,208,0,.35); }
     .rarity-cursed { background: #12060c; color: #ef4444; border: 1px dashed #ef4444; }
+    .rarity-\?\?\? {
+      background: linear-gradient(100deg, #ff004c, #ff8c00, #ffe600, #38ef7d, #38bdf8, #a78bfa, #ff004c);
+      background-size: 300% 100%;
+      color: #0b0b10;
+      border: 1px solid rgba(255,255,255,.6);
+      animation: raritySecret 3s linear infinite;
+      text-shadow: 0 0 4px rgba(255,255,255,.55);
+    }
+    @keyframes raritySecret { 0% { background-position: 0% 50%; } 100% { background-position: 300% 50%; } }
+    .achievement-card:has(.rarity-\?\?\?):not(.unlocked) { opacity: 1; }
+    .achievement-card:has(.rarity-\?\?\?) {
+      border-left-color: transparent;
+      background-image: linear-gradient(#141218, #101016), linear-gradient(100deg, #ff004c, #ff8c00, #38ef7d, #38bdf8, #a78bfa);
+      background-origin: border-box;
+      background-clip: padding-box, border-box;
+    }
 
     .achievements-close {
       padding: 14px;
@@ -1577,6 +1593,452 @@
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
+    }
+
+    /* ===== HOTBAR (embaixo, centrada) ===== */
+    #hotbar {
+      position: fixed;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 70;
+      pointer-events: none;
+      max-width: 96vw;
+    }
+    .hotbar-slot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      min-width: 62px;
+      padding: 6px 10px;
+      box-sizing: border-box;
+      background: rgba(10,10,14,.65);
+      border: 1.5px solid rgba(255,255,255,.22);
+      border-radius: 10px;
+      backdrop-filter: blur(4px);
+      text-align: center;
+    }
+    .hotbar-slot .hs-num { font-size: 9px; font-weight: 800; letter-spacing: 1px; color: #9aa0b4; }
+    .hotbar-slot .hs-name {
+      max-width: 84px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: 'Courier New', monospace;
+      font-size: 10.5px;
+      font-weight: bold;
+      color: #e8e8ef;
+    }
+    .hotbar-slot.active-slot {
+      border-color: #ffd000;
+      background: rgba(50,40,8,.8);
+      box-shadow: 0 0 14px rgba(255,208,0,.35);
+    }
+    body[data-device="mobile"] #hotbar { bottom: 118px; }
+    body[data-device="mobile"] .hotbar-slot { min-width: 52px; padding: 4px 7px; }
+    body[data-device="mobile"] .hotbar-slot .hs-name { max-width: 64px; }
+
+    /* ===== TELA DE MORTE ===== */
+    #death-screen {
+      position: fixed;
+      inset: 0;
+      display: none; /* JS alterna para flex */
+      align-items: center;
+      justify-content: center;
+      background: rgba(5,3,4,.88);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+      color: #f5f5f7;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .death-overlay {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .death-panel { padding: 34px 44px; text-align: center; min-width: 320px; max-width: 92vw; }
+    .death-panel h2 { margin: 0 0 14px; font-size: 30px; letter-spacing: 3px; }
+    #revive-count, #revive-price {
+      margin: 4px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      color: #9aa0b4;
+    }
+    .death-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 18px;
+    }
+    .death-buttons button {
+      padding: 12px 24px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 10px;
+      color: #f5f5f7;
+      font-family: inherit;
+      font-size: 13.5px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      cursor: pointer;
+      transition: .15s;
+    }
+    .death-buttons button:hover:not(:disabled) {
+      border-color: rgba(239,68,68,.65);
+      background: rgba(239,68,68,.08);
+      transform: translateY(-2px);
+    }
+    .death-buttons button:disabled { opacity: .4; cursor: default; }
+    #btn-revive:not(:disabled) {
+      color: #4ade80;
+      border-color: rgba(74,222,128,.5);
+      background: rgba(74,222,128,.08);
+    }
+    #btn-revive:hover:not(:disabled) {
+      border-color: #4ade80;
+      box-shadow: 0 6px 20px rgba(74,222,128,.25);
+    }
+
+    /* ===== CONFIGURAÇÕES ===== */
+    #settings-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 300;
+      background: rgba(4,4,8,.85);
+      backdrop-filter: blur(6px);
+    }
+    .settings-overlay {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .settings-panel {
+      width: min(560px, 94vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 28px 30px;
+      box-sizing: border-box;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(139,92,246,.4) transparent;
+    }
+    .settings-panel h2 {
+      margin: 0 0 18px;
+      text-align: center;
+      font-size: 24px;
+      letter-spacing: 3px;
+    }
+    .settings-section {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .settings-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+    .settings-section h3 {
+      margin: 0 0 12px;
+      font-size: 11.5px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      color: #a78bfa;
+    }
+    .key-bindings {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 20px;
+    }
+    .key-binding-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+    .key-binding-row label { font-size: 12.5px; color: #9aa0b4; }
+    .key-binding-row input {
+      width: 78px;
+      padding: 7px 10px;
+      box-sizing: border-box;
+      text-align: center;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 8px;
+      color: #c4b5fd;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      font-weight: bold;
+      outline: none;
+      transition: .15s;
+    }
+    .key-binding-row input:focus,
+    .set-row select:focus,
+    .set-row input[type="range"]:focus {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 0 3px rgba(139,92,246,.18);
+    }
+    .settings-btn {
+      width: 100%;
+      padding: 11px 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 999px;
+      color: #e8e8ef;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .15s;
+      box-sizing: border-box;
+    }
+    .settings-btn:hover {
+      border-color: rgba(139,92,246,.6);
+      color: #c4b5fd;
+      transform: translateY(-1px);
+    }
+    .settings-btn.quit-btn { color: #ff7b7b; border-color: rgba(239,68,68,.35); }
+    .settings-btn.quit-btn:hover { border-color: rgba(239,68,68,.7); color: #ff7b7b; background: rgba(239,68,68,.07); }
+    body[data-device="mobile"] .key-bindings { grid-template-columns: 1fr; }
+    body[data-device="mobile"] .settings-panel { padding: 20px 16px; }
+
+    /* ===== KEY HINTS ===== */
+    #key-hints {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: none; /* JS exibe quando relevante */
+      flex-direction: column;
+      gap: 4px;
+      z-index: 45;
+      pointer-events: none;
+    }
+    .key-hint {
+      padding: 3px 10px;
+      background: rgba(8,8,12,.6);
+      border: 1px solid rgba(255,204,0,.35);
+      border-radius: 6px;
+      color: #ffd83d;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      text-shadow: 0 1px 2px rgba(0,0,0,.8);
+      backdrop-filter: blur(3px);
+    }
+
+    /* ===== CHAT (multiplayer) ===== */
+    #chat {
+      position: absolute;
+      bottom: 90px;
+      left: 20px;
+      width: 300px;
+      max-width: 70vw;
+      z-index: 70;
+      pointer-events: none;
+    }
+    #chat-messages {
+      max-height: 150px;
+      overflow-y: auto;
+      margin-bottom: 4px;
+      padding: 8px;
+      background: rgba(8,8,12,.55);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 10px;
+      backdrop-filter: blur(4px);
+      font-family: 'Courier New', monospace;
+      font-size: 12.5px;
+    }
+    #chat-messages .chat-entry { margin-bottom: 4px; padding: 2px 4px; }
+    #chat-messages .chat-entry .player { color: #ffd000; font-weight: bold; }
+    #chat-messages .chat-entry .message-text { color: #d5d7e2; }
+    #chat-input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 14px;
+      background: rgba(8,8,12,.7);
+      color: #f5f5f7;
+      border: 1px solid rgba(255,255,255,.18);
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      pointer-events: auto;
+    }
+    #chat-input:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(139,92,246,.18); }
+
+    /* ===== CROSSHAIR DOT ===== */
+    #crosshair-dot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 4px;
+      height: 4px;
+      background: #ff8c00;
+      border-radius: 50%;
+      z-index: 10;
+    }
+
+    /* ===== TUTORIAL ===== */
+    #tutorial {
+      position: fixed;
+      inset: 0;
+      z-index: 1500;
+    }
+    .tutorial-overlay {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(4,4,8,.85);
+      backdrop-filter: blur(6px);
+    }
+    .tutorial-panel {
+      width: min(520px, 92vw);
+      padding: 32px 34px;
+      box-sizing: border-box;
+      text-align: center;
+      background: linear-gradient(180deg, #17171f, #101017);
+      border: 1px solid rgba(255,204,0,.35);
+      border-radius: 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.65), 0 0 40px rgba(255,204,0,.08);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      animation: mpPanelIn .35s cubic-bezier(.18,.89,.32,1.28);
+    }
+    .tutorial-panel h2 {
+      margin: 0 0 16px;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      background: linear-gradient(95deg, #ffe08a, #ffcc00);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #tutorial-text {
+      min-height: 48px;
+      margin-bottom: 24px;
+      font-size: 15px;
+      line-height: 1.5;
+      color: #cfcfd8;
+    }
+    .tutorial-buttons {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+    .tutorial-buttons button {
+      padding: 11px 26px;
+      border-radius: 999px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: .15s;
+      background: linear-gradient(160deg, #ffd000, #f59e0b);
+      border: none;
+      color: #1a1200;
+      box-shadow: 0 6px 20px rgba(245,158,11,.35);
+    }
+    .tutorial-buttons button#btn-skip-tutorial {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.18);
+      color: #9aa0b4;
+      box-shadow: none;
+    }
+    .tutorial-buttons button:hover { transform: translateY(-2px); }
+
+    /* ===== PAINEL ADMIN (modo teste) ===== */
+    #admin-panel {
+      position: fixed;
+      inset: 0;
+      z-index: 1600;
+      background: rgba(4,4,8,.85);
+      backdrop-filter: blur(6px);
+      color: #f5f5f7;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .admin-overlay {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .admin-panel-content {
+      width: min(480px, 94vw);
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 26px 28px;
+      box-sizing: border-box;
+      background: linear-gradient(180deg, #17171f, #101017);
+      border: 1px solid rgba(139,92,246,.4);
+      border-radius: 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.65);
+    }
+    .admin-panel-content h2 {
+      margin: 0 0 16px;
+      text-align: center;
+      font-size: 18px;
+      letter-spacing: 2.5px;
+      background: linear-gradient(95deg, #c4b5fd, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .admin-section {
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255,255,255,.07);
+    }
+    .admin-section:last-of-type { margin-bottom: 12px; }
+    .admin-section h3 { margin: 0 0 10px; font-size: 12.5px; letter-spacing: 1.5px; color: #a78bfa; }
+    .admin-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 130px;
+      overflow-y: auto;
+      margin: 8px 0 10px;
+    }
+    .admin-btn {
+      padding: 9px 18px;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 999px;
+      color: #e8e8ef;
+      font-family: inherit;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: .15s;
+    }
+    .admin-btn:hover { border-color: rgba(139,92,246,.6); color: #c4b5fd; transform: translateY(-1px); }
+    .admin-btn.toggle-btn.on { color: #4ade80; border-color: rgba(74,222,128,.55); }
+    .admin-btn.close-btn { width: 100%; color: #ff7b7b; border-color: rgba(239,68,68,.35); }
+
+    /* ===== AJUSTES FINOS LOJA/LOBBY/REBIRTH ===== */
+    .lobby-left { min-width: 0; }
+    .lobby-grid-label {
+      margin: 14px 0 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: #9aa0b4;
+    }
+    .ll-code-info { flex: 1; min-width: 0; }
+    .rb-req-label { color: #9aa0b4; font-size: 13px; }
+    .shop-convert.rt-exchange {
+      border-color: rgba(255,208,0,.45);
+      color: #ffd000;
+    }
+    .shop-convert.rt-exchange:hover {
+      border-color: #ffd000;
+      box-shadow: 0 4px 16px rgba(255,208,0,.2);
     }
 
     /* ===== REBIRTH (restaurado) ===== */
@@ -1750,6 +2212,7 @@
     <div class="shop-convert-row">
       <button id="btn-convert-tokens" class="shop-convert">🔄 Trocar R$ 1.000 por 1 token</button>
       <button id="btn-convert-token-money" class="shop-convert token-to-money">🔄 Trocar 1 token por R$ 1.000</button>
+      <button id="btn-convert-rt" class="shop-convert rt-exchange">💱 Trocar 1 RT por 1.000.000 tokens</button>
     </div>
     <div id="shop-convert-error" class="shop-convert-error" hidden></div>
     <div id="shop-sections"></div>
@@ -1952,6 +2415,8 @@
         <div>🪙 Tokens: <span id="rb-mult-tokens">x1</span></div>
         <div>⭐ XP: <span id="rb-mult-xp">x1</span></div>
         <div>❤️ Vida Máx: <span id="rb-mult-hp">x1</span></div>
+        <div>🔥 Dano: <span id="rb-mult-dano">x1</span></div>
+        <div>🎯 Balas Extras: <span id="rb-mult-balas">+0/recarga</span></div>
       </div>
       <h3>REQUISITOS (por partida)</h3>
       <div class="rb-reqs">

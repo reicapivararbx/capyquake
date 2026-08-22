@@ -237,15 +237,21 @@ export class HUD {
     if (!bar) {
       bar = document.createElement('div');
       bar.id = 'hotbar';
-      bar.style.cssText = 'position:fixed;bottom:10px;left:50%;transform:translateX(-50%);display:flex;gap:6px;z-index:40;font-family:sans-serif;';
       document.body.appendChild(bar);
     }
     bar.innerHTML = '';
     for (let i = 0; i < inventory.length; i++) {
       const def = WEAPONS[inventory[i]];
       const slot = document.createElement('div');
-      slot.style.cssText = 'min-width:48px;padding:4px 8px;border:2px solid ' + (i === currentIndex ? '#ffdd00' : '#555') + ';background:rgba(0,0,0,0.6);color:#fff;border-radius:4px;text-align:center;font-size:11px;';
-      slot.innerHTML = '<div>' + (i + 1) + '</div><div>' + (def ? (def.name || inventory[i]) : inventory[i]) + '</div>';
+      slot.className = 'hotbar-slot' + (i === currentIndex ? ' active-slot' : '');
+      const num = document.createElement('span');
+      num.className = 'hs-num';
+      num.textContent = i + 1;
+      const name = document.createElement('span');
+      name.className = 'hs-name';
+      name.textContent = def ? (def.name || inventory[i]) : inventory[i];
+      slot.appendChild(num);
+      slot.appendChild(name);
       bar.appendChild(slot);
     }
   }

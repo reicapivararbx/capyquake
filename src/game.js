@@ -19,6 +19,12 @@ window.__ACHIEVEMENTS_DATA = ACHIEVEMENTS;
 
 const MATCH_DURATION = 600;
 
+// Cada rebirth eleva o multiplicador ao quadrado: x1 -> x2 -> x4 -> x16 -> x256...
+export function rebirthMultiplier(level) {
+  if (!Number.isFinite(level) || level < 1) return 1;
+  return Math.pow(2, Math.pow(2, level - 1));
+}
+
 export class Game {
   static readBalance(key) {
     const raw = localStorage.getItem(key);
@@ -164,6 +170,7 @@ export class Game {
       if (this.hud) this.hud.showMessage(thirdPerson ? 'CÂMERA: 3ª PESSOA' : 'CÂMERA: 1ª PESSOA');
     };
     this.weapon = new Weapon(this.scene, this.camera, this.arena);
+    this.weapon.extraAmmo = () => this.getExtraAmmo();
     this.hud = new HUD();
 
     this.gameStartTime = Date.now();
@@ -271,7 +278,7 @@ export class Game {
       this.playerMaxHealth += 100;
     }
     if (this.rebirthLevel >= 1) {
-      this.playerMaxHealth *= Math.pow(2, this.rebirthLevel);
+      this.playerMaxHealth *= rebirthMultiplier(this.rebirthLevel);
     }
     this.playerHealth = this.playerMaxHealth;
 
@@ -1131,7 +1138,7 @@ export class Game {
       this.weapon.updateInventoryDisplay();
     }
     if (hit) {
-      const damage = this.weapon.getDamage();
+      const damage = this.weapon.getDamage() * this.getDamageMultiplier();
       this.registerDamage(hit, damage);
       const killed = hit.takeDamage(damage);
       if (this.enchantIce && !killed && hit.alive) this.applyIceSlow(hit);
@@ -1157,7 +1164,7 @@ export class Game {
     while (this.weapon.pendingHits.length > 0) {
       const entry = this.weapon.pendingHits.shift();
       const hit = entry.target;
-      const damage = entry.damage;
+      const damage = entry.damage * this.getDamageMultiplier();
       if (!hit.alive || !this.isHostileTarget(hit)) continue;
       this.registerDamage(hit, damage);
       const killed = hit.takeDamage(damage);
@@ -1209,15 +1216,23 @@ export class Game {
   }
 
   getMoneyMultiplier() {
-    return 1 + this.rebirthLevel;
+    return rebirthMultiplier(this.rebirthLevel);
   }
 
   getTokenMultiplier() {
-    return 1 + (this.rebirthLevel * 0.5);
+    return rebirthMultiplier(this.rebirthLevel);
   }
 
   getXpMultiplier() {
-    return 1 + this.rebirthLevel;
+    return rebirthMultiplier(this.rebirthLevel);
+  }
+
+  getDamageMultiplier() {
+    return rebirthMultiplier(this.rebirthLevel);
+  }
+
+  getExtraAmmo() {
+    return 500 * this.rebirthLevel;
   }
 
   saveBalance() {
@@ -1375,7 +1390,7 @@ export class Game {
         const tp = target.mesh.position;
         const dist = Math.sqrt((tp.x - pos.x) * (tp.x - pos.x) + (tp.z - pos.z) * (tp.z - pos.z));
         if (dist <= 10) {
-          const damage = 200;
+          const damage = 200 * this.getDamageMultiplier();
           this.registerDamage(target, damage);
           const killed = target.takeDamage(damage);
           if (killed) {
@@ -1423,7 +1438,7 @@ export class Game {
       const tp = target.mesh.position;
       const dist = Math.sqrt((tp.x - pos.x) * (tp.x - pos.x) + (tp.z - pos.z) * (tp.z - pos.z));
       if (dist <= 8) {
-        const damage = 5;
+        const damage = 5 * this.getDamageMultiplier();
         this.registerDamage(target, damage);
         const killed = target.takeDamage(damage);
         target.fleeTimer = 10;
@@ -1999,10 +2014,10 @@ export class Game {
       this.money = 0;
       localStorage.setItem('capiquake_tokens', '0');
       localStorage.setItem('capiquake_money', '0');
-      this.playerMaxHealth = 200 * Math.pow(2, this.rebirthLevel);
+      this.playerMaxHealth = 200 * rebirthMultiplier(this.rebirthLevel);
       this.stats.rebirths = this.rebirthLevel;
       this.checkAchievements();
-      this.hud.showMessage(`REBIRTH! Dinheiro x${this.getMoneyMultiplier()}, Tokens x${this.getTokenMultiplier()}, XP x${this.getXpMultiplier()}, HP x${Math.pow(2, this.rebirthLevel)}!`);
+      this.hud.showMessage(`REBIRTH! Tudo x${this.getMoneyMultiplier()} (dinheiro/tokens/XP/HP/dano) · +${this.getExtraAmmo()} balas por recarga!`);
     }
   }
 
@@ -2052,7 +2067,7 @@ export class Game {
     if (!def) return;
     this.achievements.add(id);
     localStorage.setItem('capiquake_achievements', JSON.stringify([...this.achievements]));
-    if (id === 'revive_inf_5') {
+    if (id === 'revive_inf_5' || id === 'the_end_of_all_things') {
       this.reviveCount = Infinity;
       localStorage.setItem('capiquake_revive_infinity', '1');
       this.hud.showMessage('REVIVE INFINITO DESBLOQUEADO!');
@@ -2071,6 +2086,9 @@ export class Game {
       if (this.achievements.has(def.id)) continue;
 
       if (def.type === 'instant' && typeof def.test === 'function') {
+        if (typeof def.progress === 'function') {
+          this.achievementProgress[def.id] = Math.min(def.progress(this), def.target || Infinity);
+        }
         if (def.test(this)) {
           this.unlockAchievement(def.id);
         }
@@ -2309,7 +2327,7 @@ endGame() {
       const tp = target.mesh.position;
       const dist = Math.sqrt((tp.x - this.fartCloud.position.x) * (tp.x - this.fartCloud.position.x) + (tp.z - this.fartCloud.position.z) * (tp.z - this.fartCloud.position.z));
       if (dist < 3.5) {
-        const damage = 1 * delta * 5;
+        const damage = 1 * delta * 5 * this.getDamageMultiplier();
         this.registerDamage(target, damage);
         const killed = target.takeDamage(damage);
         if (killed) {

@@ -25,7 +25,7 @@ Sobreviva. Evolua. Domine.
 
 - **⚔️ Combate em Arena** — 75 armas corpo a corpo e à distância com modelos 3D próprios
 - **🛒 Loja Completa** — 452 itens: armas, munições, armaduras, boosts, habilidades, encantamentos, skins e revives
-- **🏆 230 Conquistas** — 8 raridades de Common a Cursed, com recompensas em dinheiro e tokens
+- **🏆 236 Conquistas** — 9 raridades, de Common à secreta **???**, com recompensas em dinheiro e tokens
 - **🎮 33 Modos de Jogo** — Chaos, Reverse, One Shot, Boss Rush, Titan, Fantasma e muito mais
 - **👥 Multiplayer com Lobby** — Crie um lobby com código de 4 letras ou entre no de um amigo · só o host escolhe mapa e inicia
 - **🗺️ 30 Mapas** — Floresta Encantada até Planeta Alienígena, cada um com boss final
@@ -180,7 +180,7 @@ capyquake/
 │   ├── menu.js              # Menu, loja, lobby
 │   ├── network.js           # Cliente WebSocket
 │   ├── keybindings.js       # Teclas customizáveis
-│   ├── achievements-data.js # 230 conquistas + recompensas
+│   ├── achievements-data.js # 236 conquistas + recompensas
 │   ├── shop-data.js         # Catálogo da loja (452 itens)
 │   ├── device.js            # Detecção PC/mobile
 │   └── controls-mobile.js   # Controles touch
@@ -192,7 +192,7 @@ capyquake/
 
 ## 🏆 Conquistas
 
-**230 conquistas** em 8 raridades — cada uma paga recompensa:
+**236 conquistas** em 9 raridades — cada uma paga recompensa:
 
 | Raridade | Recompensa | Exemplo |
 |----------|-----------|---------|
@@ -204,8 +204,11 @@ capyquake/
 | **MYTHIC** | R$ 15.000 + 8 tokens | Lenda das Armas |
 | **DIVINE** | R$ 40.000 + 15 tokens | Conquista Divina |
 | **CURSED** | R$ 1.000 + 3 tokens | Masoquista |
+| **???** | 🔄 Revive Infinity | *???* |
 
-Destaques: conquistas para cada um dos 33 modos, a cadeia **"Além da Vida"** (5 etapas que desbloqueia o Revive Infinity) e **"Colecionador de Modos"** (jogue todos os modos).
+Destaque: a conquista secreta **"???"**, a mais difícil de todas — um progresso em **3 partes** (com barra de progresso) que exige bilhões de dano, dezenas de milhares de abates, 20 renascimentos e a MINIGUN. Completar as 3 partes desbloqueia o **Revive Infinity** de vez.
+
+Destaques: conquistas para cada um dos 33 modos, a cadeia **"Além da Vida"** (5 etapas que também leva ao Revive Infinity) e **"Colecionador de Modos"** (jogue todos os modos).
 
 ---
 
@@ -214,8 +217,8 @@ Destaques: conquistas para cada um dos 33 modos, a cadeia **"Além da Vida"** (5
 Chegou no nível 100 com 10.000 tokens e R$ 1.000.000? Faça **Rebirth** pelo menu:
 
 - Zera nível, XP, dinheiro e tokens
-- Ganha **+1 RT** (Rebirth Token · 1 RT = 1.000.000 tokens)
-- Bônus permanentes que acumulam: dinheiro ×(1+n), tokens ×(1+0,5n), XP ×(1+n), HP ×2ⁿ
+- Ganha **+1 RT** (Rebirth Token · troque por 1.000.000 tokens no painel de rebirth ou na loja)
+- **Bônus exponenciais**: a cada rebirth, o multiplicador de dinheiro, tokens, XP e HP é elevado ao quadrado — ×2 → ×4 → ×16 → ×256 → ×65.536...
 
 ---
 

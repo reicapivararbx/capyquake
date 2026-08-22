@@ -206,6 +206,33 @@ export const ACHIEVEMENTS = [
   { id: 'kills_7500', name: 'Apocalipse', description: 'Elimine 7.500 inimigos.', rarity: 'DIVINE', type: 'cumulative', stat: 'kills', target: 7500 },
   { id: 'wave_400', name: 'Quatrocentas Ondas', description: 'Sobreviva ate a Wave 400.', rarity: 'DIVINE', type: 'cumulative', stat: 'waves', target: 400 },
 
+  // Categoria secreta ??? — a mais rara e dificil de todas.
+  // Progresso em 3 partes (barra X/3). Recompensa final: REVIVE INFINITO.
+  {
+    id: 'the_end_of_all_things',
+    name: '???',
+    description: 'Ninguem sabe ao certo. Dizem que envolve 1 bilhão de dano, 50.000 abates, 20 renascimentos... e a MINIGUN. Recompensa: REVIVE INFINITO.',
+    rarity: '???',
+    type: 'instant',
+    target: 3,
+    test: g => {
+      if (!g || !g.stats) return false;
+      const hasMinigun = !!(g.weapon && Array.isArray(g.weapon.inventory) && g.weapon.inventory.includes('minigun'));
+      return g.getStatValue('damageDealt') >= 1000000000 &&
+        g.getStatValue('kills') >= 50000 &&
+        g.getStatValue('revivesUsed') >= 20 &&
+        hasMinigun;
+    },
+    progress: g => {
+      let done = 0;
+      if (g.getStatValue('damageDealt') >= 1000000000) done++;
+      if (g.getStatValue('kills') >= 50000) done++;
+      const hasMinigun = !!(g.weapon && Array.isArray(g.weapon.inventory) && g.weapon.inventory.includes('minigun'));
+      if (g.getStatValue('revivesUsed') >= 20 && hasMinigun) done++;
+      return done;
+    },
+  },
+
   { id: 'death_10', name: 'Masoquista', description: 'Morra 10 vezes.', rarity: 'CURSED', type: 'cumulative', stat: 'deaths', target: 10 },
   { id: 'death_25', name: 'Errado', description: 'Morra 25 vezes.', rarity: 'CURSED', type: 'cumulative', stat: 'deaths', target: 25 },
   { id: 'death_50', name: 'Fracassado', description: 'Morra 50 vezes.', rarity: 'CURSED', type: 'cumulative', stat: 'deaths', target: 50 },
