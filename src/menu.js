@@ -189,6 +189,20 @@ export class Menu {
       sec.appendChild(grid);
       container.appendChild(sec);
     }
+    document.getElementById('btn-convert-token-money').addEventListener('click', () => {
+      this.readBalances();
+      if (this.tokens < 1) {
+        this.showConvertError('Você precisa de pelo menos 1 token para trocar.');
+        return;
+      }
+      this.tokens -= 1;
+      this.money += 1000;
+      localStorage.setItem('capiquake_tokens', String(this.tokens));
+      localStorage.setItem('capiquake_money', String(this.money));
+      this.clearConvertError();
+      this.updateShopBalance();
+    });
+
     this.shopEl.querySelectorAll('.shop-item').forEach(btn => {
       btn.addEventListener('click', () => this.handleShopItemClick(btn));
     });
