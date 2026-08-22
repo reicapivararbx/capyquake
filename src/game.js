@@ -1992,8 +1992,16 @@ export class Game {
     return parts.join(' | ');
   }
 
-  showAchievementNotification() {
-    // Popups de conquista desativados durante o jogo (pedido do usuario).
+  showAchievementNotification(def, rewardText) {
+    const notif = document.getElementById('achievement-notification');
+    const nameEl = document.getElementById('achievement-notif-name');
+    if (!notif || !nameEl) return;
+    let text = def.name + (def.rarity ? ' [' + def.rarity + ']' : '');
+    if (rewardText) text += ' — ' + rewardText;
+    nameEl.textContent = text;
+    notif.classList.add('show');
+    clearTimeout(this._achNotifTimeout);
+    this._achNotifTimeout = setTimeout(() => notif.classList.remove('show'), 4500);
   }
 
   unlockAchievement(id) {
