@@ -534,6 +534,160 @@
       background: #ff6600;
       color: #1a1a1a;
     }
+    /* ===== MODE SELECT ===== */
+    #mode-select {
+      position: fixed;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(ellipse 70% 45% at 50% -5%, rgba(255, 122, 0, 0.14), transparent 60%),
+        linear-gradient(180deg, #0b0b10 0%, #12100e 60%, #1a120a 100%);
+      z-index: 100;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .modes-wrap { width: min(980px, 94vw); max-height: 88vh; overflow-y: auto; padding: 10px; box-sizing: border-box; }
+    .modes-wrap h2 {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      margin: 6px 0 20px;
+      background: linear-gradient(95deg, #ffb347, #ff6600);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .modes-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+    }
+    .mode-card {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px;
+      background: linear-gradient(180deg, #17171f, #121218);
+      border: 1px solid #2a2a38;
+      border-radius: 14px;
+      color: #e8e8ef;
+      font-family: inherit;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+    }
+    .mode-card:hover {
+      transform: translateY(-3px);
+      border-color: #ff8c00;
+      box-shadow: 0 8px 24px rgba(255, 140, 0, 0.22);
+    }
+    .mode-card .mc-icon { font-size: 26px; }
+    .mode-card .mc-name { font-size: 15px; font-weight: 800; }
+    .mode-card .mc-desc { font-size: 11.5px; color: #8b90a3; line-height: 1.35; }
+
+    /* ===== MP SETUP ===== */
+    #mp-setup {
+      position: fixed;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background:
+        radial-gradient(ellipse 70% 45% at 50% -5%, rgba(109, 40, 217, 0.16), transparent 60%),
+        linear-gradient(180deg, #0b0b10 0%, #100d14 60%, #17101f 100%);
+      z-index: 100;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .mp-primary {
+      padding: 14px;
+      background: linear-gradient(160deg, #8b5cf6, #6d28d9);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(109, 40, 217, 0.4);
+      transition: transform 0.15s ease;
+    }
+    .mp-primary:hover { transform: translateY(-2px); }
+    .mp-divider {
+      text-align: center;
+      font-size: 11.5px;
+      color: #6b6b78;
+      margin: 4px 0;
+    }
+    .mp-join-row { display: flex; gap: 8px; }
+    .mp-join-row input {
+      flex: 1;
+      text-transform: uppercase;
+      letter-spacing: 6px;
+      font-weight: 800;
+    }
+    .mp-join-row button {
+      padding: 12px 22px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 999px;
+      color: #e8e8ef;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .mp-join-row button:hover { border-color: #a78bfa; color: #a78bfa; }
+    .mp-error {
+      color: #ff7b7b;
+      font-size: 12.5px;
+      background: rgba(255, 60, 60, 0.1);
+      border: 1px solid rgba(255, 100, 100, 0.4);
+      border-radius: 8px;
+      padding: 8px 12px;
+      text-align: center;
+    }
+    .mp-code-chip {
+      background: rgba(167, 139, 250, 0.1);
+      border: 1px solid rgba(167, 139, 250, 0.45);
+      border-radius: 999px;
+      color: #cfcfd8;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      padding: 8px 16px;
+      cursor: pointer;
+      transition: 0.15s;
+    }
+    .mp-code-chip b { color: #a78bfa; letter-spacing: 3px; }
+    .mp-code-chip:hover { background: rgba(167, 139, 250, 0.22); }
+    #host-map-select {
+      width: 100%;
+      padding: 11px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 10px;
+      color: #f5f5f7;
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+      margin-bottom: 10px;
+    }
+    #host-map-select option { background: #16121f; }
+    #host-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: rgba(124, 58, 237, 0.07);
+      border: 1px solid rgba(124, 58, 237, 0.35);
+      border-radius: 12px;
+      padding: 14px;
+    }
+
     /* ===== LOBBY MULTIPLAYER ===== */
     #lobby {
       position: fixed;
@@ -1721,6 +1875,136 @@
       }
     }
 
+    /* ===== PASSE COLORIDO DAS UIS ===== */
+    #map-vote {
+      background:
+        radial-gradient(ellipse 70% 45% at 50% -5%, rgba(34, 197, 94, 0.16), transparent 60%),
+        linear-gradient(180deg, #0b0f0d 0%, #0e1410 60%, #12201a 100%);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    #map-vote h2 {
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 900;
+      letter-spacing: 3px;
+      background: linear-gradient(95deg, #4ade80, #22c55e);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #map-vote .vote-subtitle { color: #7a8a80; letter-spacing: 2px; text-transform: uppercase; font-size: 12px; }
+    #map-vote .map-card {
+      background: linear-gradient(180deg, #171b18, #10140f);
+      border: 1px solid #2c352e;
+      border-radius: 14px;
+    }
+    #map-vote .map-card:hover { border-color: #4ade80; transform: translateY(-4px) scale(1.02); box-shadow: 0 10px 28px rgba(74, 222, 128, 0.2); }
+    #map-vote .map-card.selected {
+      border-color: #4ade80;
+      background: rgba(74, 222, 128, 0.08);
+      box-shadow: 0 0 24px rgba(74, 222, 128, 0.3);
+    }
+    #map-vote .map-card .map-name { color: #d9f2e2; font-weight: 700; }
+
+    #inventory-screen {
+      background:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(56, 189, 248, 0.12), transparent 60%),
+        rgba(5, 10, 16, 0.92);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    #inventory-screen h2 {
+      font-size: 26px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      background: linear-gradient(95deg, #38bdf8, #0ea5e9);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    #inventory-screen .inv-help { color: #64748b; }
+    #inventory-screen .inv-item {
+      background: linear-gradient(180deg, #131a22, #0e1218);
+      border: 1px solid #1e2937;
+      border-radius: 10px;
+      margin-bottom: 8px;
+      color: #dbeafe;
+      transition: 0.15s;
+    }
+    #inventory-screen .inv-item:hover { border-color: #38bdf8; }
+    #inventory-screen .inv-item.selected { border-color: #38bdf8; background: rgba(56, 189, 248, 0.08); }
+    #inventory-screen .inv-item.active { border-color: #4ade80; }
+
+    #celebration {
+      background:
+        radial-gradient(ellipse 60% 45% at 50% 0%, rgba(250, 204, 21, 0.15), transparent 55%),
+        radial-gradient(ellipse 50% 40% at 85% 100%, rgba(239, 68, 68, 0.12), transparent 60%),
+        linear-gradient(180deg, #120d06 0%, #1a0f08 100%);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    #celebration h1 {
+      font-size: clamp(44px, 7vw, 72px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      background: linear-gradient(95deg, #fde047, #f97316);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+    }
+    #celebration .churrasco-text { color: #fcd34d; font-weight: 600; }
+    #celebration .scoreboard {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(250, 204, 21, 0.35);
+      border-radius: 14px;
+    }
+    #celebration .score-entry { border-bottom: 1px solid rgba(255, 255, 255, 0.07); }
+    #celebration .score-entry.winner { color: #fde047; }
+    #celebration .score-entry .name { color: #e8e8ef; }
+    #celebration button {
+      background: linear-gradient(160deg, #fbbf24, #f59e0b);
+      border: none;
+      border-radius: 999px;
+      color: #1a0e00;
+      font-family: inherit;
+      font-weight: 800;
+      box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
+    }
+
+    .death-panel {
+      background: linear-gradient(180deg, #1c0a12, #12060c);
+      border: 1px solid #7f1d1d !important;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(127, 29, 29, 0.35);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .death-panel h2 {
+      background: linear-gradient(95deg, #f87171, #dc2626);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 3px;
+    }
+
+    .achievements-panel {
+      background: linear-gradient(180deg, #15130a, #0d0c07) !important;
+      border: 1px solid #57451c !important;
+      border-radius: 16px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .achievements-header { border-bottom: 1px solid #3a3018 !important; }
+
+    .settings-panel {
+      background: linear-gradient(180deg, #14121d, #0d0c13) !important;
+      border: 1px solid #37304a !important;
+      border-radius: 16px;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .settings-panel h2 {
+      background: linear-gradient(95deg, #c4b5fd, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
   </style>
    <link rel="stylesheet" href="shop.css">
 </head>
@@ -1767,18 +2051,50 @@
     <button id="btn-start-game-shop">INICIAR PARTIDA</button>
   </div>
 
+  <div id="mode-select" style="display:none;">
+    <button id="btn-mode-back" class="lobby-back">← Voltar</button>
+    <div class="modes-wrap">
+      <h2>🎮 MODOS DE JOGO</h2>
+      <div class="modes-grid" id="modes-grid"></div>
+    </div>
+  </div>
+
+  <div id="mp-setup" style="display:none;">
+    <button id="btn-mp-back" class="lobby-back">← Voltar</button>
+    <div class="lobby-card">
+      <div class="lobby-head">
+        <h2>🌐 MULTIPLAYER</h2>
+        <div class="lobby-status"><span class="status-dot" id="mp-dot"></span><span id="mp-status-text">Conectando...</span></div>
+      </div>
+      <input type="text" id="mp-name" placeholder="Digite seu nome..." maxlength="12" autocomplete="off">
+      <button id="btn-create-lobby" class="mp-primary">🎮 CRIAR LOBBY</button>
+      <div class="mp-divider">ou entre com um codigo</div>
+      <div class="mp-join-row">
+        <input type="text" id="mp-code" placeholder="CODIGO" maxlength="4" autocomplete="off">
+        <button id="btn-join-lobby">ENTRAR</button>
+      </div>
+      <div id="mp-error" class="mp-error" style="display:none;"></div>
+    </div>
+  </div>
+
   <div id="lobby">
     <button id="btn-back-menu" class="lobby-back" title="Voltar ao menu">← Voltar</button>
     <div class="lobby-card">
       <div class="lobby-head">
-        <h2>🌐 MULTIPLAYER</h2>
-        <div class="lobby-status"><span class="status-dot"></span><span id="lobby-status-text">Conectando...</span></div>
+        <h2>🌐 LOBBY</h2>
+        <button id="btn-copy-code" class="mp-code-chip" title="Copiar codigo">CODIGO: <b id="lobby-code">----</b> ⧉</button>
       </div>
-      <input type="text" id="lobby-player-name" placeholder="Digite seu nome..." maxlength="12" autocomplete="off">
+      <div class="lobby-status"><span class="status-dot" id="lobby-dot"></span><span id="lobby-status-text">Conectado</span></div>
       <div class="lobby-grid-label">JOGADORES <span id="lobby-count">0/6</span></div>
       <div class="players-list" id="players-list"></div>
-      <button id="btn-start-game">🚀 INICIAR PARTIDA</button>
-      <div class="lobby-hint">Escolha o mapa quando todos estiverem prontos</div>
+      <div id="host-controls">
+        <div class="lobby-grid-label">MODO DE JOGO</div>
+        <select id="host-mode-select"></select>
+        <div class="lobby-grid-label">MAPA</div>
+        <select id="host-map-select"></select>
+        <button id="btn-start-game">🚀 INICIAR PARTIDA</button>
+      </div>
+      <div id="guest-waiting" style="display:none;" class="lobby-hint">Aguardando o host iniciar a partida...</div>
     </div>
   </div>
 

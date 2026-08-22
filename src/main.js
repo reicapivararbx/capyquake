@@ -4,6 +4,8 @@ import { Network } from './network.js';
 import { setupDevice } from './device.js';
 import { MobileControls } from './controls-mobile.js';
 import { invalidateKeyBindings } from './keybindings.js';
+import { MAPS } from './maps.js';
+import { GAME_MODES } from './game-modes.js';
 import { WEAPONS } from './weapon.js';
 import { ACHIEVEMENTS } from './achievements-data.js';
 
@@ -110,8 +112,37 @@ window.returnToMainMenu = function() {
   showMenu();
 };
 
+function openModeSelect() {
+  const grid = document.getElementById('modes-grid');
+  if (grid && !grid.childElementCount) {
+    for (const mode of GAME_MODES) {
+      const card = document.createElement('button');
+      card.className = 'mode-card';
+      card.innerHTML = `<span class="mc-icon">${mode.icon}</span><span class="mc-name">${mode.name}</span><span class="mc-desc">${mode.desc}</span>`;
+      card.addEventListener('click', () => {
+        document.getElementById('mode-select').style.display = 'none';
+        if (window.__modeFlow === 'test') {
+          startGame({ mode: 'test', botCount: 5, animalCount: 50, playerName: window.__testPlayerName || 'Jogador', map: null, gameMode: mode.id });
+        } else {
+          const ctx = window.__spCtx || {};
+          startGame({ mode: 'singleplayer', botCount: 5, animalCount: 300, playerName: ctx.playerName || menu.getPlayerName(), map: ctx.map, shopPurchases: ctx.purchases, gameMode: mode.id });
+        }
+      });
+      grid.appendChild(card);
+    }
+  }
+  document.getElementById('mode-select').style.display = 'flex';
+}
+
+document.getElementById('btn-mode-back').addEventListener('click', () => {
+  document.getElementById('mode-select').style.display = 'none';
+  menu.show();
+});
+
 menu.onSingleplayer((playerName, map, purchases) => {
-  showTutorial(() => startGame({ mode: 'singleplayer', botCount: 5, animalCount: 300, playerName, map, shopPurchases: purchases }));
+  window.__spCtx = { playerName, map, purchases };
+  window.__modeFlow = 'singleplayer';
+  showTutorial(() => openModeSelect());
 });
 
 function getLobbyPlayerName() {
@@ -130,34 +161,145 @@ function setLobbyStatus(text, state) {
   }
 }
 
+function setMpStatus(text, state) {
+  const dot = document.getElementById('mp-dot');
+  const label = document.getElementById('mp-status-text');
+  if (label) label.textContent = text;
+  if (dot) {
+    dot.classList.remove('online', 'offline');
+    if (state) dot.classList.add(state);
+  }
+}
+
 menu.onMultiplayer(() => {
-  const playerName = getLobbyPlayerName();
-  const lobbyInput = document.getElementById('lobby-player-name');
-  if (lobbyInput && !lobbyInput.value.trim()) lobbyInput.value = playerName;
-  network.setPlayerInfo(playerName);
-  menu.showLobby();
-  setLobbyStatus('Conectando...', null);
-  network.connect(playerName);
+  const nameInput = document.getElementById('player-name');
+  const mpName = document.getElementById('mp-name');
+  if (mpName && !mpName.value.trim() && nameInput) mpName.value = nameInput.value;
+  menu.hide();
+  document.getElementById('mp-setup').style.display = 'flex';
+  setMpStatus(network.connected ? 'Conectado' : 'Conectando...', network.connected ? 'online' : null);
+  if (!network.connected) network.connect(mpName ? mpName.value : '');
 });
 
-network.onOpen(() => setLobbyStatus('Conectado - aguardando jogadores', 'online'));
-network.onClose(() => {
-  const lobbyEl = document.getElementById('lobby');
-  if (lobbyEl && lobbyEl.style.display === 'flex') {
-    setLobbyStatus('Servidor offline - rode node server/index.js', 'offline');
-  }
+document.getElementById('btn-mp-back').addEventListener('click', () => {
+  document.getElementById('mp-setup').style.display = 'none';
+  menu.show();
 });
 
-menu.onStartGame(() => {
-  const name = getLobbyPlayerName();
+document.getElementById('btn-create-lobby').addEventListener('click', () => {
+  const name = (document.getElementById('mp-name').value || 'Jogador').trim().slice(0, 12);
   network.setPlayerInfo(name);
-  if (network.connected && !network.joined) {
-    network.joined = true;
-    network.sendJoin(name);
+  network.createLobby(name);
+});
+
+document.getElementById('btn-join-lobby').addEventListener('click', () => {
+  const code = (document.getElementById('mp-code').value || '').trim().toUpperCase();
+  const errEl = document.getElementById('mp-error');
+  if (code.length !== 4) {
+    errEl.textContent = 'Digite o codigo de 4 letras.';
+    errEl.style.display = 'block';
+    return;
   }
-  menu.showMapVote((map) => {
-    network.send('startGame', { map, animalCount: 20 });
-  });
+  const name = (document.getElementById('mp-name').value || 'Jogador').trim().slice(0, 12);
+  network.setPlayerInfo(name);
+  network.joinLobby(code, name);
+});
+
+network.onLobbyError((message) => {
+  const errEl = document.getElementById('mp-error');
+  errEl.textContent = message;
+  errEl.style.display = 'block';
+});
+
+network.onOpen(() => setMpStatus('Conectado', 'online'));
+network.onClose(() => {
+  const setup = document.getElementById('mp-setup');
+  if (setup && setup.style.display === 'flex') setMpStatus('Servidor offline - rode node server/index.js', 'offline');
+});
+
+network.onLobby((state) => {
+  document.getElementById('mp-setup').style.display = 'none';
+  document.getElementById('lobby').style.display = 'flex';
+  document.getElementById('lobby-code').textContent = state.code;
+  const dot = document.getElementById('lobby-dot');
+  if (dot) dot.classList.add('online');
+
+  const list = document.getElementById('players-list');
+  list.replaceChildren();
+  const countEl = document.getElementById('lobby-count');
+  if (countEl) countEl.textContent = `${state.players.length}/${state.maxPlayers}`;
+  for (let i = 0; i < state.maxPlayers; i++) {
+    const slot = document.createElement('div');
+    slot.className = 'player-slot';
+    const avatar = document.createElement('span');
+    avatar.className = 'slot-avatar';
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'slot-name';
+    if (state.players[i]) {
+      slot.classList.add('filled');
+      avatar.style.background = '#7c3aed';
+      avatar.textContent = state.players[i].name.charAt(0).toUpperCase();
+      nameSpan.textContent = state.players[i].name + (state.players[i].name === state.hostName ? ' 👑' : '');
+    } else {
+      avatar.textContent = '?';
+      nameSpan.textContent = 'Aguardando...';
+    }
+    slot.appendChild(avatar);
+    slot.appendChild(nameSpan);
+    list.appendChild(slot);
+  }
+
+  const hostControls = document.getElementById('host-controls');
+  const guestWaiting = document.getElementById('guest-waiting');
+  const startBtn = document.getElementById('btn-start-game');
+  if (state.youAreHost) {
+    hostControls.style.display = 'flex';
+    guestWaiting.style.display = 'none';
+    startBtn.disabled = false;
+  } else {
+    hostControls.style.display = 'none';
+    guestWaiting.style.display = 'block';
+  }
+});
+
+const hostMapSelect = document.getElementById('host-map-select');
+if (hostMapSelect && !hostMapSelect.options.length) {
+  for (const map of MAPS) {
+    const opt = document.createElement('option');
+    opt.value = map.name;
+    opt.textContent = map.name;
+    hostMapSelect.appendChild(opt);
+  }
+}
+const hostModeSelect = document.getElementById('host-mode-select');
+if (hostModeSelect && !hostModeSelect.options.length) {
+  for (const mode of GAME_MODES) {
+    const opt = document.createElement('option');
+    opt.value = mode.id;
+    opt.textContent = mode.icon + ' ' + mode.name;
+    hostModeSelect.appendChild(opt);
+  }
+}
+
+document.getElementById('btn-copy-code').addEventListener('click', function() {
+  const code = document.getElementById('lobby-code').textContent;
+  if (navigator.clipboard) navigator.clipboard.writeText(code).catch(() => {});
+  this.innerHTML = 'CODIGO: <b id="lobby-code">' + code + '</b> ✓';
+  setTimeout(() => { this.innerHTML = 'CODIGO: <b id="lobby-code">' + code + '</b> ⧉'; }, 1500);
+});
+
+document.getElementById('btn-back-menu').addEventListener('click', () => {
+  network.send('leaveLobby', {});
+  document.getElementById('lobby').style.display = 'none';
+  menu.show();
+});
+
+document.getElementById('btn-start-game').addEventListener('click', () => {
+  const mapName = document.getElementById('host-map-select').value || null;
+  const mapObj = MAPS.find(mp => mp.name === mapName) || null;
+  const modeSel = document.getElementById('host-mode-select');
+  const gameMode = modeSel ? modeSel.value : 'normal';
+  network.startGameAsHost(mapObj, gameMode);
 });
 
 menu.onBackToMenu(() => {
@@ -354,6 +496,26 @@ function showToastMessage(text) {
   clearTimeout(toast._t);
   toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
 }
+
+const _seqInf = [];
+const INF_WORD = 'infmuni';
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+  if (!INF_WORD.includes(k) || k === '') { _seqInf.length = 0; return; }
+  _seqInf.push(k);
+  if (_seqInf.length > INF_WORD.length) _seqInf.shift();
+  if (_seqInf.join('') === INF_WORD) {
+    _seqInf.length = 0;
+    const g = window.__game;
+    if (g) {
+      g.infiniteAmmo = true;
+      const infBtn = document.getElementById('btn-inf-ammo');
+      if (infBtn) infBtn.textContent = 'INFINITA: TRUE';
+    }
+    showToastMessage('MUNICAO INFINITA!');
+  }
+});
 
 const _seq7 = [];
 document.addEventListener('keydown', (e) => {
@@ -578,9 +740,10 @@ document.getElementById('btn-settings-quit').addEventListener('click', () => {
 
 document.getElementById('btn-test-mode').addEventListener('click', () => {
   settingsScreen.style.display = 'none';
-  const playerName = menu.getPlayerName();
+  window.__testPlayerName = menu.getPlayerName();
+  window.__modeFlow = 'test';
   menu.hide();
-  showTutorial(() => startGame({ mode: 'test', botCount: 5, animalCount: 50, playerName, map: null }));
+  showTutorial(() => openModeSelect());
 });
 
 document.getElementById('btn-play-again').addEventListener('click', () => {
