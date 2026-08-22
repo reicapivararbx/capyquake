@@ -24,7 +24,7 @@ export const WEAPONS = {
   martelo: { name: 'MARTELO DE GUERRA', damage: 26, type: 'melee', range: 3.5, cooldown: 0.65 },
   ak47: { name: 'AK-47', damage: 30, type: 'hitscan', range: 60, cooldown: 0.4 },
   minigun: {
-    name: 'MINIGUN', damage: 40, type: 'hitscan', range: 100000000000000000000000000, cooldown: 0.000000000000000000000000000001,
+        name: 'MINIGUN', damage: 40, type: 'hitscan', range: 80, cooldown: 0.08,
     precoMoney: 10000000, precoTokens: 500, precoRodadaMoney: 1000000
   },
   cajado_fogo: {
@@ -45,7 +45,7 @@ export const WEAPONS = {
     precoMoney: 490, precoTokens: 490, preco3RodadasMoney: 24500, preco3RodadasTokens: 24
   },
   sniper: {
-    name: 'SNIPER', damage: 120, type: 'hitscan', range: 100000000000000000000, cooldown: 2.0, ammoType: 'sniper',
+    name: 'SNIPER', damage: 120, type: 'hitscan', range: 150, cooldown: 2.0, ammoType: 'sniper',
     precoMoney: 50000, precoTokens: 50
   },
 };
