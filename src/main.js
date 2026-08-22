@@ -216,7 +216,7 @@ network.onLobbyError((message) => {
 network.onOpen(() => setMpStatus('Conectado', 'online'));
 network.onClose(() => {
   const setup = document.getElementById('mp-setup');
-  if (setup && setup.style.display === 'flex') setMpStatus('Servidor offline - rode node server/index.js', 'offline');
+  if (setup && setup.style.display === 'flex') setMpStatus('Servidor Localhost! - Suba ele localmente! ', 'offline');
 });
 
 function hueFromString(s) {

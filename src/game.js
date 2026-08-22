@@ -157,6 +157,12 @@ export class Game {
     this.scene.add(this.camera);
     const isMobile = document.body.dataset.device === 'mobile';
     this.player = new Player(this.camera, this.renderer.domElement, this.scene, this.arena, isMobile);
+    this.localPlayerMesh = this.createLocalPlayerMesh();
+    this.localPlayerMesh.visible = false;
+    this.scene.add(this.localPlayerMesh);
+    this.player.onCameraToggle = (thirdPerson) => {
+      if (this.hud) this.hud.showMessage(thirdPerson ? 'CÂMERA: 3ª PESSOA' : 'CÂMERA: 1ª PESSOA');
+    };
     this.weapon = new Weapon(this.scene, this.camera, this.arena);
     this.hud = new HUD();
 
@@ -1065,6 +1071,41 @@ export class Game {
     group.add(gun);
 
     return group;
+  }
+
+  createLocalPlayerMesh() {
+    const group = new THREE.Group();
+    const bodyGeo = new THREE.BoxGeometry(0.6, 1.4, 0.4);
+    const bodyMat = new THREE.MeshLambertMaterial({ color: 0x8a5a2b });
+    const body = new THREE.Mesh(bodyGeo, bodyMat);
+    body.position.y = 0.9;
+    body.castShadow = true;
+    group.add(body);
+
+    const headGeo = new THREE.BoxGeometry(0.4, 0.4, 0.4);
+    const headMat = new THREE.MeshLambertMaterial({ color: 0xa06c35 });
+    const head = new THREE.Mesh(headGeo, headMat);
+    head.position.y = 1.8;
+    head.castShadow = true;
+    group.add(head);
+
+    const gunGeo = new THREE.BoxGeometry(0.08, 0.08, 0.6);
+    const gunMat = new THREE.MeshLambertMaterial({ color: 0x333333 });
+    const gun = new THREE.Mesh(gunGeo, gunMat);
+    gun.position.set(0.4, 1.1, -0.2);
+    group.add(gun);
+
+    return group;
+  }
+
+  updateLocalPlayerMesh() {
+    if (!this.localPlayerMesh) return;
+    const tp = this.player.isThirdPerson();
+    this.localPlayerMesh.visible = tp;
+    if (!tp) return;
+    const pos = this.player.getPosition();
+    this.localPlayerMesh.position.set(pos.x, pos.y - 1.7, pos.z);
+    this.localPlayerMesh.rotation.y = this.player.euler.y;
   }
 
   isHostileTarget(target) {
@@ -2333,6 +2374,7 @@ endGame() {
     this.checkDrops();
     this.updateHotbar();
 
+    this.updateLocalPlayerMesh();
     if (!this.playerDead && !this.inventoryOpen) {
       this.player.update(delta);
       this.hud.updateStamina(this.player.stamina, this.player.maxStamina);

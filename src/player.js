@@ -23,6 +23,7 @@ export class Player {
     // game.js sets camera.position AFTER constructing the Player, so we sync
     // from the camera on the first update()/_applyCameraTransform() call.
     this.thirdPerson = false;
+    this.onCameraToggle = null;
     this.playerPos = camera.position.clone();
     this.cameraAnchor = this.playerPos;
     this.playerPosInitialized = false;
@@ -221,6 +222,7 @@ export class Player {
   toggleCamera() {
     this.thirdPerson = !this.thirdPerson;
     this._applyCameraTransform();
+    if (this.onCameraToggle) this.onCameraToggle(this.thirdPerson);
     return this.thirdPerson;
   }
 

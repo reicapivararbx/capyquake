@@ -696,6 +696,138 @@
     }
     .mp-code-chip b { color: #a78bfa; letter-spacing: 3px; }
     .mp-code-chip:hover { background: rgba(167, 139, 250, 0.22); }
+
+    /* ===== MP SETUP — CARD DE CONEXAO ===== */
+    .lobby-card {
+      width: min(420px, 92vw);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 32px 30px;
+      box-sizing: border-box;
+      background: linear-gradient(180deg, #17171f, #101017);
+      border: 1px solid rgba(139, 92, 246, .35);
+      border-radius: 18px;
+      box-shadow: 0 24px 80px rgba(0,0,0,.65), 0 0 50px rgba(109, 40, 217, .15);
+      animation: mpPanelIn .35s cubic-bezier(.18,.89,.32,1.28);
+    }
+    @keyframes mpPanelIn { from { opacity: 0; transform: translateY(18px) scale(.97); } }
+
+    .lobby-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .lobby-head h2 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(95deg, #c4b5fd, #8b5cf6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .lobby-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.14);
+      font-size: 11.5px;
+      color: #9aa0b4;
+      white-space: nowrap;
+    }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #6b6b78;
+      flex-shrink: 0;
+      transition: .2s;
+    }
+    .status-dot.online {
+      background: #4ade80;
+      box-shadow: 0 0 10px rgba(74,222,128,.8);
+      animation: statusPulse 1.6s ease-in-out infinite;
+    }
+    .status-dot.offline {
+      background: #ef4444;
+      box-shadow: 0 0 10px rgba(239,68,68,.7);
+    }
+    @keyframes statusPulse { 0%,100% { opacity: 1; } 50% { opacity: .35; } }
+
+    #mp-name, #mp-code {
+      box-sizing: border-box;
+      padding: 13px 18px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.14);
+      border-radius: 999px;
+      color: #f5f5f7;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: .15s;
+    }
+    #mp-name::placeholder, #mp-code::placeholder { color: #55555f; }
+    #mp-name:focus, #mp-code:focus {
+      border-color: #a78bfa;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, .18);
+      background: rgba(255,255,255,.07);
+    }
+
+    /* ===== LOBBY — POLIMENTO ===== */
+    #host-map-select:focus, #host-mode-select:focus {
+      border-color: #a78bfa;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, .18);
+    }
+    .ll-room-card { animation: mpPanelIn .35s ease both; }
+    .lobby-right { animation: mpPanelIn .35s ease .07s both; }
+    .ll-code-card {
+      background: linear-gradient(160deg, rgba(139, 92, 246, .10), rgba(255,255,255,.03));
+    }
+    .ll-copy:active { transform: translateY(0) scale(.97); }
+    .lh-count-capsule { transition: .15s; }
+    .lh-count-capsule:hover {
+      background: rgba(167, 139, 250, .18);
+      border-color: rgba(167, 139, 250, .7);
+    }
+    .lh-avatar { box-shadow: 0 0 24px rgba(255, 140, 0, .25); }
+    .lr-score-entry { transition: .15s; }
+    .lr-score-entry:hover {
+      background: rgba(255,255,255,.07);
+      border-color: rgba(167, 139, 250, .45);
+      transform: translateX(2px);
+    }
+    .lr-arena::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(167, 139, 250, .05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(167, 139, 250, .05) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+    }
+    .lr-goal { animation: arenaGoal 2.4s ease-in-out infinite; }
+    @keyframes arenaGoal {
+      0%, 100% { box-shadow: 0 0 24px rgba(167, 139, 250, .35), inset 0 0 18px rgba(167, 139, 250, .2); }
+      50% { box-shadow: 0 0 38px rgba(167, 139, 250, .6), inset 0 0 26px rgba(167, 139, 250, .35); }
+    }
+    .lr-capy.brown { animation: capyBob 3s ease-in-out infinite; }
+    .lr-capy.purple { animation: capyBob 3.6s ease-in-out infinite reverse; }
+    @keyframes capyBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+    .lr-shot.orange { animation: shotPulse 2.2s ease-in-out infinite; }
+    .lr-shot.purple { animation: shotPulse 2.8s ease-in-out infinite .4s; }
+    @keyframes shotPulse { 0%, 100% { opacity: .5; } 50% { opacity: 1; } }
+    #guest-waiting::after {
+      content: '';
+      animation: guestDots 1.5s steps(4, end) infinite;
+    }
+    @keyframes guestDots { 0% { content: ''; } 25% { content: '.'; } 50% { content: '..'; } 75% { content: '...'; } }
+
     #host-map-select {
       width: 100%;
       padding: 11px 14px;
@@ -1577,7 +1709,7 @@
     .stat-box .sl { font-size: 10.5px; color: #8b90a3; margin-top: 2px; }
 
   </style>
-  <script type="module" crossorigin src="./assets/index-DMTgISl1.js"></script>
+  <script type="module" crossorigin src="./assets/index-chE3fP1-.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-Bukr86hn.css">
 </head>
 <body>
