@@ -497,6 +497,11 @@ export class Game {
       animal.mesh.scale.multiplyScalar(cfg.scale);
       animal.hitRadius = (animal.hitRadius || 1) * cfg.scale;
       animal.hitHeight = (animal.hitHeight || 0.5) * cfg.scale;
+      if (animal.visualState && animal.visualState.meshes) {
+        for (const part of animal.visualState.meshes) {
+          part.baseScale.multiplyScalar(cfg.scale);
+        }
+      }
     }
     if (cfg.hpMul) animal.health *= cfg.hpMul;
     if (cfg.animalSpeedMul) {
@@ -1194,6 +1199,21 @@ export class Game {
       this.stats.tokensEarned = (this.stats.tokensEarned || 0) + dropTokens;
       this.addXp(points * 10);
       this.checkAchievements();
+      if (this.modeCfg && this.modeCfg.horde && !this.bossActive) {
+        setTimeout(() => {
+          if (!this.running || this.playerDead || this._gameEnded) return;
+          const roomIds = this.arena.getRoomIds();
+          const roomId = roomIds[Math.floor(Math.random() * roomIds.length)];
+          const sp = this.arena.getRandomSpawnInRoom ? this.arena.getRandomSpawnInRoom(roomId) : null;
+          if (!sp) return;
+          const types = ['jacare', 'tucano', 'anta', 'queixada', 'arara', 'onca', 'loboguara', 'piranha', 'cascavel', 'lobo', 'zumbi', 'esqueleto'];
+          const type = types[Math.floor(Math.random() * types.length)];
+          const animal = new Animal(this.scene, sp.x, sp.z, type, this.arena);
+          this.applyModeToAnimal(animal);
+          this.targets.push(animal);
+          this.hud.updateRemaining(this.getHostileTargets().length);
+        }, 700);
+      }
     }
     this.hud.showMessage(`${name} ABATIDA! +${points}`);
     this.hud.addKillEntry(creditedName, name);
