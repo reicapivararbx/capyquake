@@ -1,0 +1,7 @@
+node_modules/
+.omo/
+.playwright-mcp/
+qa-*.png
+animals-check.png
+shop-current.png
+*.log

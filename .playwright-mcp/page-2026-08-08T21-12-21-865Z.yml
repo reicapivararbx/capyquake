@@ -1,7 +1,0 @@
-- generic [ref=e9]:
-  - heading "ESCOLHA O MAPA" [level=2] [ref=e10]
-  - generic [ref=e11]: Clique para escolher
-  - generic [ref=e12]:
-    - generic [ref=e13] [cursor=pointer]: Canyon Rochoso
-    - generic [ref=e16] [cursor=pointer]: Templo Esquecido
-    - generic [ref=e19] [cursor=pointer]: Floresta Encantada

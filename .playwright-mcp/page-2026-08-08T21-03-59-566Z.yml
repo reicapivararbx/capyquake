@@ -1,9 +1,0 @@
-- generic [ref=e9]:
-  - heading "LOBBY" [level=2] [ref=e10]
-  - textbox "Seu nome" [ref=e11]
-  - generic [ref=e12]: Aguardando jogadores...
-  - generic [ref=e13]:
-    - generic [ref=e14]: Jogador
-    - generic [ref=e15]: Jogador
-  - button "Iniciar Partida" [ref=e16] [cursor=pointer]
-  - button "Voltar" [ref=e17] [cursor=pointer]

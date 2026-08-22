@@ -1,8 +1,0 @@
-- generic [ref=e1]:
-  - heading "CAPIQUAKE" [level=1] [ref=e2]
-  - generic [ref=e3]: A Grande Caçada de Capivaras
-  - textbox "Seu nome" [ref=e4]
-  - button "Singleplayer" [ref=e5] [cursor=pointer]
-  - button "Multiplayer" [ref=e6] [cursor=pointer]
-  - button "MODO TESTE" [ref=e7] [cursor=pointer]
-  - button "⚙" [ref=e8] [cursor=pointer]
