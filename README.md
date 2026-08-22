@@ -11,22 +11,28 @@ Sobreviva. Evolua. Domine.
 [![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
 [![WebSocket](https://img.shields.io/badge/WebSocket-010101?style=for-the-badge)](https://developer.mozilla.org/pt-BR/docs/Web/API/WebSocket)
 
+**🎮 Jogue agora: [reicapivararbx.github.io/capyquake](https://reicapivararbx.github.io/capyquake/)**
+
 </div>
 
 ---
 
 ## 🎮 Sobre o Jogo
 
-**Capiquake** é um jogo 3D de arena de combate com capivaras. Lute contra ondas crescentes de inimigos, compre armas e habilidades na loja, desbloqueie conquistas e enfrente o boss final em cada mapa.
+**CapiQuake** é um FPS 3D de arena onde você caça capivaras mutantes. Enfrente ondas crescentes de animais, compre 75+ armas na loja, evolua com níveis e rebirths, desbloqueie conquistas e enfrente bosses — sozinho ou com até 6 jogadores.
 
 ### ⚔️ Funcionalidades
 
-- **⚔️ Combate em Arena** — Armas corpo a corpo e à distância com mecânicas de recoil
-- **🛒 Loja Completa** — Armas, armaduras, boosts, skins, encantamentos e habilidades especiais
-- **🏆 216 Conquistas** — 8 raridades de Common a Cursed com sistema de progresso
-- **👥 Multiplayer** — Partidas online com até 6 jogadores via WebSocket
-- **🗺️ 3 Mapas** — Castelo, Floresta e Caverna, cada um com boss final
-- **💰 Economia** — Tokens e Reais (R$) com sistema de troca
+- **⚔️ Combate em Arena** — 75 armas corpo a corpo e à distância com modelos 3D próprios
+- **🛒 Loja Completa** — 452 itens: armas, munições, armaduras, boosts, habilidades, encantamentos, skins e revives
+- **🏆 230 Conquistas** — 8 raridades de Common a Cursed, com recompensas em dinheiro e tokens
+- **🎮 33 Modos de Jogo** — Chaos, Reverse, One Shot, Boss Rush, Titan, Fantasma e muito mais
+- **👥 Multiplayer com Lobby** — Crie um lobby com código de 4 letras ou entre no de um amigo · só o host escolhe mapa e inicia
+- **🗺️ 30 Mapas** — Floresta Encantada até Planeta Alienígena, cada um com boss final
+- **💰 Economia** — Tokens e Reais (R$) com troca entre moedas
+- **🔄 Rebirth** — Zere seu progresso por bônus permanentes e Rebirth Tokens (RT)
+- **📱 Mobile** — Joystick virtual, botões touch e HUD adaptativo
+- **⌨️ Teclas Customizáveis** — Remapeie tudo nas configurações
 
 ---
 
@@ -39,6 +45,9 @@ Sobreviva. Evolua. Domine.
 
 ### Gameplay
 <img src="assets/templates/gameplay.png" alt="Gameplay" width="800">
+
+### Modos de Jogo
+<img src="assets/templates/mods.png" alt="Modos" width="800">
 
 ### Loja
 <img src="assets/templates/shop.png" alt="Loja" width="800">
@@ -58,24 +67,40 @@ Sobreviva. Evolua. Domine.
 
 ## 🎯 Como Jogar
 
-### Controles
+### Controles (padrão — customizáveis no ⚙)
 
 | Ação | Tecla |
 |------|-------|
 | Mover | W, A, S, D |
 | Olhar | Mouse |
-| Atirar | Click Esquerdo |
+| Atirar | Botão Esquerdo |
 | Correr | Shift |
 | Pular | Espaço |
-| Trocar Arma | 1-5 |
-| Loja | Tab |
-| Pausar | Escape |
+| Pegar item / abrir baú | E |
+| Habilidade Void | F |
+| Alternar câmera 1ª/3ª pessoa | F3 |
+| Soltar o peido | T |
+| Emotes | B |
+| Mira da sniper | Ctrl |
+| Inventário | Esc |
+| Soltar arma | Z |
+| Granada / Teleporte | G |
+| Rush de velocidade | H |
+| Pausar | P |
 
-### Modos de Jogo
+No **celular**: joystick virtual + botões ATK, JUMP, SPR, ABL, 📷 câmera e 🎒 inventário.
 
-- **Singleplayer** — Lute contra ondas de inimigos e enfrente o boss final
-- **Multiplayer** — Compita contra outros jogadores em partidas online
-- **Modo Teste** — Teste armas e mecânicas sem restrições
+### Modos de Jogo (33)
+
+Além do **Normal**, experimente: Chaos Mode, Reverse, One Shot, Turbo, Gigante, Mini, Fantasma, Horda, Gravidade Zero, Vampiro, Dourado, **Boss Rush**, Vidro, Tanque, Pedra, Slow-mo, Canguru, Regenerador, Maratonista, Pesadelo, Sortudo, Mega Sortudo, Titan, Fúria, Elástico, Formigueiro, Colosso, Zumbi, Ninja, Rocha Viva, Cacique e Imortal.
+
+Cada modo altera a partida de verdade — velocidade, vida, escala dos animais, drops, gravidade e mais.
+
+### Waves e Bosses
+
+- Waves normais: 1–4, 6–9, 11–14...
+- **Mini-boss**: toda wave múltipla de 5
+- **Boss principal**: toda wave múltipla de 10
 
 ---
 
@@ -84,7 +109,8 @@ Sobreviva. Evolua. Domine.
 | Tecnologia | Uso |
 |------------|-----|
 | **Three.js** | Motor 3D, renderização, física |
-| **WebSocket** | Multiplayer online em tempo real |
+| **WebSocket (ws)** | Multiplayer online em tempo real |
+| **Vite** | Build e dev server |
 | **HTML5/CSS3** | UI, menus, HUD |
 | **Vanilla JavaScript** | Lógica do jogo, sem frameworks |
 | **Node.js** | Servidor multiplayer |
@@ -96,27 +122,37 @@ Sobreviva. Evolua. Domine.
 ### Requisitos
 
 - [Node.js](https://nodejs.org/) 18+
-- npm ou yarn
+- npm
 
 ### Instalação
 
 ```bash
-# Clone o repositório
 git clone https://github.com/reicapivararbx/capyquake.git
 cd capyquake
-
-# Instale as dependências (apenas para o servidor multiplayer)
 npm install
+```
 
-# Execute o servidor
+### Jogar offline / Multiplayer
+
+```bash
+# Sobe o jogo + servidor WebSocket na porta 8080
 node server/index.js
 ```
 
-### Jogando
+Abra `http://localhost:8080`. Amigos na mesma rede usam `http://SEU-IP:8080` (o servidor mostra o IP).
 
-1. Abra `index.html` no navegador
-2. Digite seu nome e selecione um modo de jogo
-3. Sobreviva às ondas e enfrente os boss!
+**Multiplayer:** Multiplayer → **Criar Lobby** (gera código de 4 letras) → envie o código pros amigos → **Entrar** com o código. Só o host escolhe o mapa e inicia.
+
+### Desenvolvimento
+
+```bash
+npx vite dev    # dev server com hot-reload (porta 3000)
+npx vite build  # build de produção em dist/
+```
+
+### Site público
+
+O build publicado fica em `gh-pages`. Para atualizá-lo após um `npx vite build`, copie o conteúdo de `dist/` para a branch `gh-pages`.
 
 ---
 
@@ -124,70 +160,70 @@ node server/index.js
 
 ```
 capyquake/
-├── index.html          # Arquivo principal do jogo
-├── style.css           # Estilos do jogo
+├── index.html               # HTML principal + estilos das telas
+├── shop.css                 # Estilo da loja
+├── vite.config.js           # Configuração do Vite
 ├── server/
-│   └── index.js        # Servidor multiplayer (WebSocket)
+│   └── index.js             # Servidor estático + WebSocket (lobbies)
 ├── src/
-│   ├── main.js         # Inicialização e loop do jogo
-│   ├── player.js       # Lógica do jogador
-│   ├── enemy.js        # Sistema de inimigos
-│   ├── weapons.js      # Armas e projéteis
-│   ├── maps.js         # Mapas e terreno
-│   ├── shop.js         # Loja e inventário
-│   ├── hud.js          # Interface do usuário
-│   ├── achievements.js # Sistema de conquistas
-│   ├── achievements-data.js # Dados das conquistas
-│   └── multiplayer.js  # Lógica multiplayer
-├── assets/
-│   ├── textures/       # Texturas do jogo
-│   ├── models/         # Modelos 3D
-│   ├── sounds/         # Efeitos sonoros
-│   └── templates/      # Templates HTML para screenshots
-│       ├── menu.html
-│       ├── gameplay.html
-│       ├── shop.html
-│       ├── achievements.html
-│       ├── multiplayer.html
-│       └── banner.html
-├── style-guide.md      # Guia de estilo visual
-├── ai-prompts.md       # Prompts para geração de imagens com IA
-└── gif-spec.md         # Especificação para sequência GIF
+│   ├── main.js              # Bootstrap, telas, easter eggs
+│   ├── game.js              # Núcleo: waves, combate, economia, conquistas
+│   ├── game-modes.js        # 33 modos de jogo
+│   ├── player.js            # Movimento, câmera, stamina
+│   ├── weapon.js            # Armas, tiro, modelos 3D
+│   ├── animals.js           # 96 animais com IA e animação
+│   ├── boss.js              # Boss e mini-boss
+│   ├── arena.js             # Arena, salas e colisões
+│   ├── maps.js              # 30 mapas
+│   ├── renderer.js          # Cena, luzes, céu
+│   ├── hud.js               # HUD in-game
+│   ├── menu.js              # Menu, loja, lobby
+│   ├── network.js           # Cliente WebSocket
+│   ├── keybindings.js       # Teclas customizáveis
+│   ├── achievements-data.js # 230 conquistas + recompensas
+│   ├── shop-data.js         # Catálogo da loja (452 itens)
+│   ├── device.js            # Detecção PC/mobile
+│   └── controls-mobile.js   # Controles touch
+└── assets/
+    └── templates/           # Screenshots e templates do README
 ```
 
 ---
 
 ## 🏆 Conquistas
 
-O jogo conta com **216 conquistas** distribuídas em 8 raridades:
+**230 conquistas** em 8 raridades — cada uma paga recompensa:
 
-| Raridade | Cor | Exemplo |
-|----------|-----|---------|
-| **COMMON** | ⬜ Cinza | Primeiro Abate, Cinco Ondas |
-| **UNCOMMON** | 🟢 Verde | Rico, Colecionador |
-| **RARE** | 🔵 Azul | Exterminador, Mestre das Waves |
-| **EPIC** | 🟣 Roxo | Lenda Viva |
-| **LEGENDARY** | 🟠 Laranja | Mestre das Waves |
-| **MYTHIC** | 🔴 Vermelho | Lenda das Armas |
-| **DIVINE** | 🟡 Dourado (gradiente) | Conquista Divina |
-| **CURSED** | ⬛ Escuro (borda vermelha) | Masoquista |
+| Raridade | Recompensa | Exemplo |
+|----------|-----------|---------|
+| **COMMON** | R$ 250 | Primeiro Abate |
+| **UNCOMMON** | R$ 500 | Rico |
+| **RARE** | R$ 1.500 + 1 token | Exterminador |
+| **EPIC** | R$ 3.000 + 2 tokens | Lenda Viva |
+| **LEGENDARY** | R$ 7.500 + 4 tokens | Mestre das Waves |
+| **MYTHIC** | R$ 15.000 + 8 tokens | Lenda das Armas |
+| **DIVINE** | R$ 40.000 + 15 tokens | Conquista Divina |
+| **CURSED** | R$ 1.000 + 3 tokens | Masoquista |
+
+Destaques: conquistas para cada um dos 33 modos, a cadeia **"Além da Vida"** (5 etapas que desbloqueia o Revive Infinity) e **"Colecionador de Modos"** (jogue todos os modos).
+
+---
+
+## 🔄 Rebirth
+
+Chegou no nível 100 com 10.000 tokens e R$ 1.000.000? Faça **Rebirth** pelo menu:
+
+- Zera nível, XP, dinheiro e tokens
+- Ganha **+1 RT** (Rebirth Token · 1 RT = 1.000.000 tokens)
+- Bônus permanentes que acumulam: dinheiro ×(1+n), tokens ×(1+0,5n), XP ×(1+n), HP ×2ⁿ
 
 ---
 
 ## 🎨 Assets Visuais
 
-O repositório inclui templates HTML/CSS para gerar screenshots autênticas do jogo:
-
 - **`assets/style-guide.md`** — Paleta de cores, tipografia e regras visuais
-- **`assets/ai-prompts.md`** — Prompts detalhados para geração de imagens com IA
-- **`assets/gif-spec.md`** — Especificação para sequência animada GIF
-- **`assets/templates/`** — 6 templates HTML prontos para captura de tela
-
-### Como usar os templates
-
-1. Abra o template desejado em um navegador
-2. Use `Ctrl+Shift+S` (Firefox) ou ferramentas de captura para salvar como PNG
-3. Tamanho ideal: 1920x1080 (banner, gameplay, multiplayer) ou 1600x900 (menu, shop, conquistas)
+- **`assets/ai-prompts.md`** — Prompts para geração de imagens com IA
+- **`assets/templates/`** — Templates HTML para captura de tela (1920×1080)
 
 ---
 
