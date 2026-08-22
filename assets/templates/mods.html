@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, initial-scale=1.0">
+  <title>Capiquake - Multiplayer Lobby + Combat</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #090715;
+      --panel: rgba(23, 18, 43, 0.74);
+      --panel-strong: rgba(34, 24, 62, 0.86);
+      --purple: #8b5cf6;
+      --purple-soft: #c4b5fd;
+      --orange: #ff8a2a;
+      --orange-hot: #ffb156;
+      --green: #52f0a4;
+      --red: #ff5577;
+      --ink: #f7efe4;
+      --muted: #b8a7d9;
+      --line: rgba(255, 255, 255, 0.14);
+      --glass: blur(20px) saturate(130%);
+    }
+
+    body {
+      width: 1280px;
+      height: 720px;
+      overflow: hidden;
+      color: var(--ink);
+      font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(139, 92, 246, 0.44), transparent 28%),
+        radial-gradient(circle at 84% 18%, rgba(255, 138, 42, 0.32), transparent 26%),
+        radial-gradient(circle at 48% 92%, rgba(93, 54, 210, 0.32), transparent 35%),
+        linear-gradient(135deg, #080612 0%, #140c26 48%, #22100d 100%);
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: radial-gradient(circle at center, black 0%, transparent 76%);
+      opacity: 0.42;
+    }
+
+    body::after {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      background:
+        linear-gradient(110deg, transparent 0%, rgba(255,255,255,0.08) 24%, transparent 34%, transparent 100%),
+        radial-gradient(ellipse at 50% 0%, rgba(255,255,255,0.09), transparent 55%);
+      pointer-events: none;
+      mix-blend-mode: screen;
+    }
+
+    .composition {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      padding: 38px;
+      isolation: isolate;
+    }
+
+    .orb {
+      position: absolute;
+      border-radius: 999px;
+      filter: blur(1px);
+      opacity: 0.9;
+    }
+
+    .orb.one {
+      width: 220px;
+      height: 220px;
+      left: -54px;
+      bottom: 82px;
+      background: radial-gradient(circle, rgba(139, 92, 246, 0.48), transparent 66%);
+    }
+
+    .orb.two {
+      width: 180px;
+      height: 180px;
+      right: 160px;
+      top: -44px;
+      background: radial-gradient(circle, rgba(255, 138, 42, 0.42), transparent 65%);
+    }
+
+    .topbar {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      z-index: 2;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .brand-mark {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 32% 28%, #ffe2a8 0 12%, transparent 13%),
+        radial-gradient(circle at 66% 28%, #482315 0 9%, transparent 10%),
+        linear-gradient(145deg, #d39257 0%, #8f512d 48%, #512716 100%);
+      box-shadow: 0 22px 42px rgba(255, 138, 42, 0.28), inset 0 1px 0 rgba(255,255,255,0.28);
+    }
+
+    .brand-mark::before,
+    .brand-mark::after {
+      content: "";
+      position: absolute;
+      background: #60331d;
+      border-radius: 50%;
+      top: 8px;
+      width: 15px;
+      height: 15px;
+    }
+
+    .brand-mark::before { left: 8px; }
+    .brand-mark::after { right: 8px; }
+
+    .eyebrow {
+      color: var(--orange-hot);
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-weight: 800;
+    }
+
+    h1 {
+      font-size: 42px;
+      line-height: 1;
+      letter-spacing: -0.045em;
+      text-shadow: 0 0 28px rgba(139, 92, 246, 0.34);
+    }
+
+    .status-chip {
+      border: 1px solid rgba(255, 177, 86, 0.5);
+      background: linear-gradient(135deg, rgba(255, 138, 42, 0.16), rgba(139, 92, 246, 0.16));
+      color: #ffe6c4;
+      padding: 13px 18px;
+      border-radius: 999px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      box-shadow: 0 0 34px rgba(255, 138, 42, 0.2), inset 0 1px 0 rgba(255,255,255,0.18);
+      backdrop-filter: var(--glass);
+    }
+
+    .layout {
+      position: relative;
+      display: grid;
+      grid-template-columns: 430px 1fr;
+      gap: 26px;
+      z-index: 2;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, rgba(33, 25, 58, 0.82), rgba(14, 12, 29, 0.78));
+      border-radius: 32px;
+      backdrop-filter: var(--glass);
+      box-shadow: 0 28px 80px rgba(0,0,0,0.44), inset 0 1px 0 rgba(255,255,255,0.12);
+      overflow: hidden;
+    }
+
+    .lobby {
+      height: 560px;
+      padding: 24px;
+      position: relative;
+    }
+
+    .lobby::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 18% 6%, rgba(255, 138, 42, 0.18), transparent 34%),
+        radial-gradient(circle at 90% 72%, rgba(139, 92, 246, 0.26), transparent 42%);
+      pointer-events: none;
+    }
+
+    .section-label {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+      z-index: 1;
+    }
+
+    .section-label h2 {
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .live-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(82, 240, 164, 0.35);
+      color: #bafbd6;
+      background: rgba(82, 240, 164, 0.1);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .live-pill::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 14px var(--green);
+    }
+
+    .room-card {
+      position: relative;
+      z-index: 1;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 24px;
+      padding: 18px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.08), rgba(255,255,255,0.03));
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.14);
+      margin-bottom: 18px;
+    }
+
+    .room-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .room-code {
+      display: grid;
+      grid-template-columns: 1fr 84px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .code-input {
+      height: 58px;
+      border-radius: 18px;
+      border: 1px solid rgba(196, 181, 253, 0.35);
+      background: rgba(5, 4, 14, 0.56);
+      color: #fff6e8;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04), 0 0 30px rgba(139,92,246,0.12);
+    }
+
+    .code-input strong {
+      font-size: 24px;
+      letter-spacing: 0.18em;
+    }
+
+    .code-input span {
+      color: var(--orange-hot);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .copy-button,
+    .start-button,
+    .ready-button {
+      border: 0;
+      color: #1b0d04;
+      font-family: inherit;
+      font-weight: 900;
+      cursor: default;
+      box-shadow: 0 18px 36px rgba(255, 138, 42, 0.22), inset 0 1px 0 rgba(255,255,255,0.44);
+    }
+
+    .copy-button {
+      height: 58px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #ffd08a, var(--orange));
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .players {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .player-slot {
+      display: grid;
+      grid-template-columns: 46px 1fr auto;
+      align-items: center;
+      gap: 12px;
+      min-height: 70px;
+      padding: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.055);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    .avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px 18px 18px 16px;
+      position: relative;
+      background: linear-gradient(145deg, #d69862, #7e4528);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.32);
+    }
+
+    .avatar::before,
+    .avatar::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(38, 17, 9, 0.9);
+    }
+
+    .avatar::before { left: 13px; }
+    .avatar::after { right: 10px; }
+
+    .avatar.empty {
+      background: linear-gradient(145deg, rgba(196,181,253,0.14), rgba(255,255,255,0.04));
+      border: 1px dashed rgba(196,181,253,0.42);
+      box-shadow: none;
+    }
+
+    .avatar.empty::before,
+    .avatar.empty::after { display: none; }
+
+    .player-name {
+      font-weight: 850;
+      font-size: 16px;
+    }
+
+    .player-meta {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 3px;
+      font-weight: 650;
+    }
+
+    .tag {
+      padding: 8px 11px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+
+    .tag.ready {
+      color: #baffda;
+      background: rgba(82,240,164,0.14);
+      border-color: rgba(82,240,164,0.34);
+    }
+
+    .tag.host {
+      color: #ffe1aa;
+      background: rgba(255,138,42,0.14);
+      border-color: rgba(255,138,42,0.34);
+    }
+
+    .tag.waiting {
+      color: #d9ccff;
+      background: rgba(139,92,246,0.14);
+      border-color: rgba(139,92,246,0.34);
+    }
+
+    .actions {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .ready-button,
+    .start-button {
+      height: 58px;
+      border-radius: 20px;
+      font-size: 15px;
+      letter-spacing: 0.03em;
+    }
+
+    .ready-button {
+      color: #f7edff;
+      background: linear-gradient(135deg, #6d45dd, #a66cff);
+      box-shadow: 0 18px 36px rgba(139, 92, 246, 0.28), inset 0 1px 0 rgba(255,255,255,0.34);
+    }
+
+    .start-button {
+      background: linear-gradient(135deg, #ffd08a, #ff8428);
+    }
+
+    .combat {
+      height: 560px;
+      position: relative;
+      background:
+        radial-gradient(circle at 70% 16%, rgba(255,138,42,0.18), transparent 26%),
+        radial-gradient(circle at 28% 70%, rgba(139,92,246,0.28), transparent 38%),
+        linear-gradient(145deg, rgba(24,20,44,0.86), rgba(12,10,23,0.9));
+    }
+
+    .combat-header {
+      position: absolute;
+      top: 20px;
+      left: 22px;
+      right: 22px;
+      z-index: 4;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .combat-title {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .combat-title span {
+      color: var(--orange-hot);
+      font-size: 12px;
+      font-weight: 900;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+
+    .combat-title strong {
+      font-size: 24px;
+      letter-spacing: -0.03em;
+    }
+
+    .hud {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .hud-pill {
+      min-width: 76px;
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.13);
+      background: rgba(8, 7, 20, 0.58);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+      text-align: center;
+    }
+
+    .hud-pill small {
+      display: block;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .hud-pill b {
+      display: block;
+      margin-top: 1px;
+      font-size: 18px;
+    }
+
+    .arena {
+      position: absolute;
+      left: 22px;
+      right: 22px;
+      bottom: 22px;
+      height: 430px;
+      border-radius: 28px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.12);
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+        radial-gradient(circle at 24% 28%, rgba(255,138,42,0.18), transparent 25%),
+        radial-gradient(circle at 78% 66%, rgba(139,92,246,0.24), transparent 30%),
+        linear-gradient(180deg, #201736 0%, #171124 45%, #110c1b 100%);
+      background-size: 34px 34px, 34px 34px, auto, auto, auto;
+      box-shadow: inset 0 0 80px rgba(0,0,0,0.38), 0 22px 70px rgba(0,0,0,0.34);
+    }
+
+    .arena::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(115deg, transparent 0 39%, rgba(255,255,255,0.08) 43%, transparent 49% 100%),
+        radial-gradient(ellipse at center, transparent 36%, rgba(0,0,0,0.32) 100%);
+      pointer-events: none;
+    }
+
+    .platform {
+      position: absolute;
+      height: 24px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.035));
+      box-shadow: 0 14px 28px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.16);
+    }
+
+    .platform.p1 { width: 160px; left: 58px; top: 246px; }
+    .platform.p2 { width: 178px; right: 82px; top: 166px; }
+    .platform.p3 { width: 120px; left: 314px; top: 110px; }
+    .platform.p4 { width: 190px; left: 282px; bottom: 62px; }
+
+    .player {
+      position: absolute;
+      width: 62px;
+      height: 44px;
+      z-index: 3;
+    }
+
+    .capy {
+      position: absolute;
+      left: 9px;
+      top: 14px;
+      width: 45px;
+      height: 26px;
+      border-radius: 18px 22px 16px 18px;
+      background: linear-gradient(145deg, #d99b62, #744020);
+      box-shadow: 0 12px 22px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+
+    .capy::before {
+      content: "";
+      position: absolute;
+      right: -7px;
+      top: 5px;
+      width: 18px;
+      height: 18px;
+      border-radius: 10px 12px 10px 9px;
+      background: linear-gradient(145deg, #c98a53, #6c391e);
+    }
+
+    .capy::after {
+      content: "";
+      position: absolute;
+      right: -2px;
+      top: 10px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #1c0d08;
+      box-shadow: -11px -7px 0 -1px #55301b;
+    }
+
+    .nameplate {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 45px;
+      min-width: 86px;
+      padding: 5px 8px;
+      border-radius: 10px;
+      background: rgba(8, 7, 20, 0.78);
+      border: 1px solid rgba(255,255,255,0.14);
+      text-align: center;
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .health {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: 38px;
+      width: 70px;
+      height: 5px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.14);
+      overflow: hidden;
+      box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    }
+
+    .health span {
+      display: block;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--green), #d8ff81);
+      box-shadow: 0 0 10px rgba(82,240,164,0.6);
+    }
+
+    .player.enemy .capy {
+      background: linear-gradient(145deg, #b184ff, #5730ad);
+    }
+
+    .player.enemy .capy::before {
+      background: linear-gradient(145deg, #a271ff, #4a249a);
+    }
+
+    .player.low .health span {
+      background: linear-gradient(90deg, var(--red), var(--orange-hot));
+      box-shadow: 0 0 12px rgba(255,85,119,0.65);
+    }
+
+    .player.a { left: 86px; top: 188px; }
+    .player.b { left: 370px; top: 51px; }
+    .player.c { right: 140px; top: 109px; }
+    .player.d { left: 304px; bottom: 80px; }
+
+    .projectile {
+      position: absolute;
+      height: 8px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, #fff2b8 18%, var(--orange) 78%, transparent);
+      box-shadow: 0 0 18px rgba(255,138,42,0.85);
+      z-index: 2;
+    }
+
+    .projectile.one {
+      width: 148px;
+      left: 184px;
+      top: 184px;
+      transform: rotate(-12deg);
+    }
+
+    .projectile.two {
+      width: 112px;
+      right: 238px;
+      top: 235px;
+      transform: rotate(154deg);
+      background: linear-gradient(90deg, transparent, #e8dcff 18%, var(--purple) 76%, transparent);
+      box-shadow: 0 0 18px rgba(139,92,246,0.9);
+    }
+
+    .blast {
+      position: absolute;
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle, rgba(255,255,255,0.92) 0 8%, rgba(255,177,86,0.92) 9% 25%, rgba(255,85,119,0.45) 26% 48%, transparent 50%);
+      box-shadow: 0 0 34px rgba(255,138,42,0.68);
+      z-index: 2;
+    }
+
+    .blast.one { left: 486px; top: 202px; }
+
+    .ring {
+      position: absolute;
+      width: 102px;
+      height: 102px;
+      border-radius: 50%;
+      border: 2px solid rgba(139,92,246,0.6);
+      box-shadow: inset 0 0 26px rgba(139,92,246,0.25), 0 0 26px rgba(139,92,246,0.36);
+      z-index: 1;
+    }
+
+    .ring.one { right: 108px; bottom: 72px; }
+
+    .score-strip {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 18px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      z-index: 4;
+    }
+
+    .score-card {
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(8, 7, 20, 0.58);
+      border-radius: 16px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+    }
+
+    .score-card span {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .score-card b {
+      font-size: 20px;
+    }
+
+    .caption {
+      position: absolute;
+      left: 38px;
+      right: 38px;
+      bottom: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: rgba(247,239,228,0.72);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      z-index: 2;
+    }
+
+    .caption strong {
+      color: #fff2d9;
+    }
+  </style>
+</head>
+<body>
+  <main class="composition" aria-label="Composição de captura README do modo multiplayer Capiquake">
+    <div class="orb one"></div>
+    <div class="orb two"></div>
+
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"></div>
+        <div>
+          <div class="eyebrow">Capiquake Online</div>
+          <h1>Lobby + combate em tempo real</h1>
+        </div>
+      </div>
+      <div class="status-chip">2/4 jogadores</div>
+    </header>
+
+    <section class="layout">
+      <aside class="panel lobby" aria-label="Lobby multiplayer">
+        <div class="section-label">
+          <h2>Sala multiplayer</h2>
+          <span class="live-pill">online</span>
+        </div>
+
+        <div class="room-card">
+          <div class="room-title">
+            <span>Código da sala</span>
+            <span>Servidor SP-02</span>
+          </div>
+          <div class="room-code">
+            <div class="code-input" aria-label="Código CAPY-42">
+              <strong>CAPY-42</strong>
+              <span>input</span>
+            </div>
+            <button class="copy-button">Copiar</button>
+          </div>
+        </div>
+
+        <div class="players" aria-label="Slots de jogadores">
+          <div class="player-slot">
+            <div class="avatar"></div>
+            <div>
+              <div class="player-name">Zanona</div>
+              <div class="player-meta">host · railgun laranja</div>
+            </div>
+            <span class="tag host">host</span>
+          </div>
+
+          <div class="player-slot">
+            <div class="avatar"></div>
+            <div>
+              <div class="player-name">Matteo</div>
+              <div class="player-meta">pronto · escudo violeta</div>
+            </div>
+            <span class="tag ready">ready</span>
+          </div>
+
+          <div class="player-slot">
+            <div class="avatar empty"></div>
+            <div>
+              <div class="player-name">Slot aberto</div>
+              <div class="player-meta">aguardando capivara</div>
+            </div>
+            <span class="tag waiting">vazio</span>
+          </div>
+
+          <div class="player-slot">
+            <div class="avatar empty"></div>
+            <div>
+              <div class="player-name">Slot aberto</div>
+              <div class="player-meta">convite por código</div>
+            </div>
+            <span class="tag waiting">vazio</span>
+          </div>
+        </div>
+
+        <div class="actions">
+          <button class="ready-button">Estou pronto</button>
+          <button class="start-button">Iniciar partida</button>
+        </div>
+      </aside>
+
+      <section class="panel combat" aria-label="Prévia compacta de combate multiplayer">
+        <div class="combat-header">
+          <div class="combat-title">
+            <span>Preview da arena</span>
+            <strong>Delta Docks · 03:18</strong>
+          </div>
+          <div class="hud" aria-label="HUD da partida">
+            <div class="hud-pill"><small>ping</small><b>24</b></div>
+            <div class="hud-pill"><small>fps</small><b>144</b></div>
+            <div class="hud-pill"><small>frag</small><b>08</b></div>
+          </div>
+        </div>
+
+        <div class="arena">
+          <div class="platform p1"></div>
+          <div class="platform p2"></div>
+          <div class="platform p3"></div>
+          <div class="platform p4"></div>
+
+          <div class="projectile one"></div>
+          <div class="projectile two"></div>
+          <div class="blast one"></div>
+          <div class="ring one"></div>
+
+          <div class="player a">
+            <div class="nameplate">Zanona</div>
+            <div class="health"><span style="width: 92%"></span></div>
+            <div class="capy"></div>
+          </div>
+
+          <div class="player b enemy">
+            <div class="nameplate">Roxo</div>
+            <div class="health"><span style="width: 76%"></span></div>
+            <div class="capy"></div>
+          </div>
+
+          <div class="player c enemy low">
+            <div class="nameplate">Bot-03</div>
+            <div class="health"><span style="width: 34%"></span></div>
+            <div class="capy"></div>
+          </div>
+
+          <div class="player d">
+            <div class="nameplate">Matteo</div>
+            <div class="health"><span style="width: 64%"></span></div>
+            <div class="capy"></div>
+          </div>
+
+          <div class="score-strip">
+            <div class="score-card"><span>Zanona</span><b>12</b></div>
+            <div class="score-card"><span>Matteo</span><b>09</b></div>
+            <div class="score-card"><span>Roxo</span><b>07</b></div>
+            <div class="score-card"><span>Bot-03</span><b>03</b></div>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <footer class="caption">
+      <span><strong>README screenshot composition</strong> · lobby glassmorphism + arena preview</span>
+      <span>purple/orange theme · 1280x720</span>
+    </footer>
+  </main>
+</body>
+</html>
