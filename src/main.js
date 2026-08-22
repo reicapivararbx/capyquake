@@ -481,6 +481,73 @@ function refreshRebirthPanel() {
   document.getElementById('rb-warning').style.display = allOk ? 'block' : 'none';
 }
 
+document.getElementById('btn-stats-menu').addEventListener('click', () => {
+  const savedStats = JSON.parse(localStorage.getItem('capiquake_stats') || '{}');
+  const board = JSON.parse(localStorage.getItem('capiquake_leaderboard') || '[]');
+  const tbody = document.getElementById('lb-body');
+  if (tbody) {
+    tbody.replaceChildren();
+    if (!board.length) {
+      const tr = document.createElement('tr');
+      const td = document.createElement('td');
+      td.colSpan = 6;
+      td.textContent = 'Nenhuma partida registrada ainda. Va cacar!';
+      td.style.textAlign = 'center';
+      td.style.color = '#6b6b78';
+      tr.appendChild(td);
+      tbody.appendChild(tr);
+    }
+    board.forEach((entry, i) => {
+      const tr = document.createElement('tr');
+      const cells = [
+        String(i + 1),
+        entry.name,
+        String(entry.kills),
+        String(entry.wave),
+        entry.mode,
+        entry.won ? 'VITORIA' : 'DERROTA'
+      ];
+      cells.forEach((c, ci) => {
+        const td = document.createElement('td');
+        td.textContent = c;
+        if (ci === 5) td.className = entry.won ? 'won' : 'lost';
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  const grid = document.getElementById('stats-grid');
+  if (grid) {
+    grid.replaceChildren();
+    const labels = {
+      kills: 'Abates', deaths: 'Mortes', matchesPlayed: 'Partidas', matchesWon: 'Vitorias',
+      matchesLost: 'Derrotas', headshots: 'Headshots', killStreak: 'Melhor Streak',
+      moneyEarned: 'Dinheiro ganho', tokensEarned: 'Tokens ganhos', revivesUsed: 'Revives usados',
+      waves: 'Ultima wave', bosses: 'Bosses', level: 'Nivel'
+    };
+    Object.entries(labels).forEach(([key, label]) => {
+      const box = document.createElement('div');
+      box.className = 'stat-box';
+      const v = document.createElement('div');
+      v.className = 'sv';
+      v.textContent = key === 'moneyEarned' ? 'R$ ' + (savedStats[key] || 0).toLocaleString('pt-BR') : String(savedStats[key] || 0);
+      const l = document.createElement('div');
+      l.className = 'sl';
+      l.textContent = label;
+      box.appendChild(v);
+      box.appendChild(l);
+      grid.appendChild(box);
+    });
+  }
+
+  document.getElementById('stats-screen').style.display = 'flex';
+});
+
+document.getElementById('btn-stats-close').addEventListener('click', () => {
+  document.getElementById('stats-screen').style.display = 'none';
+});
+
 document.getElementById('btn-rebirth-menu').addEventListener('click', () => {
   refreshRebirthPanel();
   document.getElementById('rebirth-screen').style.display = 'flex';

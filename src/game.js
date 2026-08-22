@@ -2135,6 +2135,23 @@ endGame() {
   this.renderer.render();
 
   this.stats.matchesPlayed = (this.stats.matchesPlayed || 0) + 1;
+
+  if (this.mode !== 'test') {
+    try {
+      const board = JSON.parse(localStorage.getItem('capiquake_leaderboard') || '[]');
+      board.push({
+        name: this.playerName,
+        kills: this.stats.kills || 0,
+        wave: this.wave || 1,
+        mode: this.gameModeId || 'normal',
+        won: !this.playerDead,
+        date: Date.now()
+      });
+      board.sort((x, y) => y.kills - x.kills);
+      localStorage.setItem('capiquake_leaderboard', JSON.stringify(board.slice(0, 10)));
+    } catch (e) { /* ignore */ }
+  }
+
   if (this.playerDead) {
     this.stats.matchesLost = (this.stats.matchesLost || 0) + 1;
   } else {

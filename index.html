@@ -1173,6 +1173,135 @@
       -webkit-text-fill-color: transparent;
     }
 
+    /* ===== REBIRTH (restaurado) ===== */
+    #rebirth-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.75);
+    }
+    .rebirth-panel {
+      width: min(440px, 92vw);
+      max-height: 88vh;
+      overflow-y: auto;
+      background: linear-gradient(180deg, #16121f, #0c0a12);
+      border: 1px solid #5a3a8a;
+      border-radius: 14px;
+      padding: 22px 26px;
+      box-sizing: border-box;
+      color: #e8e8ef;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      text-align: center;
+    }
+    .rebirth-panel h2 {
+      margin: 0 0 10px;
+      font-size: 24px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #c084fc, #7c3aed);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .rb-level { font-size: 15px; margin-bottom: 8px; }
+    .rb-level b { color: #c084fc; font-size: 18px; }
+    .rb-rt { font-size: 13px; margin-bottom: 12px; color: #9aa0b4; }
+    .rb-rt b { color: #ffd000; font-size: 16px; }
+    .rb-rt small { color: #6b6b78; }
+    .rb-buffs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .rb-buffs div {
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.35);
+      border-radius: 8px;
+      padding: 8px;
+      font-size: 13px;
+    }
+    .rb-buffs span { color: #c084fc; font-weight: bold; }
+    .rebirth-panel h3 {
+      margin: 14px 0 8px;
+      font-size: 12px;
+      letter-spacing: 2px;
+      color: #9aa0b4;
+    }
+    .rb-reqs { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+    .rb-req {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #17171f;
+      border: 1px solid #2a2a38;
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+    }
+    .rb-req.done { border-color: #4ade80; background: rgba(74, 222, 128, 0.08); }
+    .rb-req-value { font-weight: bold; color: #ffd000; font-family: 'Courier New', monospace; }
+    .rb-req.done .rb-req-value { color: #4ade80; }
+    .rb-go { background: linear-gradient(180deg, #a855f7, #7c3aed) !important; color: #fff !important; border: none !important; font-weight: bold; }
+    .rb-go:disabled { opacity: 0.4; cursor: not-allowed; }
+    .rebirth-panel .settings-btn { width: 100%; margin-top: 8px; }
+
+    /* ===== STATS & RANKING ===== */
+    #stats-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.8);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .stats-panel {
+      width: min(680px, 94vw);
+      max-height: 88vh;
+      overflow-y: auto;
+      background: linear-gradient(180deg, #12151c, #0c0e13);
+      border: 1px solid #2a3550;
+      border-radius: 16px;
+      padding: 24px 28px;
+      box-sizing: border-box;
+      color: #e8e8ef;
+    }
+    .stats-panel h2 {
+      margin: 0 0 18px;
+      text-align: center;
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      background: linear-gradient(95deg, #60a5fa, #3b82f6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .lb-section { margin-bottom: 22px; }
+    .lb-section h3 { font-size: 12px; letter-spacing: 2px; color: #9aa0b4; margin: 0 0 10px; }
+    .lb-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .lb-table th {
+      text-align: left;
+      padding: 7px 10px;
+      color: #64748b;
+      font-size: 10.5px;
+      letter-spacing: 1.5px;
+      border-bottom: 1px solid #263048;
+    }
+    .lb-table td { padding: 8px 10px; border-bottom: 1px solid rgba(255,255,255,.05); }
+    .lb-table tr:first-child td { color: #ffd000; font-weight: 700; }
+    .lb-table .won { color: #4ade80; }
+    .lb-table .lost { color: #ff7b7b; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 8px; }
+    .stat-box {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.09);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+    .stat-box .sv { font-size: 17px; font-weight: 800; color: #60a5fa; font-family:'Courier New',monospace; }
+    .stat-box .sl { font-size: 10.5px; color: #8b90a3; margin-top: 2px; }
+
   </style>
    <link rel="stylesheet" href="shop.css">
 </head>
@@ -1192,6 +1321,7 @@
       <button id="btn-shop-menu">🛒<span>Loja</span></button>
       <button id="btn-achievements-menu">🏆<span>Conquistas</span></button>
       <button id="btn-rebirth-menu">🔄<span>Rebirth</span></button>
+      <button id="btn-stats-menu">📊<span>Stats</span></button>
     </div>
     <button id="btn-test-mode">🧪 MODO TESTE</button>
   </div>
@@ -1382,6 +1512,24 @@
     <div class="scoreboard" id="final-scoreboard"></div>
     <canvas id="fire-canvas" width="400" height="200"></canvas>
     <button id="btn-play-again">Jogar novamente</button>
+  </div>
+
+<div id="stats-screen" style="display:none;">
+    <div class="stats-panel">
+      <h2>📊 ESTATÍSTICAS & RANKING</h2>
+      <div class="lb-section">
+        <h3>🏅 TOP 10 PARTIDAS (por abates)</h3>
+        <table class="lb-table">
+          <thead><tr><th>#</th><th>Jogador</th><th>Abates</th><th>Wave</th><th>Modo</th><th>Resultado</th></tr></thead>
+          <tbody id="lb-body"></tbody>
+        </table>
+      </div>
+      <div class="lb-section">
+        <h3>📈 SUAS ESTATÍSTICAS GERAIS</h3>
+        <div class="stats-grid" id="stats-grid"></div>
+      </div>
+      <button id="btn-stats-close" class="settings-btn quit-btn">Voltar</button>
+    </div>
   </div>
 
 <div id="rebirth-screen" style="display:none;">
