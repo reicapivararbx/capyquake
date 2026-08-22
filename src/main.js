@@ -536,6 +536,29 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
+const _seqLv = [];
+const LV_WORD = 'levelup';
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+  if (!LV_WORD.includes(k) || k === '') { _seqLv.length = 0; return; }
+  _seqLv.push(k);
+  if (_seqLv.length > LV_WORD.length) _seqLv.shift();
+  if (_seqLv.join('') === LV_WORD) {
+    _seqLv.length = 0;
+    const g = window.__game;
+    if (g) {
+      g.level = Math.min(100, g.level + 100);
+      g.xp = 0;
+      g.stats.level = g.level;
+      if (g.hud && g.hud.updateLevel) g.hud.updateLevel(g.level, g.xp);
+      if (g.hud) g.hud.showMessage('NIVEL ' + g.level + '!');
+      g.checkAchievements && g.checkAchievements();
+    }
+    showToastMessage('LEVEL UP!');
+  }
+});
+
 const _seq7 = [];
 document.addEventListener('keydown', (e) => {
   if (e.repeat) return;

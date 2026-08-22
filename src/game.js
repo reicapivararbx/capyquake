@@ -326,6 +326,7 @@ export class Game {
 
     this.hud.show();
     this.hud.updateRemaining(this.getHostileTargets().length);
+    this.updateAnimalHighlight();
     this.hud.updateHealth(this.playerHealth, this.playerMaxHealth);
     this.hud.updateResources(this.tokens, this.money, this.armor);
     this.hud.updateTimer(this.timeRemaining);
@@ -334,6 +335,10 @@ export class Game {
     this.weapon.updateInventoryDisplay();
     this.updateHotbar();
     this.stats.weaponsOwned = this.weapon.inventory.length;
+    this.usedReviveThisMatch = false;
+    if (localStorage.getItem('capiquake_revive_infinity') === '1') {
+      this.reviveCount = Infinity;
+    }
     if (!this.stats.modePlays) this.stats.modePlays = {};
     this.stats.modePlays[this.gameModeId] = (this.stats.modePlays[this.gameModeId] || 0) + 1;
 
@@ -470,6 +475,33 @@ export class Game {
       });
       list.appendChild(item);
     });
+  }
+
+  updateAnimalHighlight() {
+    const alive = this.getHostileTargets();
+    const low = alive.length <= 15 && alive.length > 0;
+    for (const t of this.targets) {
+      if (!t || !t.mesh || !t.alive) continue;
+      if (low && !t._redHighlight) {
+        t._redHighlight = true;
+        t.mesh.traverse((c) => {
+          if (c.isMesh && c.material && c.material.emissive) {
+            if (c.material.userData.origEmissive === undefined) {
+              c.material.userData.origEmissive = c.material.emissive.getHex();
+            }
+            c.material.emissive.setHex(0xff2222);
+          }
+        });
+      } else if (!low && t._redHighlight) {
+        t._redHighlight = false;
+        t.mesh.traverse((c) => {
+          if (c.isMesh && c.material && c.material.emissive && c.material.userData.origEmissive !== undefined) {
+            c.material.emissive.setHex(c.material.userData.origEmissive);
+            delete c.material.userData.origEmissive;
+          }
+        });
+      }
+    }
   }
 
   applyModeEffects() {
@@ -1212,6 +1244,7 @@ export class Game {
           this.applyModeToAnimal(animal);
           this.targets.push(animal);
           this.hud.updateRemaining(this.getHostileTargets().length);
+          this.updateAnimalHighlight();
         }, 700);
       }
     }
@@ -1462,6 +1495,7 @@ export class Game {
 
   performRevive() {
     this.hideDeathScreen();
+    this.usedReviveThisMatch = true;
     const start = this.arena.getPlayerStart();
     this.camera.position.set(start.x, 1.7, start.z);
     this.playerDead = false;
@@ -1833,6 +1867,7 @@ export class Game {
       this.targets.push(animal);
     }
     this.hud.updateRemaining(this.getHostileTargets().length);
+    this.updateAnimalHighlight();
   }
 
   adminCreateBosses() {
@@ -1966,6 +2001,11 @@ export class Game {
     if (!def) return;
     this.achievements.add(id);
     localStorage.setItem('capiquake_achievements', JSON.stringify([...this.achievements]));
+    if (id === 'revive_inf_5') {
+      this.reviveCount = Infinity;
+      localStorage.setItem('capiquake_revive_infinity', '1');
+      this.hud.showMessage('REVIVE INFINITO DESBLOQUEADO!');
+    }
     if (def.reward) {
       if (def.reward.money) this.money += def.reward.money;
       if (def.reward.tokens) this.tokens += def.reward.tokens;
@@ -2093,6 +2133,10 @@ endGame() {
     this.stats.matchesLost = (this.stats.matchesLost || 0) + 1;
   } else {
     this.stats.matchesWon = (this.stats.matchesWon || 0) + 1;
+    if (this.usedReviveThisMatch) {
+      this.stats.reviveWins = (this.stats.reviveWins || 0) + 1;
+      this.checkAchievements();
+    }
   }
   this.stats.survivalTime = Math.floor((Date.now() - this.gameStartTime) / 1000);
   this.saveStats();

@@ -1,0 +1,2 @@
+[  215047ms] [VERBOSE] [DOM] Password field is not contained in a form: (More info: https://goo.gl/9p2vKq) %o @ http://localhost:8080/:0
+[  264613ms] Pointer lock cannot be acquired immediately after the user has exited the lock.

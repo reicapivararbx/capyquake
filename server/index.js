@@ -113,6 +113,7 @@ class GameRoom {
       type: 'gameStart',
       data: {
         map: d.map || null,
+        gameMode: d.gameMode || 'normal',
         animalCount: d.animalCount || this.animalCount,
         bots: ['UmLegalGaucho', 'Bot_Mineiro', 'Bot_Paulista', 'Bot_Carioca', 'Bot_Baiano']
       }

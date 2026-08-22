@@ -1,0 +1,45 @@
+- generic [active] [ref=e17]:
+  - generic:
+    - generic: 10:00
+    - generic:
+      - generic: "KILLS: 0"
+      - generic: "ANIMAIS: 48"
+      - generic: ONDA 1
+    - generic:
+      - generic: "TOKENS: 0"
+      - generic: "R$: 0"
+      - generic: "ARMADURA: 0"
+    - generic: "VIDA: 200"
+    - generic: BASTAO (DMG:12)
+    - generic: "> BASTAO PISTOLA [7023] MINIGUN [INF] AK-47 [7023] CAJADO DE FOGO [7023] BAZUCA [7023] APRIL FOOLS GUN [7023] CHICKEN GUN [7023] SNIPER [7023]"
+    - generic: Pressione [E] para abrir
+    - generic: SALA ABERTA! 4 animais!
+    - generic:
+      - generic:
+        - generic: "1"
+        - generic: BASTAO
+      - generic:
+        - generic: "2"
+        - generic: PISTOLA
+      - generic:
+        - generic: "3"
+        - generic: MINIGUN
+      - generic:
+        - generic: "4"
+        - generic: AK-47
+      - generic:
+        - generic: "5"
+        - generic: CAJADO DE FOGO
+      - generic:
+        - generic: "6"
+        - generic: BAZUCA
+      - generic:
+        - generic: "7"
+        - generic: APRIL FOOLS GUN
+      - generic:
+        - generic: "8"
+        - generic: CHICKEN GUN
+      - generic:
+        - generic: "9"
+        - generic: SNIPER
+    - button "Pausar"

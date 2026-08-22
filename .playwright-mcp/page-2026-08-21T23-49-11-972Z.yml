@@ -1,0 +1,35 @@
+- generic [active]:
+  - generic [ref=f7e1]:
+    - button "⚙" [ref=f7e2] [cursor=pointer]
+    - generic [ref=f7e3]:
+      - heading "CAPIQUAKE" [level=1] [ref=f7e4]
+      - generic [ref=f7e5]: A GRANDE CAÇADA
+    - textbox "Digite seu nome..." [ref=f7e6]
+    - generic [ref=f7e7]:
+      - button "▶ Singleplayer Sobreviva às ondas" [ref=f7e8] [cursor=pointer]:
+        - generic [ref=f7e9]: ▶
+        - generic [ref=f7e10]:
+          - text: Singleplayer
+          - generic [ref=f7e11]: Sobreviva às ondas
+      - button "🌐 Multiplayer Até 6 jogadores" [ref=f7e12] [cursor=pointer]:
+        - generic [ref=f7e13]: 🌐
+        - generic [ref=f7e14]:
+          - text: Multiplayer
+          - generic [ref=f7e15]: Até 6 jogadores
+    - generic [ref=f7e16]:
+      - button "🛒 Loja" [ref=f7e17] [cursor=pointer]:
+        - text: 🛒
+        - generic [ref=f7e18]: Loja
+      - button "🏆 Conquistas" [ref=f7e19] [cursor=pointer]:
+        - text: 🏆
+        - generic [ref=f7e20]: Conquistas
+      - button "🔄 Rebirth" [ref=f7e21] [cursor=pointer]:
+        - text: 🔄
+        - generic [ref=f7e22]: Rebirth
+    - button "🧪 MODO TESTE" [ref=f7e23] [cursor=pointer]
+  - text: ✓
+  - generic:
+    - generic: 🏆
+    - generic:
+      - heading "CONQUISTA DESBLOQUEADA" [level=4]
+      - paragraph

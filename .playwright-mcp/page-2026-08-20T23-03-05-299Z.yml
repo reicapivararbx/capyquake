@@ -1,0 +1,6 @@
+- generic [ref=e11]:
+  - heading "TUTORIAL" [level=2] [ref=e12]
+  - generic [ref=e13]: Bem-vindo ao CapiQuake! Use [W][A][S][D] para se mover e o MOUSE para atirar.
+  - generic [ref=e14]:
+    - button "PULAR TUTORIAL" [ref=e15] [cursor=pointer]
+    - button "PRÓXIMO" [ref=e16] [cursor=pointer]

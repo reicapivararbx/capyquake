@@ -1,0 +1,235 @@
+- generic [active]:
+  - generic [ref=f4e1]:
+    - generic [ref=f4e2]:
+      - heading "🛒 LOJA" [level=2] [ref=f4e3]
+      - generic [ref=f4e4]:
+        - generic [ref=f4e5]: "TOKENS: 0"
+        - generic [ref=f4e6]: "R$: 0"
+    - button "🔄 Trocar R$ 1.000 por 1 token" [ref=f4e7] [cursor=pointer]
+    - generic [ref=f4e8]:
+      - heading "🔫 ARMAS R$" [level=3] [ref=f4e9]:
+        - generic [ref=f4e10]: 🔫
+        - text: ARMAS
+        - generic [ref=f4e11]: R$
+      - generic [ref=f4e12]:
+        - button "🔫 Minigun Metralhadora pesada R$ 5.000" [ref=f4e13] [cursor=pointer]:
+          - generic [ref=f4e14]: 🔫
+          - generic [ref=f4e15]:
+            - generic [ref=f4e16]: Minigun
+            - generic [ref=f4e17]: Metralhadora pesada
+          - generic [ref=f4e18]: R$ 5.000
+        - button "🔫 AK-47 Rifle de assalto R$ 3.000" [ref=f4e19] [cursor=pointer]:
+          - generic [ref=f4e20]: 🔫
+          - generic [ref=f4e21]:
+            - generic [ref=f4e22]: AK-47
+            - generic [ref=f4e23]: Rifle de assalto
+          - generic [ref=f4e24]: R$ 3.000
+    - generic [ref=f4e25]:
+      - heading "🛡️ ARMADURAS R$" [level=3] [ref=f4e26]:
+        - generic [ref=f4e27]: 🛡️
+        - text: ARMADURAS
+        - generic [ref=f4e28]: R$
+      - generic [ref=f4e29]:
+        - button "🥼 Armadura Leve +25 de proteção R$ 2.000" [ref=f4e30] [cursor=pointer]:
+          - generic [ref=f4e31]: 🥼
+          - generic [ref=f4e32]:
+            - generic [ref=f4e33]: Armadura Leve
+            - generic [ref=f4e34]: +25 de proteção
+          - generic [ref=f4e35]: R$ 2.000
+        - button "🦺 Armadura Pesada +50 de proteção R$ 4.000" [ref=f4e36] [cursor=pointer]:
+          - generic [ref=f4e37]: 🦺
+          - generic [ref=f4e38]:
+            - generic [ref=f4e39]: Armadura Pesada
+            - generic [ref=f4e40]: +50 de proteção
+          - generic [ref=f4e41]: R$ 4.000
+    - generic [ref=f4e42]:
+      - heading "⚡ BOOSTS 🪙" [level=3] [ref=f4e43]:
+        - generic [ref=f4e44]: ⚡
+        - text: BOOSTS
+        - generic [ref=f4e45]: 🪙
+      - generic [ref=f4e46]:
+        - button "💨 Velocidade +50% velocidade por 60s 1 🪙" [ref=f4e47] [cursor=pointer]:
+          - generic [ref=f4e48]: 💨
+          - generic [ref=f4e49]:
+            - generic [ref=f4e50]: Velocidade
+            - generic [ref=f4e51]: +50% velocidade por 60s
+          - generic [ref=f4e52]: 1 🪙
+        - button "❤️ Vida Máxima +100 HP máximo 1 🪙" [ref=f4e53] [cursor=pointer]:
+          - generic [ref=f4e54]: ❤️
+          - generic [ref=f4e55]:
+            - generic [ref=f4e56]: Vida Máxima
+            - generic [ref=f4e57]: +100 HP máximo
+          - generic [ref=f4e58]: 1 🪙
+    - generic [ref=f4e59]:
+      - heading "📦 MUNIÇÕES R$" [level=3] [ref=f4e60]:
+        - generic [ref=f4e61]: 📦
+        - text: MUNIÇÕES
+        - generic [ref=f4e62]: R$
+      - generic [ref=f4e63]:
+        - button "🚀 Munição Bazuca 100 tiros R$ 575" [ref=f4e64] [cursor=pointer]:
+          - generic [ref=f4e65]: 🚀
+          - generic [ref=f4e66]:
+            - generic [ref=f4e67]: Munição Bazuca
+            - generic [ref=f4e68]: 100 tiros
+          - generic [ref=f4e69]: R$ 575
+        - button "🐔 Munição Chicken 10 tiros R$ 58" [ref=f4e70] [cursor=pointer]:
+          - generic [ref=f4e71]: 🐔
+          - generic [ref=f4e72]:
+            - generic [ref=f4e73]: Munição Chicken
+            - generic [ref=f4e74]: 10 tiros
+          - generic [ref=f4e75]: R$ 58
+        - button "🎯 Munição Sniper 10 tiros R$ 288" [ref=f4e76] [cursor=pointer]:
+          - generic [ref=f4e77]: 🎯
+          - generic [ref=f4e78]:
+            - generic [ref=f4e79]: Munição Sniper
+            - generic [ref=f4e80]: 10 tiros
+          - generic [ref=f4e81]: R$ 288
+    - generic [ref=f4e82]:
+      - heading "🛡️ ARMADURAS COMPLETAS R$" [level=3] [ref=f4e83]:
+        - generic [ref=f4e84]: 🛡️
+        - text: ARMADURAS COMPLETAS
+        - generic [ref=f4e85]: R$
+      - generic [ref=f4e86]:
+        - button "🟤 Armadura Couro +20 HP · permanente R$ 1.150" [ref=f4e87] [cursor=pointer]:
+          - generic [ref=f4e88]: 🟤
+          - generic [ref=f4e89]:
+            - generic [ref=f4e90]: Armadura Couro
+            - generic [ref=f4e91]: +20 HP · permanente
+          - generic [ref=f4e92]: R$ 1.150
+        - button "🟡 Armadura Ouro +30 HP · permanente R$ 2.300" [ref=f4e93] [cursor=pointer]:
+          - generic [ref=f4e94]: 🟡
+          - generic [ref=f4e95]:
+            - generic [ref=f4e96]: Armadura Ouro
+            - generic [ref=f4e97]: +30 HP · permanente
+          - generic [ref=f4e98]: R$ 2.300
+        - button "⚪ Armadura Ferro +50 HP · permanente R$ 5.750" [ref=f4e99] [cursor=pointer]:
+          - generic [ref=f4e100]: ⚪
+          - generic [ref=f4e101]:
+            - generic [ref=f4e102]: Armadura Ferro
+            - generic [ref=f4e103]: +50 HP · permanente
+          - generic [ref=f4e104]: R$ 5.750
+        - button "💎 Armadura Diamante +100 HP · permanente R$ 11.500" [ref=f4e105] [cursor=pointer]:
+          - generic [ref=f4e106]: 💎
+          - generic [ref=f4e107]:
+            - generic [ref=f4e108]: Armadura Diamante
+            - generic [ref=f4e109]: +100 HP · permanente
+          - generic [ref=f4e110]: R$ 11.500
+        - button "🕳️ Armadura Void +500 HP · permanente R$ 57.500" [ref=f4e111] [cursor=pointer]:
+          - generic [ref=f4e112]: 🕳️
+          - generic [ref=f4e113]:
+            - generic [ref=f4e114]: Armadura Void
+            - generic [ref=f4e115]: +500 HP · permanente
+          - generic [ref=f4e116]: R$ 57.500
+    - generic [ref=f4e117]:
+      - heading "✨ HABILIDADES 🪙" [level=3] [ref=f4e118]:
+        - generic [ref=f4e119]: ✨
+        - text: HABILIDADES
+        - generic [ref=f4e120]: 🪙
+      - generic [ref=f4e121]:
+        - button "💥 Explosão Void Dano AoE 200 · CD 30s 10 🪙" [ref=f4e122] [cursor=pointer]:
+          - generic [ref=f4e123]: 💥
+          - generic [ref=f4e124]:
+            - generic [ref=f4e125]: Explosão Void
+            - generic [ref=f4e126]: Dano AoE 200 · CD 30s
+          - generic [ref=f4e127]: 10 🪙
+        - button "🌀 Teleporte Instantâneo · CD 15s 8 🪙" [ref=f4e128] [cursor=pointer]:
+          - generic [ref=f4e129]: 🌀
+          - generic [ref=f4e130]:
+            - generic [ref=f4e131]: Teleporte
+            - generic [ref=f4e132]: Instantâneo · CD 15s
+          - generic [ref=f4e133]: 8 🪙
+        - button "🏃 Rush de Velocidade +200% vel · 10s · CD 45s 15 🪙" [ref=f4e134] [cursor=pointer]:
+          - generic [ref=f4e135]: 🏃
+          - generic [ref=f4e136]:
+            - generic [ref=f4e137]: Rush de Velocidade
+            - generic [ref=f4e138]: +200% vel · 10s · CD 45s
+          - generic [ref=f4e139]: 15 🪙
+    - generic [ref=f4e140]:
+      - heading "🪄 ENCANTAMENTOS 🪙" [level=3] [ref=f4e141]:
+        - generic [ref=f4e142]: 🪄
+        - text: ENCANTAMENTOS
+        - generic [ref=f4e143]: 🪙
+      - generic [ref=f4e144]:
+        - button "🔥 Fogo Visual ígneo · permanente 12 🪙" [ref=f4e145] [cursor=pointer]:
+          - generic [ref=f4e146]: 🔥
+          - generic [ref=f4e147]:
+            - generic [ref=f4e148]: Fogo
+            - generic [ref=f4e149]: Visual ígneo · permanente
+          - generic [ref=f4e150]: 12 🪙
+        - button "❄️ Gelado Lentidão inimiga · 5s 10 🪙" [ref=f4e151] [cursor=pointer]:
+          - generic [ref=f4e152]: ❄️
+          - generic [ref=f4e153]:
+            - generic [ref=f4e154]: Gelado
+            - generic [ref=f4e155]: Lentidão inimiga · 5s
+          - generic [ref=f4e156]: 10 🪙
+        - button "⚡ Raio Visual elétrico · permanente 15 🪙" [ref=f4e157] [cursor=pointer]:
+          - generic [ref=f4e158]: ⚡
+          - generic [ref=f4e159]:
+            - generic [ref=f4e160]: Raio
+            - generic [ref=f4e161]: Visual elétrico · permanente
+          - generic [ref=f4e162]: 15 🪙
+    - generic [ref=f4e163]:
+      - heading "👤 SKINS DE JOGADOR 🪙" [level=3] [ref=f4e164]:
+        - generic [ref=f4e165]: 👤
+        - text: SKINS DE JOGADOR
+        - generic [ref=f4e166]: 🪙
+      - generic [ref=f4e167]:
+        - button "🕳️ Void Estilo sombrio 50 🪙" [ref=f4e168] [cursor=pointer]:
+          - generic [ref=f4e169]: 🕳️
+          - generic [ref=f4e170]:
+            - generic [ref=f4e171]: Void
+            - generic [ref=f4e172]: Estilo sombrio
+          - generic [ref=f4e173]: 50 🪙
+        - button "🔥 Flame Estilo chama 45 🪙" [ref=f4e174] [cursor=pointer]:
+          - generic [ref=f4e175]: 🔥
+          - generic [ref=f4e176]:
+            - generic [ref=f4e177]: Flame
+            - generic [ref=f4e178]: Estilo chama
+          - generic [ref=f4e179]: 45 🪙
+        - button "💨 Steam Estilo vapor 40 🪙" [ref=f4e180] [cursor=pointer]:
+          - generic [ref=f4e181]: 💨
+          - generic [ref=f4e182]:
+            - generic [ref=f4e183]: Steam
+            - generic [ref=f4e184]: Estilo vapor
+          - generic [ref=f4e185]: 40 🪙
+    - generic [ref=f4e186]:
+      - heading "🎨 SKINS DE ARMAS 🪙" [level=3] [ref=f4e187]:
+        - generic [ref=f4e188]: 🎨
+        - text: SKINS DE ARMAS
+        - generic [ref=f4e189]: 🪙
+      - generic [ref=f4e190]:
+        - button "🕸️ Armadilha Visual exclusivo 25 🪙" [ref=f4e191] [cursor=pointer]:
+          - generic [ref=f4e192]: 🕸️
+          - generic [ref=f4e193]:
+            - generic [ref=f4e194]: Armadilha
+            - generic [ref=f4e195]: Visual exclusivo
+          - generic [ref=f4e196]: 25 🪙
+        - button "🏆 Dourada Visual exclusivo 30 🪙" [ref=f4e197] [cursor=pointer]:
+          - generic [ref=f4e198]: 🏆
+          - generic [ref=f4e199]:
+            - generic [ref=f4e200]: Dourada
+            - generic [ref=f4e201]: Visual exclusivo
+          - generic [ref=f4e202]: 30 🪙
+        - button "🧊 Criogênico Visual exclusivo 35 🪙" [ref=f4e203] [cursor=pointer]:
+          - generic [ref=f4e204]: 🧊
+          - generic [ref=f4e205]:
+            - generic [ref=f4e206]: Criogênico
+            - generic [ref=f4e207]: Visual exclusivo
+          - generic [ref=f4e208]: 35 🪙
+    - generic [ref=f4e209]:
+      - heading "❤️ REVIVES R$" [level=3] [ref=f4e210]:
+        - generic [ref=f4e211]: ❤️
+        - text: REVIVES
+        - generic [ref=f4e212]: R$
+      - button "💖 Revive Reapareça no jogo · uso único R$ 5.750" [ref=f4e214] [cursor=pointer]:
+        - generic [ref=f4e215]: 💖
+        - generic [ref=f4e216]:
+          - generic [ref=f4e217]: Revive
+          - generic [ref=f4e218]: Reapareça no jogo · uso único
+        - generic [ref=f4e219]: R$ 5.750
+    - button "FECHAR" [ref=f4e221] [cursor=pointer]
+  - generic:
+    - generic: 🏆
+    - generic:
+      - heading "CONQUISTA DESBLOQUEADA" [level=4]
+      - paragraph

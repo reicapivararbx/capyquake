@@ -1,0 +1,2782 @@
+- generic [active]:
+  - generic [ref=f3e1]:
+    - generic [ref=f3e2]:
+      - heading "🛒 LOJA" [level=2] [ref=f3e3]
+      - button "✕" [ref=f3e4] [cursor=pointer]
+      - generic [ref=f3e5]:
+        - generic [ref=f3e6]: "TOKENS: 0"
+        - generic [ref=f3e7]: "R$: 20000"
+    - button "🔄 Trocar R$ 1.000 por 1 token" [ref=f3e8] [cursor=pointer]
+    - generic [ref=f3e9]:
+      - generic [ref=f3e10]:
+        - heading "🔫 ARMAS R$" [level=3] [ref=f3e11]:
+          - generic [ref=f3e12]: 🔫
+          - text: ARMAS
+          - generic [ref=f3e13]: R$
+        - generic [ref=f3e14]:
+          - button "🔫 Minigun Metralhadora pesada R$ 5.000" [ref=f3e15] [cursor=pointer]:
+            - generic [ref=f3e16]: 🔫
+            - generic [ref=f3e17]:
+              - generic [ref=f3e18]: Minigun
+              - generic [ref=f3e19]: Metralhadora pesada
+            - generic [ref=f3e20]: R$ 5.000
+          - button "🔫 AK-47 ✓ Rifle de assalto" [ref=f3e21]:
+            - generic [ref=f3e22]: 🔫
+            - generic [ref=f3e23]:
+              - generic [ref=f3e24]: AK-47 ✓
+              - generic [ref=f3e25]: Rifle de assalto
+          - button "🔫 Glock Pistola R$ 750" [ref=f3e26] [cursor=pointer]:
+            - generic [ref=f3e27]: 🔫
+            - generic [ref=f3e28]:
+              - generic [ref=f3e29]: Glock
+              - generic [ref=f3e30]: Pistola
+            - generic [ref=f3e31]: R$ 750
+          - button "🔫 Desert Eagle Pistola pesada R$ 1.500" [ref=f3e32] [cursor=pointer]:
+            - generic [ref=f3e33]: 🔫
+            - generic [ref=f3e34]:
+              - generic [ref=f3e35]: Desert Eagle
+              - generic [ref=f3e36]: Pistola pesada
+            - generic [ref=f3e37]: R$ 1.500
+          - button "🔫 Uzi Submetralhadora R$ 2.000" [ref=f3e38] [cursor=pointer]:
+            - generic [ref=f3e39]: 🔫
+            - generic [ref=f3e40]:
+              - generic [ref=f3e41]: Uzi
+              - generic [ref=f3e42]: Submetralhadora
+            - generic [ref=f3e43]: R$ 2.000
+          - button "🔫 MP5 Submetralhadora R$ 2.500" [ref=f3e44] [cursor=pointer]:
+            - generic [ref=f3e45]: 🔫
+            - generic [ref=f3e46]:
+              - generic [ref=f3e47]: MP5
+              - generic [ref=f3e48]: Submetralhadora
+            - generic [ref=f3e49]: R$ 2.500
+          - button "🔫 P90 Submetralhadora R$ 3.000" [ref=f3e50] [cursor=pointer]:
+            - generic [ref=f3e51]: 🔫
+            - generic [ref=f3e52]:
+              - generic [ref=f3e53]: P90
+              - generic [ref=f3e54]: Submetralhadora
+            - generic [ref=f3e55]: R$ 3.000
+          - button "🔫 Vector SMG rápida R$ 3.500" [ref=f3e56] [cursor=pointer]:
+            - generic [ref=f3e57]: 🔫
+            - generic [ref=f3e58]:
+              - generic [ref=f3e59]: Vector
+              - generic [ref=f3e60]: SMG rápida
+            - generic [ref=f3e61]: R$ 3.500
+          - button "🔫 M4A1 Rifle de assalto R$ 4.000" [ref=f3e62] [cursor=pointer]:
+            - generic [ref=f3e63]: 🔫
+            - generic [ref=f3e64]:
+              - generic [ref=f3e65]: M4A1
+              - generic [ref=f3e66]: Rifle de assalto
+            - generic [ref=f3e67]: R$ 4.000
+          - button "🔫 SCAR-H Rifle pesado R$ 6.000" [ref=f3e68] [cursor=pointer]:
+            - generic [ref=f3e69]: 🔫
+            - generic [ref=f3e70]:
+              - generic [ref=f3e71]: SCAR-H
+              - generic [ref=f3e72]: Rifle pesado
+            - generic [ref=f3e73]: R$ 6.000
+          - button "🔫 FAMAS Rifle de assalto R$ 4.500" [ref=f3e74] [cursor=pointer]:
+            - generic [ref=f3e75]: 🔫
+            - generic [ref=f3e76]:
+              - generic [ref=f3e77]: FAMAS
+              - generic [ref=f3e78]: Rifle de assalto
+            - generic [ref=f3e79]: R$ 4.500
+          - button "🔫 AUG Rifle de assalto R$ 5.000" [ref=f3e80] [cursor=pointer]:
+            - generic [ref=f3e81]: 🔫
+            - generic [ref=f3e82]:
+              - generic [ref=f3e83]: AUG
+              - generic [ref=f3e84]: Rifle de assalto
+            - generic [ref=f3e85]: R$ 5.000
+          - button "🔫 G36 Rifle de assalto R$ 4.750" [ref=f3e86] [cursor=pointer]:
+            - generic [ref=f3e87]: 🔫
+            - generic [ref=f3e88]:
+              - generic [ref=f3e89]: G36
+              - generic [ref=f3e90]: Rifle de assalto
+            - generic [ref=f3e91]: R$ 4.750
+          - button "🔫 M16 Rifle de assalto R$ 4.250" [ref=f3e92] [cursor=pointer]:
+            - generic [ref=f3e93]: 🔫
+            - generic [ref=f3e94]:
+              - generic [ref=f3e95]: M16
+              - generic [ref=f3e96]: Rifle de assalto
+            - generic [ref=f3e97]: R$ 4.250
+          - button "🔫 AK-74 Rifle de assalto R$ 5.250" [ref=f3e98] [cursor=pointer]:
+            - generic [ref=f3e99]: 🔫
+            - generic [ref=f3e100]:
+              - generic [ref=f3e101]: AK-74
+              - generic [ref=f3e102]: Rifle de assalto
+            - generic [ref=f3e103]: R$ 5.250
+          - button "🔫 Galil Rifle de assalto R$ 3.750" [ref=f3e104] [cursor=pointer]:
+            - generic [ref=f3e105]: 🔫
+            - generic [ref=f3e106]:
+              - generic [ref=f3e107]: Galil
+              - generic [ref=f3e108]: Rifle de assalto
+            - generic [ref=f3e109]: R$ 3.750
+          - button "🔫 TAR-21 Rifle de assalto R$ 5.500" [ref=f3e110] [cursor=pointer]:
+            - generic [ref=f3e111]: 🔫
+            - generic [ref=f3e112]:
+              - generic [ref=f3e113]: TAR-21
+              - generic [ref=f3e114]: Rifle de assalto
+            - generic [ref=f3e115]: R$ 5.500
+          - button "🔫 SPAS-12 Escopeta R$ 4.500" [ref=f3e116] [cursor=pointer]:
+            - generic [ref=f3e117]: 🔫
+            - generic [ref=f3e118]:
+              - generic [ref=f3e119]: SPAS-12
+              - generic [ref=f3e120]: Escopeta
+            - generic [ref=f3e121]: R$ 4.500
+          - button "🔫 M870 Escopeta R$ 3.000" [ref=f3e122] [cursor=pointer]:
+            - generic [ref=f3e123]: 🔫
+            - generic [ref=f3e124]:
+              - generic [ref=f3e125]: M870
+              - generic [ref=f3e126]: Escopeta
+            - generic [ref=f3e127]: R$ 3.000
+          - button "🔫 Double Barrel Escopeta dupla R$ 2.250" [ref=f3e128] [cursor=pointer]:
+            - generic [ref=f3e129]: 🔫
+            - generic [ref=f3e130]:
+              - generic [ref=f3e131]: Double Barrel
+              - generic [ref=f3e132]: Escopeta dupla
+            - generic [ref=f3e133]: R$ 2.250
+          - button "🔫 AA-12 Escopeta automática R$ 7.000" [ref=f3e134] [cursor=pointer]:
+            - generic [ref=f3e135]: 🔫
+            - generic [ref=f3e136]:
+              - generic [ref=f3e137]: AA-12
+              - generic [ref=f3e138]: Escopeta automática
+            - generic [ref=f3e139]: R$ 7.000
+          - button "🔫 S12K Escopeta automática R$ 6.500" [ref=f3e140] [cursor=pointer]:
+            - generic [ref=f3e141]: 🔫
+            - generic [ref=f3e142]:
+              - generic [ref=f3e143]: S12K
+              - generic [ref=f3e144]: Escopeta automática
+            - generic [ref=f3e145]: R$ 6.500
+          - button "🔫 Kar98k Rifle de precisão R$ 4.000" [ref=f3e146] [cursor=pointer]:
+            - generic [ref=f3e147]: 🔫
+            - generic [ref=f3e148]:
+              - generic [ref=f3e149]: Kar98k
+              - generic [ref=f3e150]: Rifle de precisão
+            - generic [ref=f3e151]: R$ 4.000
+          - button "🔫 M24 Rifle de precisão R$ 5.000" [ref=f3e152] [cursor=pointer]:
+            - generic [ref=f3e153]: 🔫
+            - generic [ref=f3e154]:
+              - generic [ref=f3e155]: M24
+              - generic [ref=f3e156]: Rifle de precisão
+            - generic [ref=f3e157]: R$ 5.000
+          - button "🔫 AWP Rifle sniper R$ 10.000" [ref=f3e158] [cursor=pointer]:
+            - generic [ref=f3e159]: 🔫
+            - generic [ref=f3e160]:
+              - generic [ref=f3e161]: AWP
+              - generic [ref=f3e162]: Rifle sniper
+            - generic [ref=f3e163]: R$ 10.000
+          - button "🔫 Barrett Sniper pesado R$ 15.000" [ref=f3e164] [cursor=pointer]:
+            - generic [ref=f3e165]: 🔫
+            - generic [ref=f3e166]:
+              - generic [ref=f3e167]: Barrett
+              - generic [ref=f3e168]: Sniper pesado
+            - generic [ref=f3e169]: R$ 15.000
+          - button "🔫 Dragunov Sniper semiautomático R$ 8.000" [ref=f3e170] [cursor=pointer]:
+            - generic [ref=f3e171]: 🔫
+            - generic [ref=f3e172]:
+              - generic [ref=f3e173]: Dragunov
+              - generic [ref=f3e174]: Sniper semiautomático
+            - generic [ref=f3e175]: R$ 8.000
+          - button "🔫 Railgun Rifle de energia R$ 20.000" [ref=f3e176] [cursor=pointer]:
+            - generic [ref=f3e177]: 🔫
+            - generic [ref=f3e178]:
+              - generic [ref=f3e179]: Railgun
+              - generic [ref=f3e180]: Rifle de energia
+            - generic [ref=f3e181]: R$ 20.000
+          - button "🔫 Plasma Gun Arma energética R$ 25.000" [ref=f3e182] [cursor=pointer]:
+            - generic [ref=f3e183]: 🔫
+            - generic [ref=f3e184]:
+              - generic [ref=f3e185]: Plasma Gun
+              - generic [ref=f3e186]: Arma energética
+            - generic [ref=f3e187]: R$ 25.000
+          - button "🔫 Laser Rifle Rifle laser R$ 30.000" [ref=f3e188] [cursor=pointer]:
+            - generic [ref=f3e189]: 🔫
+            - generic [ref=f3e190]:
+              - generic [ref=f3e191]: Laser Rifle
+              - generic [ref=f3e192]: Rifle laser
+            - generic [ref=f3e193]: R$ 30.000
+          - button "🔫 Rocket Launcher Lançador R$ 12.000" [ref=f3e194] [cursor=pointer]:
+            - generic [ref=f3e195]: 🔫
+            - generic [ref=f3e196]:
+              - generic [ref=f3e197]: Rocket Launcher
+              - generic [ref=f3e198]: Lançador
+            - generic [ref=f3e199]: R$ 12.000
+          - button "🔫 Bazuca Explosiva R$ 10.000" [ref=f3e200] [cursor=pointer]:
+            - generic [ref=f3e201]: 🔫
+            - generic [ref=f3e202]:
+              - generic [ref=f3e203]: Bazuca
+              - generic [ref=f3e204]: Explosiva
+            - generic [ref=f3e205]: R$ 10.000
+          - button "🔫 Grenade Launcher Lançador R$ 9.000" [ref=f3e206] [cursor=pointer]:
+            - generic [ref=f3e207]: 🔫
+            - generic [ref=f3e208]:
+              - generic [ref=f3e209]: Grenade Launcher
+              - generic [ref=f3e210]: Lançador
+            - generic [ref=f3e211]: R$ 9.000
+          - button "🔫 Crossbow Besta R$ 3.500" [ref=f3e212] [cursor=pointer]:
+            - generic [ref=f3e213]: 🔫
+            - generic [ref=f3e214]:
+              - generic [ref=f3e215]: Crossbow
+              - generic [ref=f3e216]: Besta
+            - generic [ref=f3e217]: R$ 3.500
+          - button "🔫 Heavy Crossbow Besta pesada R$ 6.000" [ref=f3e218] [cursor=pointer]:
+            - generic [ref=f3e219]: 🔫
+            - generic [ref=f3e220]:
+              - generic [ref=f3e221]: Heavy Crossbow
+              - generic [ref=f3e222]: Besta pesada
+            - generic [ref=f3e223]: R$ 6.000
+          - button "🔫 Flamethrower Lança-chamas R$ 11.000" [ref=f3e224] [cursor=pointer]:
+            - generic [ref=f3e225]: 🔫
+            - generic [ref=f3e226]:
+              - generic [ref=f3e227]: Flamethrower
+              - generic [ref=f3e228]: Lança-chamas
+            - generic [ref=f3e229]: R$ 11.000
+          - button "🔫 Ice Gun Arma congelante R$ 14.000" [ref=f3e230] [cursor=pointer]:
+            - generic [ref=f3e231]: 🔫
+            - generic [ref=f3e232]:
+              - generic [ref=f3e233]: Ice Gun
+              - generic [ref=f3e234]: Arma congelante
+            - generic [ref=f3e235]: R$ 14.000
+          - button "🔫 Thunder Gun Arma elétrica R$ 18.000" [ref=f3e236] [cursor=pointer]:
+            - generic [ref=f3e237]: 🔫
+            - generic [ref=f3e238]:
+              - generic [ref=f3e239]: Thunder Gun
+              - generic [ref=f3e240]: Arma elétrica
+            - generic [ref=f3e241]: R$ 18.000
+          - button "🔫 Void Gun Arma Void R$ 40.000" [ref=f3e242] [cursor=pointer]:
+            - generic [ref=f3e243]: 🔫
+            - generic [ref=f3e244]:
+              - generic [ref=f3e245]: Void Gun
+              - generic [ref=f3e246]: Arma Void
+            - generic [ref=f3e247]: R$ 40.000
+          - button "🔫 Golden Gun Pistola dourada R$ 25.000" [ref=f3e248] [cursor=pointer]:
+            - generic [ref=f3e249]: 🔫
+            - generic [ref=f3e250]:
+              - generic [ref=f3e251]: Golden Gun
+              - generic [ref=f3e252]: Pistola dourada
+            - generic [ref=f3e253]: R$ 25.000
+          - button "🔫 Plasma Shotgun Escopeta energética R$ 22.000" [ref=f3e254] [cursor=pointer]:
+            - generic [ref=f3e255]: 🔫
+            - generic [ref=f3e256]:
+              - generic [ref=f3e257]: Plasma Shotgun
+              - generic [ref=f3e258]: Escopeta energética
+            - generic [ref=f3e259]: R$ 22.000
+          - button "🔫 Heavy Rifle Rifle pesado R$ 13.000" [ref=f3e260] [cursor=pointer]:
+            - generic [ref=f3e261]: 🔫
+            - generic [ref=f3e262]:
+              - generic [ref=f3e263]: Heavy Rifle
+              - generic [ref=f3e264]: Rifle pesado
+            - generic [ref=f3e265]: R$ 13.000
+          - button "🔫 Tactical SMG SMG tática R$ 5.500" [ref=f3e266] [cursor=pointer]:
+            - generic [ref=f3e267]: 🔫
+            - generic [ref=f3e268]:
+              - generic [ref=f3e269]: Tactical SMG
+              - generic [ref=f3e270]: SMG tática
+            - generic [ref=f3e271]: R$ 5.500
+          - button "🔫 Combat Rifle Rifle de combate R$ 7.500" [ref=f3e272] [cursor=pointer]:
+            - generic [ref=f3e273]: 🔫
+            - generic [ref=f3e274]:
+              - generic [ref=f3e275]: Combat Rifle
+              - generic [ref=f3e276]: Rifle de combate
+            - generic [ref=f3e277]: R$ 7.500
+          - button "🔫 Burst Rifle Rifle de rajada R$ 6.250" [ref=f3e278] [cursor=pointer]:
+            - generic [ref=f3e279]: 🔫
+            - generic [ref=f3e280]:
+              - generic [ref=f3e281]: Burst Rifle
+              - generic [ref=f3e282]: Rifle de rajada
+            - generic [ref=f3e283]: R$ 6.250
+          - button "🔫 Auto Sniper Sniper automático R$ 12.500" [ref=f3e284] [cursor=pointer]:
+            - generic [ref=f3e285]: 🔫
+            - generic [ref=f3e286]:
+              - generic [ref=f3e287]: Auto Sniper
+              - generic [ref=f3e288]: Sniper automático
+            - generic [ref=f3e289]: R$ 12.500
+          - button "🔫 Hand Cannon Canhão portátil R$ 17.500" [ref=f3e290] [cursor=pointer]:
+            - generic [ref=f3e291]: 🔫
+            - generic [ref=f3e292]:
+              - generic [ref=f3e293]: Hand Cannon
+              - generic [ref=f3e294]: Canhão portátil
+            - generic [ref=f3e295]: R$ 17.500
+          - button "🔫 Energy Cannon Canhão energético R$ 27.500" [ref=f3e296] [cursor=pointer]:
+            - generic [ref=f3e297]: 🔫
+            - generic [ref=f3e298]:
+              - generic [ref=f3e299]: Energy Cannon
+              - generic [ref=f3e300]: Canhão energético
+            - generic [ref=f3e301]: R$ 27.500
+          - button "🔫 Void Blaster Blaster Void R$ 45.000" [ref=f3e302] [cursor=pointer]:
+            - generic [ref=f3e303]: 🔫
+            - generic [ref=f3e304]:
+              - generic [ref=f3e305]: Void Blaster
+              - generic [ref=f3e306]: Blaster Void
+            - generic [ref=f3e307]: R$ 45.000
+          - button "🔫 Mini Rocket Lançador compacto R$ 8.500" [ref=f3e308] [cursor=pointer]:
+            - generic [ref=f3e309]: 🔫
+            - generic [ref=f3e310]:
+              - generic [ref=f3e311]: Mini Rocket
+              - generic [ref=f3e312]: Lançador compacto
+            - generic [ref=f3e313]: R$ 8.500
+          - button "🔫 Heavy Minigun Minigun pesada R$ 25.000" [ref=f3e314] [cursor=pointer]:
+            - generic [ref=f3e315]: 🔫
+            - generic [ref=f3e316]:
+              - generic [ref=f3e317]: Heavy Minigun
+              - generic [ref=f3e318]: Minigun pesada
+            - generic [ref=f3e319]: R$ 25.000
+          - button "🔫 Hyper Gun Arma experimental R$ 50.000" [ref=f3e320] [cursor=pointer]:
+            - generic [ref=f3e321]: 🔫
+            - generic [ref=f3e322]:
+              - generic [ref=f3e323]: Hyper Gun
+              - generic [ref=f3e324]: Arma experimental
+            - generic [ref=f3e325]: R$ 50.000
+      - generic [ref=f3e326]:
+        - heading "⚡ BOOSTS 🪙" [level=3] [ref=f3e327]:
+          - generic [ref=f3e328]: ⚡
+          - text: BOOSTS
+          - generic [ref=f3e329]: 🪙
+        - generic [ref=f3e330]:
+          - button "💨 Velocidade II +75% velocidade · 60s 2 🪙" [ref=f3e331] [cursor=pointer]:
+            - generic [ref=f3e332]: 💨
+            - generic [ref=f3e333]:
+              - generic [ref=f3e334]: Velocidade II
+              - generic [ref=f3e335]: +75% velocidade · 60s
+            - generic [ref=f3e336]: 2 🪙
+          - button "💨 Velocidade III +100% velocidade · 60s 3 🪙" [ref=f3e337] [cursor=pointer]:
+            - generic [ref=f3e338]: 💨
+            - generic [ref=f3e339]:
+              - generic [ref=f3e340]: Velocidade III
+              - generic [ref=f3e341]: +100% velocidade · 60s
+            - generic [ref=f3e342]: 3 🪙
+          - button "❤️ Vida Máxima II +200 HP 2 🪙" [ref=f3e343] [cursor=pointer]:
+            - generic [ref=f3e344]: ❤️
+            - generic [ref=f3e345]:
+              - generic [ref=f3e346]: Vida Máxima II
+              - generic [ref=f3e347]: +200 HP
+            - generic [ref=f3e348]: 2 🪙
+          - button "❤️ Vida Máxima III +300 HP 3 🪙" [ref=f3e349] [cursor=pointer]:
+            - generic [ref=f3e350]: ❤️
+            - generic [ref=f3e351]:
+              - generic [ref=f3e352]: Vida Máxima III
+              - generic [ref=f3e353]: +300 HP
+            - generic [ref=f3e354]: 3 🪙
+          - button "🛡️ Defesa +25% defesa · 60s 2 🪙" [ref=f3e355] [cursor=pointer]:
+            - generic [ref=f3e356]: 🛡️
+            - generic [ref=f3e357]:
+              - generic [ref=f3e358]: Defesa
+              - generic [ref=f3e359]: +25% defesa · 60s
+            - generic [ref=f3e360]: 2 🪙
+          - button "🛡️ Defesa II +50% defesa · 60s 4 🪙" [ref=f3e361] [cursor=pointer]:
+            - generic [ref=f3e362]: 🛡️
+            - generic [ref=f3e363]:
+              - generic [ref=f3e364]: Defesa II
+              - generic [ref=f3e365]: +50% defesa · 60s
+            - generic [ref=f3e366]: 4 🪙
+          - button "🔥 Dano +25% dano · 60s 2 🪙" [ref=f3e367] [cursor=pointer]:
+            - generic [ref=f3e368]: 🔥
+            - generic [ref=f3e369]:
+              - generic [ref=f3e370]: Dano
+              - generic [ref=f3e371]: +25% dano · 60s
+            - generic [ref=f3e372]: 2 🪙
+          - button "🔥 Dano II +50% dano · 60s 4 🪙" [ref=f3e373] [cursor=pointer]:
+            - generic [ref=f3e374]: 🔥
+            - generic [ref=f3e375]:
+              - generic [ref=f3e376]: Dano II
+              - generic [ref=f3e377]: +50% dano · 60s
+            - generic [ref=f3e378]: 4 🪙
+          - button "🎯 Precisão +30% precisão · 60s 2 🪙" [ref=f3e379] [cursor=pointer]:
+            - generic [ref=f3e380]: 🎯
+            - generic [ref=f3e381]:
+              - generic [ref=f3e382]: Precisão
+              - generic [ref=f3e383]: +30% precisão · 60s
+            - generic [ref=f3e384]: 2 🪙
+          - button "🎯 Precisão II +60% precisão · 60s 4 🪙" [ref=f3e385] [cursor=pointer]:
+            - generic [ref=f3e386]: 🎯
+            - generic [ref=f3e387]:
+              - generic [ref=f3e388]: Precisão II
+              - generic [ref=f3e389]: +60% precisão · 60s
+            - generic [ref=f3e390]: 4 🪙
+          - button "⚡ Recarga +30% recarga · 60s 3 🪙" [ref=f3e391] [cursor=pointer]:
+            - generic [ref=f3e392]: ⚡
+            - generic [ref=f3e393]:
+              - generic [ref=f3e394]: Recarga
+              - generic [ref=f3e395]: +30% recarga · 60s
+            - generic [ref=f3e396]: 3 🪙
+          - button "⚡ Recarga II +60% recarga · 60s 5 🪙" [ref=f3e397] [cursor=pointer]:
+            - generic [ref=f3e398]: ⚡
+            - generic [ref=f3e399]:
+              - generic [ref=f3e400]: Recarga II
+              - generic [ref=f3e401]: +60% recarga · 60s
+            - generic [ref=f3e402]: 5 🪙
+          - button "🏃 Sprint +100% corrida · 30s 2 🪙" [ref=f3e403] [cursor=pointer]:
+            - generic [ref=f3e404]: 🏃
+            - generic [ref=f3e405]:
+              - generic [ref=f3e406]: Sprint
+              - generic [ref=f3e407]: +100% corrida · 30s
+            - generic [ref=f3e408]: 2 🪙
+          - button "🛡️ Escudo 100 HP escudo · 60s 3 🪙" [ref=f3e409] [cursor=pointer]:
+            - generic [ref=f3e410]: 🛡️
+            - generic [ref=f3e411]:
+              - generic [ref=f3e412]: Escudo
+              - generic [ref=f3e413]: 100 HP escudo · 60s
+            - generic [ref=f3e414]: 3 🪙
+          - button "🛡️ Escudo II 250 HP escudo · 60s 6 🪙" [ref=f3e415] [cursor=pointer]:
+            - generic [ref=f3e416]: 🛡️
+            - generic [ref=f3e417]:
+              - generic [ref=f3e418]: Escudo II
+              - generic [ref=f3e419]: 250 HP escudo · 60s
+            - generic [ref=f3e420]: 6 🪙
+          - button "💚 Regeneração +10 HP/s · 30s 3 🪙" [ref=f3e421] [cursor=pointer]:
+            - generic [ref=f3e422]: 💚
+            - generic [ref=f3e423]:
+              - generic [ref=f3e424]: Regeneração
+              - generic [ref=f3e425]: +10 HP/s · 30s
+            - generic [ref=f3e426]: 3 🪙
+          - button "💚 Regeneração II +25 HP/s · 30s 6 🪙" [ref=f3e427] [cursor=pointer]:
+            - generic [ref=f3e428]: 💚
+            - generic [ref=f3e429]:
+              - generic [ref=f3e430]: Regeneração II
+              - generic [ref=f3e431]: +25 HP/s · 30s
+            - generic [ref=f3e432]: 6 🪙
+          - button "🔥 Dano Crítico +25% crítico · 60s 4 🪙" [ref=f3e433] [cursor=pointer]:
+            - generic [ref=f3e434]: 🔥
+            - generic [ref=f3e435]:
+              - generic [ref=f3e436]: Dano Crítico
+              - generic [ref=f3e437]: +25% crítico · 60s
+            - generic [ref=f3e438]: 4 🪙
+          - button "🔥 Dano Crítico II +50% crítico · 60s 7 🪙" [ref=f3e439] [cursor=pointer]:
+            - generic [ref=f3e440]: 🔥
+            - generic [ref=f3e441]:
+              - generic [ref=f3e442]: Dano Crítico II
+              - generic [ref=f3e443]: +50% crítico · 60s
+            - generic [ref=f3e444]: 7 🪙
+          - button "🧲 Coletor alcance coleta +100% · 60s 2 🪙" [ref=f3e445] [cursor=pointer]:
+            - generic [ref=f3e446]: 🧲
+            - generic [ref=f3e447]:
+              - generic [ref=f3e448]: Coletor
+              - generic [ref=f3e449]: alcance coleta +100% · 60s
+            - generic [ref=f3e450]: 2 🪙
+          - button "🪙 Fortuna +50% dinheiro · 60s 4 🪙" [ref=f3e451] [cursor=pointer]:
+            - generic [ref=f3e452]: 🪙
+            - generic [ref=f3e453]:
+              - generic [ref=f3e454]: Fortuna
+              - generic [ref=f3e455]: +50% dinheiro · 60s
+            - generic [ref=f3e456]: 4 🪙
+          - button "🪙 Fortuna II +100% dinheiro · 60s 7 🪙" [ref=f3e457] [cursor=pointer]:
+            - generic [ref=f3e458]: 🪙
+            - generic [ref=f3e459]:
+              - generic [ref=f3e460]: Fortuna II
+              - generic [ref=f3e461]: +100% dinheiro · 60s
+            - generic [ref=f3e462]: 7 🪙
+          - button "❤️ Cura recupera 100 HP 2 🪙" [ref=f3e463] [cursor=pointer]:
+            - generic [ref=f3e464]: ❤️
+            - generic [ref=f3e465]:
+              - generic [ref=f3e466]: Cura
+              - generic [ref=f3e467]: recupera 100 HP
+            - generic [ref=f3e468]: 2 🪙
+          - button "❤️ Cura II recupera 250 HP 4 🪙" [ref=f3e469] [cursor=pointer]:
+            - generic [ref=f3e470]: ❤️
+            - generic [ref=f3e471]:
+              - generic [ref=f3e472]: Cura II
+              - generic [ref=f3e473]: recupera 250 HP
+            - generic [ref=f3e474]: 4 🪙
+          - button "🔥 Fúria +100% dano · 20s 5 🪙" [ref=f3e475] [cursor=pointer]:
+            - generic [ref=f3e476]: 🔥
+            - generic [ref=f3e477]:
+              - generic [ref=f3e478]: Fúria
+              - generic [ref=f3e479]: +100% dano · 20s
+            - generic [ref=f3e480]: 5 🪙
+          - button "❄️ Resistência resist. lentidão · 60s 3 🪙" [ref=f3e481] [cursor=pointer]:
+            - generic [ref=f3e482]: ❄️
+            - generic [ref=f3e483]:
+              - generic [ref=f3e484]: Resistência
+              - generic [ref=f3e485]: resist. lentidão · 60s
+            - generic [ref=f3e486]: 3 🪙
+          - button "⚡ Reflexo +50% reação · 60s 3 🪙" [ref=f3e487] [cursor=pointer]:
+            - generic [ref=f3e488]: ⚡
+            - generic [ref=f3e489]:
+              - generic [ref=f3e490]: Reflexo
+              - generic [ref=f3e491]: +50% reação · 60s
+            - generic [ref=f3e492]: 3 🪙
+          - button "👻 Invisibilidade invisível · 15s 8 🪙" [ref=f3e493] [cursor=pointer]:
+            - generic [ref=f3e494]: 👻
+            - generic [ref=f3e495]:
+              - generic [ref=f3e496]: Invisibilidade
+              - generic [ref=f3e497]: invisível · 15s
+            - generic [ref=f3e498]: 8 🪙
+          - button "🛡️ Invulnerabilidade sem dano · 5s 10 🪙" [ref=f3e499] [cursor=pointer]:
+            - generic [ref=f3e500]: 🛡️
+            - generic [ref=f3e501]:
+              - generic [ref=f3e502]: Invulnerabilidade
+              - generic [ref=f3e503]: sem dano · 5s
+            - generic [ref=f3e504]: 10 🪙
+          - button "💨 Super Velocidade +150% vel · 30s 6 🪙" [ref=f3e505] [cursor=pointer]:
+            - generic [ref=f3e506]: 💨
+            - generic [ref=f3e507]:
+              - generic [ref=f3e508]: Super Velocidade
+              - generic [ref=f3e509]: +150% vel · 30s
+            - generic [ref=f3e510]: 6 🪙
+          - button "🔥 Super Dano +150% dano · 30s 8 🪙" [ref=f3e511] [cursor=pointer]:
+            - generic [ref=f3e512]: 🔥
+            - generic [ref=f3e513]:
+              - generic [ref=f3e514]: Super Dano
+              - generic [ref=f3e515]: +150% dano · 30s
+            - generic [ref=f3e516]: 8 🪙
+          - button "❤️ Super Vida +500 HP máx 5 🪙" [ref=f3e517] [cursor=pointer]:
+            - generic [ref=f3e518]: ❤️
+            - generic [ref=f3e519]:
+              - generic [ref=f3e520]: Super Vida
+              - generic [ref=f3e521]: +500 HP máx
+            - generic [ref=f3e522]: 5 🪙
+          - button "⚡ Super Recarga +100% recarga · 30s 8 🪙" [ref=f3e523] [cursor=pointer]:
+            - generic [ref=f3e524]: ⚡
+            - generic [ref=f3e525]:
+              - generic [ref=f3e526]: Super Recarga
+              - generic [ref=f3e527]: +100% recarga · 30s
+            - generic [ref=f3e528]: 8 🪙
+          - button "🎯 Mira Perfeita precisão máx · 30s 7 🪙" [ref=f3e529] [cursor=pointer]:
+            - generic [ref=f3e530]: 🎯
+            - generic [ref=f3e531]:
+              - generic [ref=f3e532]: Mira Perfeita
+              - generic [ref=f3e533]: precisão máx · 30s
+            - generic [ref=f3e534]: 7 🪙
+          - button "🧲 Mega Coletor alcance +300% · 60s 5 🪙" [ref=f3e535] [cursor=pointer]:
+            - generic [ref=f3e536]: 🧲
+            - generic [ref=f3e537]:
+              - generic [ref=f3e538]: Mega Coletor
+              - generic [ref=f3e539]: alcance +300% · 60s
+            - generic [ref=f3e540]: 5 🪙
+          - button "🪙 Mega Fortuna +200% dinheiro · 60s 10 🪙" [ref=f3e541] [cursor=pointer]:
+            - generic [ref=f3e542]: 🪙
+            - generic [ref=f3e543]:
+              - generic [ref=f3e544]: Mega Fortuna
+              - generic [ref=f3e545]: +200% dinheiro · 60s
+            - generic [ref=f3e546]: 10 🪙
+          - button "❤️ Cura Total recupera 100% HP 8 🪙" [ref=f3e547] [cursor=pointer]:
+            - generic [ref=f3e548]: ❤️
+            - generic [ref=f3e549]:
+              - generic [ref=f3e550]: Cura Total
+              - generic [ref=f3e551]: recupera 100% HP
+            - generic [ref=f3e552]: 8 🪙
+          - button "🛡️ Barreira 500 HP escudo · 30s 9 🪙" [ref=f3e553] [cursor=pointer]:
+            - generic [ref=f3e554]: 🛡️
+            - generic [ref=f3e555]:
+              - generic [ref=f3e556]: Barreira
+              - generic [ref=f3e557]: 500 HP escudo · 30s
+            - generic [ref=f3e558]: 9 🪙
+          - button "🔥 Berserker +200% dano · 15s 10 🪙" [ref=f3e559] [cursor=pointer]:
+            - generic [ref=f3e560]: 🔥
+            - generic [ref=f3e561]:
+              - generic [ref=f3e562]: Berserker
+              - generic [ref=f3e563]: +200% dano · 15s
+            - generic [ref=f3e564]: 10 🪙
+          - button "💨 Flash +300% vel · 10s 12 🪙" [ref=f3e565] [cursor=pointer]:
+            - generic [ref=f3e566]: 💨
+            - generic [ref=f3e567]:
+              - generic [ref=f3e568]: Flash
+              - generic [ref=f3e569]: +300% vel · 10s
+            - generic [ref=f3e570]: 12 🪙
+          - button "⚡ Overcharge +200% recarga · 20s 10 🪙" [ref=f3e571] [cursor=pointer]:
+            - generic [ref=f3e572]: ⚡
+            - generic [ref=f3e573]:
+              - generic [ref=f3e574]: Overcharge
+              - generic [ref=f3e575]: +200% recarga · 20s
+            - generic [ref=f3e576]: 10 🪙
+          - button "💚 Regen Suprema +50 HP/s · 30s 10 🪙" [ref=f3e577] [cursor=pointer]:
+            - generic [ref=f3e578]: 💚
+            - generic [ref=f3e579]:
+              - generic [ref=f3e580]: Regen Suprema
+              - generic [ref=f3e581]: +50 HP/s · 30s
+            - generic [ref=f3e582]: 10 🪙
+          - button "🎯 Headshot +100% crítico · 30s 9 🪙" [ref=f3e583] [cursor=pointer]:
+            - generic [ref=f3e584]: 🎯
+            - generic [ref=f3e585]:
+              - generic [ref=f3e586]: Headshot
+              - generic [ref=f3e587]: +100% crítico · 30s
+            - generic [ref=f3e588]: 9 🪙
+          - button "🪙 Fortaleza +100% defesa · 30s 12 🪙" [ref=f3e589] [cursor=pointer]:
+            - generic [ref=f3e590]: 🪙
+            - generic [ref=f3e591]:
+              - generic [ref=f3e592]: Fortaleza
+              - generic [ref=f3e593]: +100% defesa · 30s
+            - generic [ref=f3e594]: 12 🪙
+          - button "👻 Fase atravessa obstáculos · 10s 10 🪙" [ref=f3e595] [cursor=pointer]:
+            - generic [ref=f3e596]: 👻
+            - generic [ref=f3e597]:
+              - generic [ref=f3e598]: Fase
+              - generic [ref=f3e599]: atravessa obstáculos · 10s
+            - generic [ref=f3e600]: 10 🪙
+          - button "💥 Explosivo ataques AoE · 30s 8 🪙" [ref=f3e601] [cursor=pointer]:
+            - generic [ref=f3e602]: 💥
+            - generic [ref=f3e603]:
+              - generic [ref=f3e604]: Explosivo
+              - generic [ref=f3e605]: ataques AoE · 30s
+            - generic [ref=f3e606]: 8 🪙
+          - button "🧊 Congelante ataques desaceleram · 30s 7 🪙" [ref=f3e607] [cursor=pointer]:
+            - generic [ref=f3e608]: 🧊
+            - generic [ref=f3e609]:
+              - generic [ref=f3e610]: Congelante
+              - generic [ref=f3e611]: ataques desaceleram · 30s
+            - generic [ref=f3e612]: 7 🪙
+          - button "⚡ Eletrificado ataques chocam · 30s 9 🪙" [ref=f3e613] [cursor=pointer]:
+            - generic [ref=f3e614]: ⚡
+            - generic [ref=f3e615]:
+              - generic [ref=f3e616]: Eletrificado
+              - generic [ref=f3e617]: ataques chocam · 30s
+            - generic [ref=f3e618]: 9 🪙
+          - button "🕳️ Void Boost +500 HP e +100% vel · 30s 15 🪙" [ref=f3e619] [cursor=pointer]:
+            - generic [ref=f3e620]: 🕳️
+            - generic [ref=f3e621]:
+              - generic [ref=f3e622]: Void Boost
+              - generic [ref=f3e623]: +500 HP e +100% vel · 30s
+            - generic [ref=f3e624]: 15 🪙
+          - button "🌟 Boost Supremo +100% tudo · 30s 20 🪙" [ref=f3e625] [cursor=pointer]:
+            - generic [ref=f3e626]: 🌟
+            - generic [ref=f3e627]:
+              - generic [ref=f3e628]: Boost Supremo
+              - generic [ref=f3e629]: +100% tudo · 30s
+            - generic [ref=f3e630]: 20 🪙
+      - generic [ref=f3e631]:
+        - heading "📦 MUNIÇÕES R$" [level=3] [ref=f3e632]:
+          - generic [ref=f3e633]: 📦
+          - text: MUNIÇÕES
+          - generic [ref=f3e634]: R$
+        - generic [ref=f3e635]:
+          - button "📦 Munição Pistola 50 tiros R$ 100" [ref=f3e636] [cursor=pointer]:
+            - generic [ref=f3e637]: 📦
+            - generic [ref=f3e638]:
+              - generic [ref=f3e639]: Munição Pistola
+              - generic [ref=f3e640]: 50 tiros
+            - generic [ref=f3e641]: R$ 100
+          - button "📦 Munição Pistola+ 100 tiros R$ 180" [ref=f3e642] [cursor=pointer]:
+            - generic [ref=f3e643]: 📦
+            - generic [ref=f3e644]:
+              - generic [ref=f3e645]: Munição Pistola+
+              - generic [ref=f3e646]: 100 tiros
+            - generic [ref=f3e647]: R$ 180
+          - button "📦 Munição SMG 100 tiros R$ 250" [ref=f3e648] [cursor=pointer]:
+            - generic [ref=f3e649]: 📦
+            - generic [ref=f3e650]:
+              - generic [ref=f3e651]: Munição SMG
+              - generic [ref=f3e652]: 100 tiros
+            - generic [ref=f3e653]: R$ 250
+          - button "📦 Munição SMG+ 250 tiros R$ 550" [ref=f3e654] [cursor=pointer]:
+            - generic [ref=f3e655]: 📦
+            - generic [ref=f3e656]:
+              - generic [ref=f3e657]: Munição SMG+
+              - generic [ref=f3e658]: 250 tiros
+            - generic [ref=f3e659]: R$ 550
+          - button "📦 Munição Rifle 100 tiros R$ 350" [ref=f3e660] [cursor=pointer]:
+            - generic [ref=f3e661]: 📦
+            - generic [ref=f3e662]:
+              - generic [ref=f3e663]: Munição Rifle
+              - generic [ref=f3e664]: 100 tiros
+            - generic [ref=f3e665]: R$ 350
+          - button "📦 Munição Rifle+ 250 tiros R$ 750" [ref=f3e666] [cursor=pointer]:
+            - generic [ref=f3e667]: 📦
+            - generic [ref=f3e668]:
+              - generic [ref=f3e669]: Munição Rifle+
+              - generic [ref=f3e670]: 250 tiros
+            - generic [ref=f3e671]: R$ 750
+          - button "📦 Munição AK 100 tiros R$ 400" [ref=f3e672] [cursor=pointer]:
+            - generic [ref=f3e673]: 📦
+            - generic [ref=f3e674]:
+              - generic [ref=f3e675]: Munição AK
+              - generic [ref=f3e676]: 100 tiros
+            - generic [ref=f3e677]: R$ 400
+          - button "📦 Munição AK+ 250 tiros R$ 850" [ref=f3e678] [cursor=pointer]:
+            - generic [ref=f3e679]: 📦
+            - generic [ref=f3e680]:
+              - generic [ref=f3e681]: Munição AK+
+              - generic [ref=f3e682]: 250 tiros
+            - generic [ref=f3e683]: R$ 850
+          - button "📦 Munição M4 100 tiros R$ 375" [ref=f3e684] [cursor=pointer]:
+            - generic [ref=f3e685]: 📦
+            - generic [ref=f3e686]:
+              - generic [ref=f3e687]: Munição M4
+              - generic [ref=f3e688]: 100 tiros
+            - generic [ref=f3e689]: R$ 375
+          - button "📦 Munição M4+ 250 tiros R$ 800" [ref=f3e690] [cursor=pointer]:
+            - generic [ref=f3e691]: 📦
+            - generic [ref=f3e692]:
+              - generic [ref=f3e693]: Munição M4+
+              - generic [ref=f3e694]: 250 tiros
+            - generic [ref=f3e695]: R$ 800
+          - button "📦 Munição Escopeta 25 tiros R$ 300" [ref=f3e696] [cursor=pointer]:
+            - generic [ref=f3e697]: 📦
+            - generic [ref=f3e698]:
+              - generic [ref=f3e699]: Munição Escopeta
+              - generic [ref=f3e700]: 25 tiros
+            - generic [ref=f3e701]: R$ 300
+          - button "📦 Munição Escopeta+ 50 tiros R$ 550" [ref=f3e702] [cursor=pointer]:
+            - generic [ref=f3e703]: 📦
+            - generic [ref=f3e704]:
+              - generic [ref=f3e705]: Munição Escopeta+
+              - generic [ref=f3e706]: 50 tiros
+            - generic [ref=f3e707]: R$ 550
+          - button "📦 Munição Sniper 10 tiros R$ 288" [ref=f3e708] [cursor=pointer]:
+            - generic [ref=f3e709]: 📦
+            - generic [ref=f3e710]:
+              - generic [ref=f3e711]: Munição Sniper
+              - generic [ref=f3e712]: 10 tiros
+            - generic [ref=f3e713]: R$ 288
+          - button "📦 Munição Sniper+ 25 tiros R$ 650" [ref=f3e714] [cursor=pointer]:
+            - generic [ref=f3e715]: 📦
+            - generic [ref=f3e716]:
+              - generic [ref=f3e717]: Munição Sniper+
+              - generic [ref=f3e718]: 25 tiros
+            - generic [ref=f3e719]: R$ 650
+          - button "📦 Munição AWP 10 tiros R$ 500" [ref=f3e720] [cursor=pointer]:
+            - generic [ref=f3e721]: 📦
+            - generic [ref=f3e722]:
+              - generic [ref=f3e723]: Munição AWP
+              - generic [ref=f3e724]: 10 tiros
+            - generic [ref=f3e725]: R$ 500
+          - button "📦 Munição AWP+ 25 tiros R$ 1.100" [ref=f3e726] [cursor=pointer]:
+            - generic [ref=f3e727]: 📦
+            - generic [ref=f3e728]:
+              - generic [ref=f3e729]: Munição AWP+
+              - generic [ref=f3e730]: 25 tiros
+            - generic [ref=f3e731]: R$ 1.100
+          - button "🚀 Munição Foguete 5 tiros R$ 350" [ref=f3e732] [cursor=pointer]:
+            - generic [ref=f3e733]: 🚀
+            - generic [ref=f3e734]:
+              - generic [ref=f3e735]: Munição Foguete
+              - generic [ref=f3e736]: 5 tiros
+            - generic [ref=f3e737]: R$ 350
+          - button "🚀 Munição Foguete+ 15 tiros R$ 900" [ref=f3e738] [cursor=pointer]:
+            - generic [ref=f3e739]: 🚀
+            - generic [ref=f3e740]:
+              - generic [ref=f3e741]: Munição Foguete+
+              - generic [ref=f3e742]: 15 tiros
+            - generic [ref=f3e743]: R$ 900
+          - button "🚀 Munição Bazuca 100 tiros R$ 575" [ref=f3e744] [cursor=pointer]:
+            - generic [ref=f3e745]: 🚀
+            - generic [ref=f3e746]:
+              - generic [ref=f3e747]: Munição Bazuca
+              - generic [ref=f3e748]: 100 tiros
+            - generic [ref=f3e749]: R$ 575
+          - button "🐔 Munição Chicken 10 tiros R$ 58" [ref=f3e750] [cursor=pointer]:
+            - generic [ref=f3e751]: 🐔
+            - generic [ref=f3e752]:
+              - generic [ref=f3e753]: Munição Chicken
+              - generic [ref=f3e754]: 10 tiros
+            - generic [ref=f3e755]: R$ 58
+          - button "🐔 Munição Chicken+ 50 tiros R$ 250" [ref=f3e756] [cursor=pointer]:
+            - generic [ref=f3e757]: 🐔
+            - generic [ref=f3e758]:
+              - generic [ref=f3e759]: Munição Chicken+
+              - generic [ref=f3e760]: 50 tiros
+            - generic [ref=f3e761]: R$ 250
+          - button "⚡ Munição Laser 50 tiros R$ 1.000" [ref=f3e762] [cursor=pointer]:
+            - generic [ref=f3e763]: ⚡
+            - generic [ref=f3e764]:
+              - generic [ref=f3e765]: Munição Laser
+              - generic [ref=f3e766]: 50 tiros
+            - generic [ref=f3e767]: R$ 1.000
+          - button "⚡ Munição Laser+ 150 tiros R$ 2.500" [ref=f3e768] [cursor=pointer]:
+            - generic [ref=f3e769]: ⚡
+            - generic [ref=f3e770]:
+              - generic [ref=f3e771]: Munição Laser+
+              - generic [ref=f3e772]: 150 tiros
+            - generic [ref=f3e773]: R$ 2.500
+          - button "🔥 Munição Flame 100 unid. R$ 900" [ref=f3e774] [cursor=pointer]:
+            - generic [ref=f3e775]: 🔥
+            - generic [ref=f3e776]:
+              - generic [ref=f3e777]: Munição Flame
+              - generic [ref=f3e778]: 100 unid.
+            - generic [ref=f3e779]: R$ 900
+          - button "🔥 Munição Flame+ 300 unid. R$ 2.200" [ref=f3e780] [cursor=pointer]:
+            - generic [ref=f3e781]: 🔥
+            - generic [ref=f3e782]:
+              - generic [ref=f3e783]: Munição Flame+
+              - generic [ref=f3e784]: 300 unid.
+            - generic [ref=f3e785]: R$ 2.200
+          - button "❄️ Munição Ice 50 tiros R$ 1.200" [ref=f3e786] [cursor=pointer]:
+            - generic [ref=f3e787]: ❄️
+            - generic [ref=f3e788]:
+              - generic [ref=f3e789]: Munição Ice
+              - generic [ref=f3e790]: 50 tiros
+            - generic [ref=f3e791]: R$ 1.200
+          - button "❄️ Munição Ice+ 150 tiros R$ 3.000" [ref=f3e792] [cursor=pointer]:
+            - generic [ref=f3e793]: ❄️
+            - generic [ref=f3e794]:
+              - generic [ref=f3e795]: Munição Ice+
+              - generic [ref=f3e796]: 150 tiros
+            - generic [ref=f3e797]: R$ 3.000
+          - button "🕳️ Munição Void 25 tiros R$ 3.500" [ref=f3e798] [cursor=pointer]:
+            - generic [ref=f3e799]: 🕳️
+            - generic [ref=f3e800]:
+              - generic [ref=f3e801]: Munição Void
+              - generic [ref=f3e802]: 25 tiros
+            - generic [ref=f3e803]: R$ 3.500
+          - button "🕳️ Munição Void+ 100 tiros R$ 10.000" [ref=f3e804] [cursor=pointer]:
+            - generic [ref=f3e805]: 🕳️
+            - generic [ref=f3e806]:
+              - generic [ref=f3e807]: Munição Void+
+              - generic [ref=f3e808]: 100 tiros
+            - generic [ref=f3e809]: R$ 10.000
+          - button "💎 Munição Diamante 50 tiros R$ 2.500" [ref=f3e810] [cursor=pointer]:
+            - generic [ref=f3e811]: 💎
+            - generic [ref=f3e812]:
+              - generic [ref=f3e813]: Munição Diamante
+              - generic [ref=f3e814]: 50 tiros
+            - generic [ref=f3e815]: R$ 2.500
+          - button "🟡 Munição Ouro 100 tiros R$ 1.500" [ref=f3e816] [cursor=pointer]:
+            - generic [ref=f3e817]: 🟡
+            - generic [ref=f3e818]:
+              - generic [ref=f3e819]: Munição Ouro
+              - generic [ref=f3e820]: 100 tiros
+            - generic [ref=f3e821]: R$ 1.500
+          - button "⚪ Munição Ferro 100 tiros R$ 1.000" [ref=f3e822] [cursor=pointer]:
+            - generic [ref=f3e823]: ⚪
+            - generic [ref=f3e824]:
+              - generic [ref=f3e825]: Munição Ferro
+              - generic [ref=f3e826]: 100 tiros
+            - generic [ref=f3e827]: R$ 1.000
+          - button "🟡 Munição Couro 100 tiros R$ 750" [ref=f3e828] [cursor=pointer]:
+            - generic [ref=f3e829]: 🟡
+            - generic [ref=f3e830]:
+              - generic [ref=f3e831]: Munição Couro
+              - generic [ref=f3e832]: 100 tiros
+            - generic [ref=f3e833]: R$ 750
+          - button "💥 Munição Explosiva 25 tiros R$ 1.500" [ref=f3e834] [cursor=pointer]:
+            - generic [ref=f3e835]: 💥
+            - generic [ref=f3e836]:
+              - generic [ref=f3e837]: Munição Explosiva
+              - generic [ref=f3e838]: 25 tiros
+            - generic [ref=f3e839]: R$ 1.500
+          - button "💥 Munição Explosiva+ 75 tiros R$ 4.000" [ref=f3e840] [cursor=pointer]:
+            - generic [ref=f3e841]: 💥
+            - generic [ref=f3e842]:
+              - generic [ref=f3e843]: Munição Explosiva+
+              - generic [ref=f3e844]: 75 tiros
+            - generic [ref=f3e845]: R$ 4.000
+          - button "⚡ Munição Shock 25 tiros R$ 1.800" [ref=f3e846] [cursor=pointer]:
+            - generic [ref=f3e847]: ⚡
+            - generic [ref=f3e848]:
+              - generic [ref=f3e849]: Munição Shock
+              - generic [ref=f3e850]: 25 tiros
+            - generic [ref=f3e851]: R$ 1.800
+          - button "⚡ Munição Shock+ 75 tiros R$ 4.500" [ref=f3e852] [cursor=pointer]:
+            - generic [ref=f3e853]: ⚡
+            - generic [ref=f3e854]:
+              - generic [ref=f3e855]: Munição Shock+
+              - generic [ref=f3e856]: 75 tiros
+            - generic [ref=f3e857]: R$ 4.500
+          - button "🌀 Munição Teleport 10 cargas R$ 2.000" [ref=f3e858] [cursor=pointer]:
+            - generic [ref=f3e859]: 🌀
+            - generic [ref=f3e860]:
+              - generic [ref=f3e861]: Munição Teleport
+              - generic [ref=f3e862]: 10 cargas
+            - generic [ref=f3e863]: R$ 2.000
+          - button "📦 Munição Precisa 50 tiros R$ 1.500" [ref=f3e864] [cursor=pointer]:
+            - generic [ref=f3e865]: 📦
+            - generic [ref=f3e866]:
+              - generic [ref=f3e867]: Munição Precisa
+              - generic [ref=f3e868]: 50 tiros
+            - generic [ref=f3e869]: R$ 1.500
+          - button "🔥 Munição Incendiária 50 tiros R$ 2.000" [ref=f3e870] [cursor=pointer]:
+            - generic [ref=f3e871]: 🔥
+            - generic [ref=f3e872]:
+              - generic [ref=f3e873]: Munição Incendiária
+              - generic [ref=f3e874]: 50 tiros
+            - generic [ref=f3e875]: R$ 2.000
+          - button "🧊 Munição Congelante 50 tiros R$ 2.000" [ref=f3e876] [cursor=pointer]:
+            - generic [ref=f3e877]: 🧊
+            - generic [ref=f3e878]:
+              - generic [ref=f3e879]: Munição Congelante
+              - generic [ref=f3e880]: 50 tiros
+            - generic [ref=f3e881]: R$ 2.000
+          - button "☢️ Munição Nuclear 5 tiros R$ 10.000" [ref=f3e882] [cursor=pointer]:
+            - generic [ref=f3e883]: ☢️
+            - generic [ref=f3e884]:
+              - generic [ref=f3e885]: Munição Nuclear
+              - generic [ref=f3e886]: 5 tiros
+            - generic [ref=f3e887]: R$ 10.000
+          - button "🌟 Munição Estelar 25 tiros R$ 7.500" [ref=f3e888] [cursor=pointer]:
+            - generic [ref=f3e889]: 🌟
+            - generic [ref=f3e890]:
+              - generic [ref=f3e891]: Munição Estelar
+              - generic [ref=f3e892]: 25 tiros
+            - generic [ref=f3e893]: R$ 7.500
+          - button "🌀 Munição Gravitacional 10 tiros R$ 5.000" [ref=f3e894] [cursor=pointer]:
+            - generic [ref=f3e895]: 🌀
+            - generic [ref=f3e896]:
+              - generic [ref=f3e897]: Munição Gravitacional
+              - generic [ref=f3e898]: 10 tiros
+            - generic [ref=f3e899]: R$ 5.000
+          - button "🕸️ Munição Armadilha 25 tiros R$ 1.250" [ref=f3e900] [cursor=pointer]:
+            - generic [ref=f3e901]: 🕸️
+            - generic [ref=f3e902]:
+              - generic [ref=f3e903]: Munição Armadilha
+              - generic [ref=f3e904]: 25 tiros
+            - generic [ref=f3e905]: R$ 1.250
+          - button "💀 Munição Crítica 25 tiros R$ 3.000" [ref=f3e906] [cursor=pointer]:
+            - generic [ref=f3e907]: 💀
+            - generic [ref=f3e908]:
+              - generic [ref=f3e909]: Munição Crítica
+              - generic [ref=f3e910]: 25 tiros
+            - generic [ref=f3e911]: R$ 3.000
+          - button "👻 Munição Fantasma 25 tiros R$ 4.000" [ref=f3e912] [cursor=pointer]:
+            - generic [ref=f3e913]: 👻
+            - generic [ref=f3e914]:
+              - generic [ref=f3e915]: Munição Fantasma
+              - generic [ref=f3e916]: 25 tiros
+            - generic [ref=f3e917]: R$ 4.000
+          - button "🩸 Munição Vampírica 25 tiros R$ 5.000" [ref=f3e918] [cursor=pointer]:
+            - generic [ref=f3e919]: 🩸
+            - generic [ref=f3e920]:
+              - generic [ref=f3e921]: Munição Vampírica
+              - generic [ref=f3e922]: 25 tiros
+            - generic [ref=f3e923]: R$ 5.000
+          - button "🌈 Munição Prisma 50 tiros R$ 6.000" [ref=f3e924] [cursor=pointer]:
+            - generic [ref=f3e925]: 🌈
+            - generic [ref=f3e926]:
+              - generic [ref=f3e927]: Munição Prisma
+              - generic [ref=f3e928]: 50 tiros
+            - generic [ref=f3e929]: R$ 6.000
+          - button "🔱 Munição Suprema 100 tiros R$ 15.000" [ref=f3e930] [cursor=pointer]:
+            - generic [ref=f3e931]: 🔱
+            - generic [ref=f3e932]:
+              - generic [ref=f3e933]: Munição Suprema
+              - generic [ref=f3e934]: 100 tiros
+            - generic [ref=f3e935]: R$ 15.000
+      - generic [ref=f3e936]:
+        - heading "🛡️ ARMADURAS COMPLETAS R$" [level=3] [ref=f3e937]:
+          - generic [ref=f3e938]: 🛡️
+          - text: ARMADURAS COMPLETAS
+          - generic [ref=f3e939]: R$
+        - generic [ref=f3e940]:
+          - button "🟤 Couro Reforçado +25 HP · permanente R$ 1.500" [ref=f3e941] [cursor=pointer]:
+            - generic [ref=f3e942]: 🟤
+            - generic [ref=f3e943]:
+              - generic [ref=f3e944]: Couro Reforçado
+              - generic [ref=f3e945]: +25 HP · permanente
+            - generic [ref=f3e946]: R$ 1.500
+          - button "🟤 Couro Tático +35 HP · permanente R$ 1.800" [ref=f3e947] [cursor=pointer]:
+            - generic [ref=f3e948]: 🟤
+            - generic [ref=f3e949]:
+              - generic [ref=f3e950]: Couro Tático
+              - generic [ref=f3e951]: +35 HP · permanente
+            - generic [ref=f3e952]: R$ 1.800
+          - button "🟡 Ouro Reforçado +40 HP · permanente R$ 3.000" [ref=f3e953] [cursor=pointer]:
+            - generic [ref=f3e954]: 🟡
+            - generic [ref=f3e955]:
+              - generic [ref=f3e956]: Ouro Reforçado
+              - generic [ref=f3e957]: +40 HP · permanente
+            - generic [ref=f3e958]: R$ 3.000
+          - button "🟡 Ouro Elite +50 HP · permanente R$ 4.000" [ref=f3e959] [cursor=pointer]:
+            - generic [ref=f3e960]: 🟡
+            - generic [ref=f3e961]:
+              - generic [ref=f3e962]: Ouro Elite
+              - generic [ref=f3e963]: +50 HP · permanente
+            - generic [ref=f3e964]: R$ 4.000
+          - button "⚪ Ferro Reforçado +65 HP · permanente R$ 6.500" [ref=f3e965] [cursor=pointer]:
+            - generic [ref=f3e966]: ⚪
+            - generic [ref=f3e967]:
+              - generic [ref=f3e968]: Ferro Reforçado
+              - generic [ref=f3e969]: +65 HP · permanente
+            - generic [ref=f3e970]: R$ 6.500
+          - button "⚪ Ferro Elite +80 HP · permanente R$ 8.000" [ref=f3e971] [cursor=pointer]:
+            - generic [ref=f3e972]: ⚪
+            - generic [ref=f3e973]:
+              - generic [ref=f3e974]: Ferro Elite
+              - generic [ref=f3e975]: +80 HP · permanente
+            - generic [ref=f3e976]: R$ 8.000
+          - button "💎 Diamante Reforçado +125 HP · permanente R$ 13.500" [ref=f3e977] [cursor=pointer]:
+            - generic [ref=f3e978]: 💎
+            - generic [ref=f3e979]:
+              - generic [ref=f3e980]: Diamante Reforçado
+              - generic [ref=f3e981]: +125 HP · permanente
+            - generic [ref=f3e982]: R$ 13.500
+          - button "💎 Diamante Elite +150 HP · permanente R$ 17.500" [ref=f3e983] [cursor=pointer]:
+            - generic [ref=f3e984]: 💎
+            - generic [ref=f3e985]:
+              - generic [ref=f3e986]: Diamante Elite
+              - generic [ref=f3e987]: +150 HP · permanente
+            - generic [ref=f3e988]: R$ 17.500
+          - button "🕳️ Void Reforçada +600 HP · permanente R$ 65.000" [ref=f3e989] [cursor=pointer]:
+            - generic [ref=f3e990]: 🕳️
+            - generic [ref=f3e991]:
+              - generic [ref=f3e992]: Void Reforçada
+              - generic [ref=f3e993]: +600 HP · permanente
+            - generic [ref=f3e994]: R$ 65.000
+          - button "🕳️ Void Elite +750 HP · permanente R$ 80.000" [ref=f3e995] [cursor=pointer]:
+            - generic [ref=f3e996]: 🕳️
+            - generic [ref=f3e997]:
+              - generic [ref=f3e998]: Void Elite
+              - generic [ref=f3e999]: +750 HP · permanente
+            - generic [ref=f3e1000]: R$ 80.000
+          - button "🛡️ Titânio +175 HP · permanente R$ 20.000" [ref=f3e1001] [cursor=pointer]:
+            - generic [ref=f3e1002]: 🛡️
+            - generic [ref=f3e1003]:
+              - generic [ref=f3e1004]: Titânio
+              - generic [ref=f3e1005]: +175 HP · permanente
+            - generic [ref=f3e1006]: R$ 20.000
+          - button "🛡️ Titânio Elite +225 HP · permanente R$ 27.500" [ref=f3e1007] [cursor=pointer]:
+            - generic [ref=f3e1008]: 🛡️
+            - generic [ref=f3e1009]:
+              - generic [ref=f3e1010]: Titânio Elite
+              - generic [ref=f3e1011]: +225 HP · permanente
+            - generic [ref=f3e1012]: R$ 27.500
+          - button "⚡ Plasma +250 HP · permanente R$ 30.000" [ref=f3e1013] [cursor=pointer]:
+            - generic [ref=f3e1014]: ⚡
+            - generic [ref=f3e1015]:
+              - generic [ref=f3e1016]: Plasma
+              - generic [ref=f3e1017]: +250 HP · permanente
+            - generic [ref=f3e1018]: R$ 30.000
+          - button "⚡ Plasma Elite +300 HP · permanente R$ 40.000" [ref=f3e1019] [cursor=pointer]:
+            - generic [ref=f3e1020]: ⚡
+            - generic [ref=f3e1021]:
+              - generic [ref=f3e1022]: Plasma Elite
+              - generic [ref=f3e1023]: +300 HP · permanente
+            - generic [ref=f3e1024]: R$ 40.000
+          - button "🔥 Inferno +350 HP · permanente R$ 45.000" [ref=f3e1025] [cursor=pointer]:
+            - generic [ref=f3e1026]: 🔥
+            - generic [ref=f3e1027]:
+              - generic [ref=f3e1028]: Inferno
+              - generic [ref=f3e1029]: +350 HP · permanente
+            - generic [ref=f3e1030]: R$ 45.000
+          - button "❄️ Glacial +350 HP · permanente R$ 45.000" [ref=f3e1031] [cursor=pointer]:
+            - generic [ref=f3e1032]: ❄️
+            - generic [ref=f3e1033]:
+              - generic [ref=f3e1034]: Glacial
+              - generic [ref=f3e1035]: +350 HP · permanente
+            - generic [ref=f3e1036]: R$ 45.000
+          - button "⚡ Thunder +400 HP · permanente R$ 50.000" [ref=f3e1037] [cursor=pointer]:
+            - generic [ref=f3e1038]: ⚡
+            - generic [ref=f3e1039]:
+              - generic [ref=f3e1040]: Thunder
+              - generic [ref=f3e1041]: +400 HP · permanente
+            - generic [ref=f3e1042]: R$ 50.000
+          - button "🌀 Gravity +425 HP · permanente R$ 55.000" [ref=f3e1043] [cursor=pointer]:
+            - generic [ref=f3e1044]: 🌀
+            - generic [ref=f3e1045]:
+              - generic [ref=f3e1046]: Gravity
+              - generic [ref=f3e1047]: +425 HP · permanente
+            - generic [ref=f3e1048]: R$ 55.000
+          - button "🌌 Cosmic +450 HP · permanente R$ 60.000" [ref=f3e1049] [cursor=pointer]:
+            - generic [ref=f3e1050]: 🌌
+            - generic [ref=f3e1051]:
+              - generic [ref=f3e1052]: Cosmic
+              - generic [ref=f3e1053]: +450 HP · permanente
+            - generic [ref=f3e1054]: R$ 60.000
+          - button "🌟 Stellar +500 HP · permanente R$ 65.000" [ref=f3e1055] [cursor=pointer]:
+            - generic [ref=f3e1056]: 🌟
+            - generic [ref=f3e1057]:
+              - generic [ref=f3e1058]: Stellar
+              - generic [ref=f3e1059]: +500 HP · permanente
+            - generic [ref=f3e1060]: R$ 65.000
+          - button "👻 Phantom +300 HP · permanente R$ 40.000" [ref=f3e1061] [cursor=pointer]:
+            - generic [ref=f3e1062]: 👻
+            - generic [ref=f3e1063]:
+              - generic [ref=f3e1064]: Phantom
+              - generic [ref=f3e1065]: +300 HP · permanente
+            - generic [ref=f3e1066]: R$ 40.000
+          - button "💀 Reaper +400 HP · permanente R$ 55.000" [ref=f3e1067] [cursor=pointer]:
+            - generic [ref=f3e1068]: 💀
+            - generic [ref=f3e1069]:
+              - generic [ref=f3e1070]: Reaper
+              - generic [ref=f3e1071]: +400 HP · permanente
+            - generic [ref=f3e1072]: R$ 55.000
+          - button "😈 Demon +450 HP · permanente R$ 60.000" [ref=f3e1073] [cursor=pointer]:
+            - generic [ref=f3e1074]: 😈
+            - generic [ref=f3e1075]:
+              - generic [ref=f3e1076]: Demon
+              - generic [ref=f3e1077]: +450 HP · permanente
+            - generic [ref=f3e1078]: R$ 60.000
+          - button "😇 Angel +450 HP · permanente R$ 60.000" [ref=f3e1079] [cursor=pointer]:
+            - generic [ref=f3e1080]: 😇
+            - generic [ref=f3e1081]:
+              - generic [ref=f3e1082]: Angel
+              - generic [ref=f3e1083]: +450 HP · permanente
+            - generic [ref=f3e1084]: R$ 60.000
+          - button "🐉 Dragon +550 HP · permanente R$ 70.000" [ref=f3e1085] [cursor=pointer]:
+            - generic [ref=f3e1086]: 🐉
+            - generic [ref=f3e1087]:
+              - generic [ref=f3e1088]: Dragon
+              - generic [ref=f3e1089]: +550 HP · permanente
+            - generic [ref=f3e1090]: R$ 70.000
+          - button "🐉 Ancient Dragon +650 HP · permanente R$ 85.000" [ref=f3e1091] [cursor=pointer]:
+            - generic [ref=f3e1092]: 🐉
+            - generic [ref=f3e1093]:
+              - generic [ref=f3e1094]: Ancient Dragon
+              - generic [ref=f3e1095]: +650 HP · permanente
+            - generic [ref=f3e1096]: R$ 85.000
+          - button "🕸️ Spider +275 HP · permanente R$ 35.000" [ref=f3e1097] [cursor=pointer]:
+            - generic [ref=f3e1098]: 🕸️
+            - generic [ref=f3e1099]:
+              - generic [ref=f3e1100]: Spider
+              - generic [ref=f3e1101]: +275 HP · permanente
+            - generic [ref=f3e1102]: R$ 35.000
+          - button "🦂 Scorpion +325 HP · permanente R$ 42.500" [ref=f3e1103] [cursor=pointer]:
+            - generic [ref=f3e1104]: 🦂
+            - generic [ref=f3e1105]:
+              - generic [ref=f3e1106]: Scorpion
+              - generic [ref=f3e1107]: +325 HP · permanente
+            - generic [ref=f3e1108]: R$ 42.500
+          - button "🦾 Cyber +375 HP · permanente R$ 47.500" [ref=f3e1109] [cursor=pointer]:
+            - generic [ref=f3e1110]: 🦾
+            - generic [ref=f3e1111]:
+              - generic [ref=f3e1112]: Cyber
+              - generic [ref=f3e1113]: +375 HP · permanente
+            - generic [ref=f3e1114]: R$ 47.500
+          - button "🤖 Robo +425 HP · permanente R$ 52.500" [ref=f3e1115] [cursor=pointer]:
+            - generic [ref=f3e1116]: 🤖
+            - generic [ref=f3e1117]:
+              - generic [ref=f3e1118]: Robo
+              - generic [ref=f3e1119]: +425 HP · permanente
+            - generic [ref=f3e1120]: R$ 52.500
+          - button "🧪 Mutant +500 HP · permanente R$ 60.000" [ref=f3e1121] [cursor=pointer]:
+            - generic [ref=f3e1122]: 🧪
+            - generic [ref=f3e1123]:
+              - generic [ref=f3e1124]: Mutant
+              - generic [ref=f3e1125]: +500 HP · permanente
+            - generic [ref=f3e1126]: R$ 60.000
+          - button "🌑 Dark +550 HP · permanente R$ 70.000" [ref=f3e1127] [cursor=pointer]:
+            - generic [ref=f3e1128]: 🌑
+            - generic [ref=f3e1129]:
+              - generic [ref=f3e1130]: Dark
+              - generic [ref=f3e1131]: +550 HP · permanente
+            - generic [ref=f3e1132]: R$ 70.000
+          - button "☀️ Solar +600 HP · permanente R$ 75.000" [ref=f3e1133] [cursor=pointer]:
+            - generic [ref=f3e1134]: ☀️
+            - generic [ref=f3e1135]:
+              - generic [ref=f3e1136]: Solar
+              - generic [ref=f3e1137]: +600 HP · permanente
+            - generic [ref=f3e1138]: R$ 75.000
+          - button "🌙 Lunar +600 HP · permanente R$ 75.000" [ref=f3e1139] [cursor=pointer]:
+            - generic [ref=f3e1140]: 🌙
+            - generic [ref=f3e1141]:
+              - generic [ref=f3e1142]: Lunar
+              - generic [ref=f3e1143]: +600 HP · permanente
+            - generic [ref=f3e1144]: R$ 75.000
+          - button "🌈 Prism +650 HP · permanente R$ 80.000" [ref=f3e1145] [cursor=pointer]:
+            - generic [ref=f3e1146]: 🌈
+            - generic [ref=f3e1147]:
+              - generic [ref=f3e1148]: Prism
+              - generic [ref=f3e1149]: +650 HP · permanente
+            - generic [ref=f3e1150]: R$ 80.000
+          - button "💠 Crystal +700 HP · permanente R$ 90.000" [ref=f3e1151] [cursor=pointer]:
+            - generic [ref=f3e1152]: 💠
+            - generic [ref=f3e1153]:
+              - generic [ref=f3e1154]: Crystal
+              - generic [ref=f3e1155]: +700 HP · permanente
+            - generic [ref=f3e1156]: R$ 90.000
+          - button "🔮 Mystic +750 HP · permanente R$ 100.000" [ref=f3e1157] [cursor=pointer]:
+            - generic [ref=f3e1158]: 🔮
+            - generic [ref=f3e1159]:
+              - generic [ref=f3e1160]: Mystic
+              - generic [ref=f3e1161]: +750 HP · permanente
+            - generic [ref=f3e1162]: R$ 100.000
+          - button "👑 Royal +800 HP · permanente R$ 110.000" [ref=f3e1163] [cursor=pointer]:
+            - generic [ref=f3e1164]: 👑
+            - generic [ref=f3e1165]:
+              - generic [ref=f3e1166]: Royal
+              - generic [ref=f3e1167]: +800 HP · permanente
+            - generic [ref=f3e1168]: R$ 110.000
+          - button "🏆 Champion +850 HP · permanente R$ 120.000" [ref=f3e1169] [cursor=pointer]:
+            - generic [ref=f3e1170]: 🏆
+            - generic [ref=f3e1171]:
+              - generic [ref=f3e1172]: Champion
+              - generic [ref=f3e1173]: +850 HP · permanente
+            - generic [ref=f3e1174]: R$ 120.000
+          - button "⚔️ Warrior +900 HP · permanente R$ 125.000" [ref=f3e1175] [cursor=pointer]:
+            - generic [ref=f3e1176]: ⚔️
+            - generic [ref=f3e1177]:
+              - generic [ref=f3e1178]: Warrior
+              - generic [ref=f3e1179]: +900 HP · permanente
+            - generic [ref=f3e1180]: R$ 125.000
+          - button "🛡️ Guardian +950 HP · permanente R$ 135.000" [ref=f3e1181] [cursor=pointer]:
+            - generic [ref=f3e1182]: 🛡️
+            - generic [ref=f3e1183]:
+              - generic [ref=f3e1184]: Guardian
+              - generic [ref=f3e1185]: +950 HP · permanente
+            - generic [ref=f3e1186]: R$ 135.000
+          - button "🛡️ Titan +1000 HP · permanente R$ 150.000" [ref=f3e1187] [cursor=pointer]:
+            - generic [ref=f3e1188]: 🛡️
+            - generic [ref=f3e1189]:
+              - generic [ref=f3e1190]: Titan
+              - generic [ref=f3e1191]: +1000 HP · permanente
+            - generic [ref=f3e1192]: R$ 150.000
+          - button "🌌 Galaxy +1100 HP · permanente R$ 175.000" [ref=f3e1193] [cursor=pointer]:
+            - generic [ref=f3e1194]: 🌌
+            - generic [ref=f3e1195]:
+              - generic [ref=f3e1196]: Galaxy
+              - generic [ref=f3e1197]: +1100 HP · permanente
+            - generic [ref=f3e1198]: R$ 175.000
+          - button "🌠 Universe +1250 HP · permanente R$ 200.000" [ref=f3e1199] [cursor=pointer]:
+            - generic [ref=f3e1200]: 🌠
+            - generic [ref=f3e1201]:
+              - generic [ref=f3e1202]: Universe
+              - generic [ref=f3e1203]: +1250 HP · permanente
+            - generic [ref=f3e1204]: R$ 200.000
+          - button "🕳️ Void Master +1500 HP · permanente R$ 250.000" [ref=f3e1205] [cursor=pointer]:
+            - generic [ref=f3e1206]: 🕳️
+            - generic [ref=f3e1207]:
+              - generic [ref=f3e1208]: Void Master
+              - generic [ref=f3e1209]: +1500 HP · permanente
+            - generic [ref=f3e1210]: R$ 250.000
+          - button "🕳️ Void God +2000 HP · permanente R$ 350.000" [ref=f3e1211] [cursor=pointer]:
+            - generic [ref=f3e1212]: 🕳️
+            - generic [ref=f3e1213]:
+              - generic [ref=f3e1214]: Void God
+              - generic [ref=f3e1215]: +2000 HP · permanente
+            - generic [ref=f3e1216]: R$ 350.000
+          - button "☄️ Meteor +1300 HP · permanente R$ 225.000" [ref=f3e1217] [cursor=pointer]:
+            - generic [ref=f3e1218]: ☄️
+            - generic [ref=f3e1219]:
+              - generic [ref=f3e1220]: Meteor
+              - generic [ref=f3e1221]: +1300 HP · permanente
+            - generic [ref=f3e1222]: R$ 225.000
+          - button "💫 Infinity Armor +1750 HP · permanente R$ 300.000" [ref=f3e1223] [cursor=pointer]:
+            - generic [ref=f3e1224]: 💫
+            - generic [ref=f3e1225]:
+              - generic [ref=f3e1226]: Infinity Armor
+              - generic [ref=f3e1227]: +1750 HP · permanente
+            - generic [ref=f3e1228]: R$ 300.000
+          - button "♾️ Eternal +2500 HP · permanente R$ 450.000" [ref=f3e1229] [cursor=pointer]:
+            - generic [ref=f3e1230]: ♾️
+            - generic [ref=f3e1231]:
+              - generic [ref=f3e1232]: Eternal
+              - generic [ref=f3e1233]: +2500 HP · permanente
+            - generic [ref=f3e1234]: R$ 450.000
+          - button "🌟 Ultimate +3000 HP · permanente R$ 500.000" [ref=f3e1235] [cursor=pointer]:
+            - generic [ref=f3e1236]: 🌟
+            - generic [ref=f3e1237]:
+              - generic [ref=f3e1238]: Ultimate
+              - generic [ref=f3e1239]: +3000 HP · permanente
+            - generic [ref=f3e1240]: R$ 500.000
+      - generic [ref=f3e1241]:
+        - heading "💥 HABILIDADES 🪙" [level=3] [ref=f3e1242]:
+          - generic [ref=f3e1243]: 💥
+          - text: HABILIDADES
+          - generic [ref=f3e1244]: 🪙
+        - generic [ref=f3e1245]:
+          - button "💨 Dash avanço rápido · CD 10s 3 🪙" [ref=f3e1246] [cursor=pointer]:
+            - generic [ref=f3e1247]: 💨
+            - generic [ref=f3e1248]:
+              - generic [ref=f3e1249]: Dash
+              - generic [ref=f3e1250]: avanço rápido · CD 10s
+            - generic [ref=f3e1251]: 3 🪙
+          - button "💨 Dash II avanço duplo · CD 15s 5 🪙" [ref=f3e1252] [cursor=pointer]:
+            - generic [ref=f3e1253]: 💨
+            - generic [ref=f3e1254]:
+              - generic [ref=f3e1255]: Dash II
+              - generic [ref=f3e1256]: avanço duplo · CD 15s
+            - generic [ref=f3e1257]: 5 🪙
+          - button "🛡️ Escudo 200 HP · CD 30s 5 🪙" [ref=f3e1258] [cursor=pointer]:
+            - generic [ref=f3e1259]: 🛡️
+            - generic [ref=f3e1260]:
+              - generic [ref=f3e1261]: Escudo
+              - generic [ref=f3e1262]: 200 HP · CD 30s
+            - generic [ref=f3e1263]: 5 🪙
+          - button "🛡️ Escudo II 500 HP · CD 45s 9 🪙" [ref=f3e1264] [cursor=pointer]:
+            - generic [ref=f3e1265]: 🛡️
+            - generic [ref=f3e1266]:
+              - generic [ref=f3e1267]: Escudo II
+              - generic [ref=f3e1268]: 500 HP · CD 45s
+            - generic [ref=f3e1269]: 9 🪙
+          - button "❤️ Cura +150 HP · CD 20s 4 🪙" [ref=f3e1270] [cursor=pointer]:
+            - generic [ref=f3e1271]: ❤️
+            - generic [ref=f3e1272]:
+              - generic [ref=f3e1273]: Cura
+              - generic [ref=f3e1274]: +150 HP · CD 20s
+            - generic [ref=f3e1275]: 4 🪙
+          - button "❤️ Cura II +300 HP · CD 30s 7 🪙" [ref=f3e1276] [cursor=pointer]:
+            - generic [ref=f3e1277]: ❤️
+            - generic [ref=f3e1278]:
+              - generic [ref=f3e1279]: Cura II
+              - generic [ref=f3e1280]: +300 HP · CD 30s
+            - generic [ref=f3e1281]: 7 🪙
+          - button "💥 Explosão AoE 100 · CD 20s 5 🪙" [ref=f3e1282] [cursor=pointer]:
+            - generic [ref=f3e1283]: 💥
+            - generic [ref=f3e1284]:
+              - generic [ref=f3e1285]: Explosão
+              - generic [ref=f3e1286]: AoE 100 · CD 20s
+            - generic [ref=f3e1287]: 5 🪙
+          - button "💥 Mega Explosão AoE 350 · CD 40s 12 🪙" [ref=f3e1288] [cursor=pointer]:
+            - generic [ref=f3e1289]: 💥
+            - generic [ref=f3e1290]:
+              - generic [ref=f3e1291]: Mega Explosão
+              - generic [ref=f3e1292]: AoE 350 · CD 40s
+            - generic [ref=f3e1293]: 12 🪙
+          - button "⚡ Choque dano 150 · CD 15s 5 🪙" [ref=f3e1294] [cursor=pointer]:
+            - generic [ref=f3e1295]: ⚡
+            - generic [ref=f3e1296]:
+              - generic [ref=f3e1297]: Choque
+              - generic [ref=f3e1298]: dano 150 · CD 15s
+            - generic [ref=f3e1299]: 5 🪙
+          - button "⚡ Mega Choque dano 400 · CD 30s 10 🪙" [ref=f3e1300] [cursor=pointer]:
+            - generic [ref=f3e1301]: ⚡
+            - generic [ref=f3e1302]:
+              - generic [ref=f3e1303]: Mega Choque
+              - generic [ref=f3e1304]: dano 400 · CD 30s
+            - generic [ref=f3e1305]: 10 🪙
+          - button "❄️ Congelar paralisa 3s · CD 25s 7 🪙" [ref=f3e1306] [cursor=pointer]:
+            - generic [ref=f3e1307]: ❄️
+            - generic [ref=f3e1308]:
+              - generic [ref=f3e1309]: Congelar
+              - generic [ref=f3e1310]: paralisa 3s · CD 25s
+            - generic [ref=f3e1311]: 7 🪙
+          - button "❄️ Mega Congelar paralisa 6s · CD 40s 12 🪙" [ref=f3e1312] [cursor=pointer]:
+            - generic [ref=f3e1313]: ❄️
+            - generic [ref=f3e1314]:
+              - generic [ref=f3e1315]: Mega Congelar
+              - generic [ref=f3e1316]: paralisa 6s · CD 40s
+            - generic [ref=f3e1317]: 12 🪙
+          - button "🔥 Incendiar dano contínuo · CD 20s 6 🪙" [ref=f3e1318] [cursor=pointer]:
+            - generic [ref=f3e1319]: 🔥
+            - generic [ref=f3e1320]:
+              - generic [ref=f3e1321]: Incendiar
+              - generic [ref=f3e1322]: dano contínuo · CD 20s
+            - generic [ref=f3e1323]: 6 🪙
+          - button "🔥 Inferno AoE · CD 45s 13 🪙" [ref=f3e1324] [cursor=pointer]:
+            - generic [ref=f3e1325]: 🔥
+            - generic [ref=f3e1326]:
+              - generic [ref=f3e1327]: Inferno
+              - generic [ref=f3e1328]: AoE · CD 45s
+            - generic [ref=f3e1329]: 13 🪙
+          - button "🌀 Teleporte II alcance aumentado · CD 10s 10 🪙" [ref=f3e1330] [cursor=pointer]:
+            - generic [ref=f3e1331]: 🌀
+            - generic [ref=f3e1332]:
+              - generic [ref=f3e1333]: Teleporte II
+              - generic [ref=f3e1334]: alcance aumentado · CD 10s
+            - generic [ref=f3e1335]: 10 🪙
+          - button "🌀 Teleporte Global CD 30s 15 🪙" [ref=f3e1336] [cursor=pointer]:
+            - generic [ref=f3e1337]: 🌀
+            - generic [ref=f3e1338]:
+              - generic [ref=f3e1339]: Teleporte Global
+              - generic [ref=f3e1340]: CD 30s
+            - generic [ref=f3e1341]: 15 🪙
+          - button "👻 Invisibilidade 10s · CD 30s 10 🪙" [ref=f3e1342] [cursor=pointer]:
+            - generic [ref=f3e1343]: 👻
+            - generic [ref=f3e1344]:
+              - generic [ref=f3e1345]: Invisibilidade
+              - generic [ref=f3e1346]: 10s · CD 30s
+            - generic [ref=f3e1347]: 10 🪙
+          - button "👻 Invisibilidade II 20s · CD 50s 15 🪙" [ref=f3e1348] [cursor=pointer]:
+            - generic [ref=f3e1349]: 👻
+            - generic [ref=f3e1350]:
+              - generic [ref=f3e1351]: Invisibilidade II
+              - generic [ref=f3e1352]: 20s · CD 50s
+            - generic [ref=f3e1353]: 15 🪙
+          - button "🏃 Rush +150% velocidade · 10s · CD 30s 8 🪙" [ref=f3e1354] [cursor=pointer]:
+            - generic [ref=f3e1355]: 🏃
+            - generic [ref=f3e1356]:
+              - generic [ref=f3e1357]: Rush
+              - generic [ref=f3e1358]: +150% velocidade · 10s · CD 30s
+            - generic [ref=f3e1359]: 8 🪙
+          - button "🏃 Mega Rush +300% velocidade · 10s · CD 45s 15 🪙" [ref=f3e1360] [cursor=pointer]:
+            - generic [ref=f3e1361]: 🏃
+            - generic [ref=f3e1362]:
+              - generic [ref=f3e1363]: Mega Rush
+              - generic [ref=f3e1364]: +300% velocidade · 10s · CD 45s
+            - generic [ref=f3e1365]: 15 🪙
+          - button "🎯 Mira Automática 10s · CD 30s 8 🪙" [ref=f3e1366] [cursor=pointer]:
+            - generic [ref=f3e1367]: 🎯
+            - generic [ref=f3e1368]:
+              - generic [ref=f3e1369]: Mira Automática
+              - generic [ref=f3e1370]: 10s · CD 30s
+            - generic [ref=f3e1371]: 8 🪙
+          - button "🎯 Mira Suprema 20s · CD 45s 14 🪙" [ref=f3e1372] [cursor=pointer]:
+            - generic [ref=f3e1373]: 🎯
+            - generic [ref=f3e1374]:
+              - generic [ref=f3e1375]: Mira Suprema
+              - generic [ref=f3e1376]: 20s · CD 45s
+            - generic [ref=f3e1377]: 14 🪙
+          - button "💥 Tiro Explosivo 5 tiros · CD 20s 7 🪙" [ref=f3e1378] [cursor=pointer]:
+            - generic [ref=f3e1379]: 💥
+            - generic [ref=f3e1380]:
+              - generic [ref=f3e1381]: Tiro Explosivo
+              - generic [ref=f3e1382]: 5 tiros · CD 20s
+            - generic [ref=f3e1383]: 7 🪙
+          - button "🔫 Tiro Elétrico 5 tiros · CD 20s 8 🪙" [ref=f3e1384] [cursor=pointer]:
+            - generic [ref=f3e1385]: 🔫
+            - generic [ref=f3e1386]:
+              - generic [ref=f3e1387]: Tiro Elétrico
+              - generic [ref=f3e1388]: 5 tiros · CD 20s
+            - generic [ref=f3e1389]: 8 🪙
+          - button "❄️ Tiro Congelante 5 tiros · CD 20s 8 🪙" [ref=f3e1390] [cursor=pointer]:
+            - generic [ref=f3e1391]: ❄️
+            - generic [ref=f3e1392]:
+              - generic [ref=f3e1393]: Tiro Congelante
+              - generic [ref=f3e1394]: 5 tiros · CD 20s
+            - generic [ref=f3e1395]: 8 🪙
+          - button "🔫 Tiro Flamejante 5 tiros · CD 20s 8 🪙" [ref=f3e1396] [cursor=pointer]:
+            - generic [ref=f3e1397]: 🔫
+            - generic [ref=f3e1398]:
+              - generic [ref=f3e1399]: Tiro Flamejante
+              - generic [ref=f3e1400]: 5 tiros · CD 20s
+            - generic [ref=f3e1401]: 8 🪙
+          - button "🔫 Tiro Void 5 tiros · CD 30s 12 🪙" [ref=f3e1402] [cursor=pointer]:
+            - generic [ref=f3e1403]: 🔫
+            - generic [ref=f3e1404]:
+              - generic [ref=f3e1405]: Tiro Void
+              - generic [ref=f3e1406]: 5 tiros · CD 30s
+            - generic [ref=f3e1407]: 12 🪙
+          - button "🧲 Ímã coleta automática · 30s · CD 30s 6 🪙" [ref=f3e1408] [cursor=pointer]:
+            - generic [ref=f3e1409]: 🧲
+            - generic [ref=f3e1410]:
+              - generic [ref=f3e1411]: Ímã
+              - generic [ref=f3e1412]: coleta automática · 30s · CD 30s
+            - generic [ref=f3e1413]: 6 🪙
+          - button "🪙 Fortuna +100% dinheiro · 60s · CD 60s 8 🪙" [ref=f3e1414] [cursor=pointer]:
+            - generic [ref=f3e1415]: 🪙
+            - generic [ref=f3e1416]:
+              - generic [ref=f3e1417]: Fortuna
+              - generic [ref=f3e1418]: +100% dinheiro · 60s · CD 60s
+            - generic [ref=f3e1419]: 8 🪙
+          - button "❤️ Segunda Chance evita eliminação · CD 90s 15 🪙" [ref=f3e1420] [cursor=pointer]:
+            - generic [ref=f3e1421]: ❤️
+            - generic [ref=f3e1422]:
+              - generic [ref=f3e1423]: Segunda Chance
+              - generic [ref=f3e1424]: evita eliminação · CD 90s
+            - generic [ref=f3e1425]: 15 🪙
+          - button "🛡️ Invencível 5s · CD 45s 12 🪙" [ref=f3e1426] [cursor=pointer]:
+            - generic [ref=f3e1427]: 🛡️
+            - generic [ref=f3e1428]:
+              - generic [ref=f3e1429]: Invencível
+              - generic [ref=f3e1430]: 5s · CD 45s
+            - generic [ref=f3e1431]: 12 🪙
+          - button "🛡️ Invencível II 10s · CD 60s 20 🪙" [ref=f3e1432] [cursor=pointer]:
+            - generic [ref=f3e1433]: 🛡️
+            - generic [ref=f3e1434]:
+              - generic [ref=f3e1435]: Invencível II
+              - generic [ref=f3e1436]: 10s · CD 60s
+            - generic [ref=f3e1437]: 20 🪙
+          - button "💀 Reaper dano aumentado · 15s · CD 45s 14 🪙" [ref=f3e1438] [cursor=pointer]:
+            - generic [ref=f3e1439]: 💀
+            - generic [ref=f3e1440]:
+              - generic [ref=f3e1441]: Reaper
+              - generic [ref=f3e1442]: dano aumentado · 15s · CD 45s
+            - generic [ref=f3e1443]: 14 🪙
+          - button "👑 Rei do Campo atributos +50% · 20s · CD 90s 20 🪙" [ref=f3e1444] [cursor=pointer]:
+            - generic [ref=f3e1445]: 👑
+            - generic [ref=f3e1446]:
+              - generic [ref=f3e1447]: Rei do Campo
+              - generic [ref=f3e1448]: atributos +50% · 20s · CD 90s
+            - generic [ref=f3e1449]: 20 🪙
+          - button "🌌 Gravidade atrai inimigos · 10s · CD 45s 15 🪙" [ref=f3e1450] [cursor=pointer]:
+            - generic [ref=f3e1451]: 🌌
+            - generic [ref=f3e1452]:
+              - generic [ref=f3e1453]: Gravidade
+              - generic [ref=f3e1454]: atrai inimigos · 10s · CD 45s
+            - generic [ref=f3e1455]: 15 🪙
+          - button "🌀 Vórtice puxa inimigos · 8s · CD 40s 13 🪙" [ref=f3e1456] [cursor=pointer]:
+            - generic [ref=f3e1457]: 🌀
+            - generic [ref=f3e1458]:
+              - generic [ref=f3e1459]: Vórtice
+              - generic [ref=f3e1460]: puxa inimigos · 8s · CD 40s
+            - generic [ref=f3e1461]: 13 🪙
+          - button "☄️ Meteoro AoE 500 · CD 60s 18 🪙" [ref=f3e1462] [cursor=pointer]:
+            - generic [ref=f3e1463]: ☄️
+            - generic [ref=f3e1464]:
+              - generic [ref=f3e1465]: Meteoro
+              - generic [ref=f3e1466]: AoE 500 · CD 60s
+            - generic [ref=f3e1467]: 18 🪙
+          - button "🌩️ Tempestade dano contínuo · 15s · CD 60s 20 🪙" [ref=f3e1468] [cursor=pointer]:
+            - generic [ref=f3e1469]: 🌩️
+            - generic [ref=f3e1470]:
+              - generic [ref=f3e1471]: Tempestade
+              - generic [ref=f3e1472]: dano contínuo · 15s · CD 60s
+            - generic [ref=f3e1473]: 20 🪙
+          - button "🌋 Vulcão AoE 600 · CD 75s 22 🪙" [ref=f3e1474] [cursor=pointer]:
+            - generic [ref=f3e1475]: 🌋
+            - generic [ref=f3e1476]:
+              - generic [ref=f3e1477]: Vulcão
+              - generic [ref=f3e1478]: AoE 600 · CD 75s
+            - generic [ref=f3e1479]: 22 🪙
+          - button "🌊 Onda empurra inimigos · CD 30s 8 🪙" [ref=f3e1480] [cursor=pointer]:
+            - generic [ref=f3e1481]: 🌊
+            - generic [ref=f3e1482]:
+              - generic [ref=f3e1483]: Onda
+              - generic [ref=f3e1484]: empurra inimigos · CD 30s
+            - generic [ref=f3e1485]: 8 🪙
+          - button "🌪️ Tornado dano AoE · 10s · CD 50s 16 🪙" [ref=f3e1486] [cursor=pointer]:
+            - generic [ref=f3e1487]: 🌪️
+            - generic [ref=f3e1488]:
+              - generic [ref=f3e1489]: Tornado
+              - generic [ref=f3e1490]: dano AoE · 10s · CD 50s
+            - generic [ref=f3e1491]: 16 🪙
+          - button "🌑 Dark Pulse dano 500 · CD 40s 15 🪙" [ref=f3e1492] [cursor=pointer]:
+            - generic [ref=f3e1493]: 🌑
+            - generic [ref=f3e1494]:
+              - generic [ref=f3e1495]: Dark Pulse
+              - generic [ref=f3e1496]: dano 500 · CD 40s
+            - generic [ref=f3e1497]: 15 🪙
+          - button "🌟 Star Burst dano 750 · CD 60s 22 🪙" [ref=f3e1498] [cursor=pointer]:
+            - generic [ref=f3e1499]: 🌟
+            - generic [ref=f3e1500]:
+              - generic [ref=f3e1501]: Star Burst
+              - generic [ref=f3e1502]: dano 750 · CD 60s
+            - generic [ref=f3e1503]: 22 🪙
+          - button "♾️ Infinity todos os efeitos · 10s · CD 90s 30 🪙" [ref=f3e1504] [cursor=pointer]:
+            - generic [ref=f3e1505]: ♾️
+            - generic [ref=f3e1506]:
+              - generic [ref=f3e1507]: "Infinity"
+              - generic [ref=f3e1508]: todos os efeitos · 10s · CD 90s
+            - generic [ref=f3e1509]: 30 🪙
+          - button "🔱 Tridente ataque especial · CD 45s 18 🪙" [ref=f3e1510] [cursor=pointer]:
+            - generic [ref=f3e1511]: 🔱
+            - generic [ref=f3e1512]:
+              - generic [ref=f3e1513]: Tridente
+              - generic [ref=f3e1514]: ataque especial · CD 45s
+            - generic [ref=f3e1515]: 18 🪙
+          - button "🐉 Dragon Breath AoE 800 · CD 60s 25 🪙" [ref=f3e1516] [cursor=pointer]:
+            - generic [ref=f3e1517]: 🐉
+            - generic [ref=f3e1518]:
+              - generic [ref=f3e1519]: Dragon Breath
+              - generic [ref=f3e1520]: AoE 800 · CD 60s
+            - generic [ref=f3e1521]: 25 🪙
+          - button "👑 Royal Blast dano 1.000 · CD 90s 30 🪙" [ref=f3e1522] [cursor=pointer]:
+            - generic [ref=f3e1523]: 👑
+            - generic [ref=f3e1524]:
+              - generic [ref=f3e1525]: Royal Blast
+              - generic [ref=f3e1526]: dano 1.000 · CD 90s
+            - generic [ref=f3e1527]: 30 🪙
+          - button "🕳️ Void Blast dano 1.500 · CD 90s 35 🪙" [ref=f3e1528] [cursor=pointer]:
+            - generic [ref=f3e1529]: 🕳️
+            - generic [ref=f3e1530]:
+              - generic [ref=f3e1531]: Void Blast
+              - generic [ref=f3e1532]: dano 1.500 · CD 90s
+            - generic [ref=f3e1533]: 35 🪙
+          - button "💫 Cosmic Ray dano 2.000 · CD 120s 40 🪙" [ref=f3e1534] [cursor=pointer]:
+            - generic [ref=f3e1535]: 💫
+            - generic [ref=f3e1536]:
+              - generic [ref=f3e1537]: Cosmic Ray
+              - generic [ref=f3e1538]: dano 2.000 · CD 120s
+            - generic [ref=f3e1539]: 40 🪙
+          - button "🌟 Ultimate habilidade suprema · CD 180s 50 🪙" [ref=f3e1540] [cursor=pointer]:
+            - generic [ref=f3e1541]: 🌟
+            - generic [ref=f3e1542]:
+              - generic [ref=f3e1543]: Ultimate
+              - generic [ref=f3e1544]: habilidade suprema · CD 180s
+            - generic [ref=f3e1545]: 50 🪙
+      - generic [ref=f3e1546]:
+        - heading "🪄 ENCANTAMENTOS 🪙" [level=3] [ref=f3e1547]:
+          - generic [ref=f3e1548]: 🪄
+          - text: ENCANTAMENTOS
+          - generic [ref=f3e1549]: 🪙
+        - generic [ref=f3e1550]:
+          - button "🔥 Fogo II dano flamejante 15 🪙" [ref=f3e1551] [cursor=pointer]:
+            - generic [ref=f3e1552]: 🔥
+            - generic [ref=f3e1553]:
+              - generic [ref=f3e1554]: Fogo II
+              - generic [ref=f3e1555]: dano flamejante
+            - generic [ref=f3e1556]: 15 🪙
+          - button "🔥 Inferno fogo intenso 25 🪙" [ref=f3e1557] [cursor=pointer]:
+            - generic [ref=f3e1558]: 🔥
+            - generic [ref=f3e1559]:
+              - generic [ref=f3e1560]: Inferno
+              - generic [ref=f3e1561]: fogo intenso
+            - generic [ref=f3e1562]: 25 🪙
+          - button "❄️ Gelado II lentidão 7s 15 🪙" [ref=f3e1563] [cursor=pointer]:
+            - generic [ref=f3e1564]: ❄️
+            - generic [ref=f3e1565]:
+              - generic [ref=f3e1566]: Gelado II
+              - generic [ref=f3e1567]: lentidão 7s
+            - generic [ref=f3e1568]: 15 🪙
+          - button "🧊 Congelante lentidão 10s 20 🪙" [ref=f3e1569] [cursor=pointer]:
+            - generic [ref=f3e1570]: 🧊
+            - generic [ref=f3e1571]:
+              - generic [ref=f3e1572]: Congelante
+              - generic [ref=f3e1573]: lentidão 10s
+            - generic [ref=f3e1574]: 20 🪙
+          - button "⚡ Raio II eletricidade intensa 20 🪙" [ref=f3e1575] [cursor=pointer]:
+            - generic [ref=f3e1576]: ⚡
+            - generic [ref=f3e1577]:
+              - generic [ref=f3e1578]: Raio II
+              - generic [ref=f3e1579]: eletricidade intensa
+            - generic [ref=f3e1580]: 20 🪙
+          - button "🌩️ Tempestade efeito elétrico 30 🪙" [ref=f3e1581] [cursor=pointer]:
+            - generic [ref=f3e1582]: 🌩️
+            - generic [ref=f3e1583]:
+              - generic [ref=f3e1584]: Tempestade
+              - generic [ref=f3e1585]: efeito elétrico
+            - generic [ref=f3e1586]: 30 🪙
+          - button "🩸 Vampírico recupera HP ao dar dano 25 🪙" [ref=f3e1587] [cursor=pointer]:
+            - generic [ref=f3e1588]: 🩸
+            - generic [ref=f3e1589]:
+              - generic [ref=f3e1590]: Vampírico
+              - generic [ref=f3e1591]: recupera HP ao dar dano
+            - generic [ref=f3e1592]: 25 🪙
+          - button "🩸 Vampírico II recuperação aumentada 40 🪙" [ref=f3e1593] [cursor=pointer]:
+            - generic [ref=f3e1594]: 🩸
+            - generic [ref=f3e1595]:
+              - generic [ref=f3e1596]: Vampírico II
+              - generic [ref=f3e1597]: recuperação aumentada
+            - generic [ref=f3e1598]: 40 🪙
+          - button "🕳️ Void energia Void 35 🪙" [ref=f3e1599] [cursor=pointer]:
+            - generic [ref=f3e1600]: 🕳️
+            - generic [ref=f3e1601]:
+              - generic [ref=f3e1602]: Void
+              - generic [ref=f3e1603]: energia Void
+            - generic [ref=f3e1604]: 35 🪙
+          - button "🕳️ Void II energia Void intensa 50 🪙" [ref=f3e1605] [cursor=pointer]:
+            - generic [ref=f3e1606]: 🕳️
+            - generic [ref=f3e1607]:
+              - generic [ref=f3e1608]: Void II
+              - generic [ref=f3e1609]: energia Void intensa
+            - generic [ref=f3e1610]: 50 🪙
+          - button "✨ Brilhante brilho especial 8 🪙" [ref=f3e1611] [cursor=pointer]:
+            - generic [ref=f3e1612]: ✨
+            - generic [ref=f3e1613]:
+              - generic [ref=f3e1614]: Brilhante
+              - generic [ref=f3e1615]: brilho especial
+            - generic [ref=f3e1616]: 8 🪙
+          - button "🌈 Prisma efeito colorido 18 🪙" [ref=f3e1617] [cursor=pointer]:
+            - generic [ref=f3e1618]: 🌈
+            - generic [ref=f3e1619]:
+              - generic [ref=f3e1620]: Prisma
+              - generic [ref=f3e1621]: efeito colorido
+            - generic [ref=f3e1622]: 18 🪙
+          - button "🌑 Sombrio aura escura 15 🪙" [ref=f3e1623] [cursor=pointer]:
+            - generic [ref=f3e1624]: 🌑
+            - generic [ref=f3e1625]:
+              - generic [ref=f3e1626]: Sombrio
+              - generic [ref=f3e1627]: aura escura
+            - generic [ref=f3e1628]: 15 🪙
+          - button "☀️ Solar aura solar 20 🪙" [ref=f3e1629] [cursor=pointer]:
+            - generic [ref=f3e1630]: ☀️
+            - generic [ref=f3e1631]:
+              - generic [ref=f3e1632]: Solar
+              - generic [ref=f3e1633]: aura solar
+            - generic [ref=f3e1634]: 20 🪙
+          - button "🌙 Lunar aura lunar 20 🪙" [ref=f3e1635] [cursor=pointer]:
+            - generic [ref=f3e1636]: 🌙
+            - generic [ref=f3e1637]:
+              - generic [ref=f3e1638]: Lunar
+              - generic [ref=f3e1639]: aura lunar
+            - generic [ref=f3e1640]: 20 🪙
+          - button "💨 Vento partículas de vento 12 🪙" [ref=f3e1641] [cursor=pointer]:
+            - generic [ref=f3e1642]: 💨
+            - generic [ref=f3e1643]:
+              - generic [ref=f3e1644]: Vento
+              - generic [ref=f3e1645]: partículas de vento
+            - generic [ref=f3e1646]: 12 🪙
+          - button "🌪️ Tornado efeito de vento 25 🪙" [ref=f3e1647] [cursor=pointer]:
+            - generic [ref=f3e1648]: 🌪️
+            - generic [ref=f3e1649]:
+              - generic [ref=f3e1650]: Tornado
+              - generic [ref=f3e1651]: efeito de vento
+            - generic [ref=f3e1652]: 25 🪙
+          - button "🌊 Água efeito aquático 12 🪙" [ref=f3e1653] [cursor=pointer]:
+            - generic [ref=f3e1654]: 🌊
+            - generic [ref=f3e1655]:
+              - generic [ref=f3e1656]: Água
+              - generic [ref=f3e1657]: efeito aquático
+            - generic [ref=f3e1658]: 12 🪙
+          - button "🌋 Lava efeito de lava 30 🪙" [ref=f3e1659] [cursor=pointer]:
+            - generic [ref=f3e1660]: 🌋
+            - generic [ref=f3e1661]:
+              - generic [ref=f3e1662]: Lava
+              - generic [ref=f3e1663]: efeito de lava
+            - generic [ref=f3e1664]: 30 🪙
+          - button "☄️ Meteoro partículas de meteoro 35 🪙" [ref=f3e1665] [cursor=pointer]:
+            - generic [ref=f3e1666]: ☄️
+            - generic [ref=f3e1667]:
+              - generic [ref=f3e1668]: Meteoro
+              - generic [ref=f3e1669]: partículas de meteoro
+            - generic [ref=f3e1670]: 35 🪙
+          - button "💎 Cristal efeito cristalino 25 🪙" [ref=f3e1671] [cursor=pointer]:
+            - generic [ref=f3e1672]: 💎
+            - generic [ref=f3e1673]:
+              - generic [ref=f3e1674]: Cristal
+              - generic [ref=f3e1675]: efeito cristalino
+            - generic [ref=f3e1676]: 25 🪙
+          - button "🔮 Místico aura mística 30 🪙" [ref=f3e1677] [cursor=pointer]:
+            - generic [ref=f3e1678]: 🔮
+            - generic [ref=f3e1679]:
+              - generic [ref=f3e1680]: Místico
+              - generic [ref=f3e1681]: aura mística
+            - generic [ref=f3e1682]: 30 🪙
+          - button "👻 Fantasma partículas fantasma 25 🪙" [ref=f3e1683] [cursor=pointer]:
+            - generic [ref=f3e1684]: 👻
+            - generic [ref=f3e1685]:
+              - generic [ref=f3e1686]: Fantasma
+              - generic [ref=f3e1687]: partículas fantasma
+            - generic [ref=f3e1688]: 25 🪙
+          - button "🕸️ Aranha efeito de teia 20 🪙" [ref=f3e1689] [cursor=pointer]:
+            - generic [ref=f3e1690]: 🕸️
+            - generic [ref=f3e1691]:
+              - generic [ref=f3e1692]: Aranha
+              - generic [ref=f3e1693]: efeito de teia
+            - generic [ref=f3e1694]: 20 🪙
+          - button "💥 Explosivo impacto visual 20 🪙" [ref=f3e1695] [cursor=pointer]:
+            - generic [ref=f3e1696]: 💥
+            - generic [ref=f3e1697]:
+              - generic [ref=f3e1698]: Explosivo
+              - generic [ref=f3e1699]: impacto visual
+            - generic [ref=f3e1700]: 20 🪙
+          - button "🎯 Precisão efeito de mira 15 🪙" [ref=f3e1701] [cursor=pointer]:
+            - generic [ref=f3e1702]: 🎯
+            - generic [ref=f3e1703]:
+              - generic [ref=f3e1704]: Precisão
+              - generic [ref=f3e1705]: efeito de mira
+            - generic [ref=f3e1706]: 15 🪙
+          - button "⚔️ Guerreiro aura de combate 20 🪙" [ref=f3e1707] [cursor=pointer]:
+            - generic [ref=f3e1708]: ⚔️
+            - generic [ref=f3e1709]:
+              - generic [ref=f3e1710]: Guerreiro
+              - generic [ref=f3e1711]: aura de combate
+            - generic [ref=f3e1712]: 20 🪙
+          - button "🛡️ Guardião aura defensiva 25 🪙" [ref=f3e1713] [cursor=pointer]:
+            - generic [ref=f3e1714]: 🛡️
+            - generic [ref=f3e1715]:
+              - generic [ref=f3e1716]: Guardião
+              - generic [ref=f3e1717]: aura defensiva
+            - generic [ref=f3e1718]: 25 🪙
+          - button "👑 Real aura dourada 35 🪙" [ref=f3e1719] [cursor=pointer]:
+            - generic [ref=f3e1720]: 👑
+            - generic [ref=f3e1721]:
+              - generic [ref=f3e1722]: Real
+              - generic [ref=f3e1723]: aura dourada
+            - generic [ref=f3e1724]: 35 🪙
+          - button "🐉 Dragão partículas de dragão 40 🪙" [ref=f3e1725] [cursor=pointer]:
+            - generic [ref=f3e1726]: 🐉
+            - generic [ref=f3e1727]:
+              - generic [ref=f3e1728]: Dragão
+              - generic [ref=f3e1729]: partículas de dragão
+            - generic [ref=f3e1730]: 40 🪙
+          - button "🐉 Dragão Negro aura negra 50 🪙" [ref=f3e1731] [cursor=pointer]:
+            - generic [ref=f3e1732]: 🐉
+            - generic [ref=f3e1733]:
+              - generic [ref=f3e1734]: Dragão Negro
+              - generic [ref=f3e1735]: aura negra
+            - generic [ref=f3e1736]: 50 🪙
+          - button "😇 Anjo partículas angelicais 35 🪙" [ref=f3e1737] [cursor=pointer]:
+            - generic [ref=f3e1738]: 😇
+            - generic [ref=f3e1739]:
+              - generic [ref=f3e1740]: Anjo
+              - generic [ref=f3e1741]: partículas angelicais
+            - generic [ref=f3e1742]: 35 🪙
+          - button "😈 Demônio aura demoníaca 35 🪙" [ref=f3e1743] [cursor=pointer]:
+            - generic [ref=f3e1744]: 😈
+            - generic [ref=f3e1745]:
+              - generic [ref=f3e1746]: Demônio
+              - generic [ref=f3e1747]: aura demoníaca
+            - generic [ref=f3e1748]: 35 🪙
+          - button "💫 Cósmico partículas cósmicas 45 🪙" [ref=f3e1749] [cursor=pointer]:
+            - generic [ref=f3e1750]: 💫
+            - generic [ref=f3e1751]:
+              - generic [ref=f3e1752]: Cósmico
+              - generic [ref=f3e1753]: partículas cósmicas
+            - generic [ref=f3e1754]: 45 🪙
+          - button "🌌 Galáxia efeito galáctico 50 🪙" [ref=f3e1755] [cursor=pointer]:
+            - generic [ref=f3e1756]: 🌌
+            - generic [ref=f3e1757]:
+              - generic [ref=f3e1758]: Galáxia
+              - generic [ref=f3e1759]: efeito galáctico
+            - generic [ref=f3e1760]: 50 🪙
+          - button "♾️ Infinito aura infinita 60 🪙" [ref=f3e1761] [cursor=pointer]:
+            - generic [ref=f3e1762]: ♾️
+            - generic [ref=f3e1763]:
+              - generic [ref=f3e1764]: Infinito
+              - generic [ref=f3e1765]: aura infinita
+            - generic [ref=f3e1766]: 60 🪙
+          - button "🌠 Estelar partículas estelares 40 🪙" [ref=f3e1767] [cursor=pointer]:
+            - generic [ref=f3e1768]: 🌠
+            - generic [ref=f3e1769]:
+              - generic [ref=f3e1770]: Estelar
+              - generic [ref=f3e1771]: partículas estelares
+            - generic [ref=f3e1772]: 40 🪙
+          - button "⚡ Plasma efeito energético 35 🪙" [ref=f3e1773] [cursor=pointer]:
+            - generic [ref=f3e1774]: ⚡
+            - generic [ref=f3e1775]:
+              - generic [ref=f3e1776]: Plasma
+              - generic [ref=f3e1777]: efeito energético
+            - generic [ref=f3e1778]: 35 🪙
+          - button "🔋 Energia aura energética 25 🪙" [ref=f3e1779] [cursor=pointer]:
+            - generic [ref=f3e1780]: 🔋
+            - generic [ref=f3e1781]:
+              - generic [ref=f3e1782]: Energia
+              - generic [ref=f3e1783]: aura energética
+            - generic [ref=f3e1784]: 25 🪙
+          - button "🌀 Gravidade distorção visual 45 🪙" [ref=f3e1785] [cursor=pointer]:
+            - generic [ref=f3e1786]: 🌀
+            - generic [ref=f3e1787]:
+              - generic [ref=f3e1788]: Gravidade
+              - generic [ref=f3e1789]: distorção visual
+            - generic [ref=f3e1790]: 45 🪙
+          - button "🧊 Glacial aura congelada 30 🪙" [ref=f3e1791] [cursor=pointer]:
+            - generic [ref=f3e1792]: 🧊
+            - generic [ref=f3e1793]:
+              - generic [ref=f3e1794]: Glacial
+              - generic [ref=f3e1795]: aura congelada
+            - generic [ref=f3e1796]: 30 🪙
+          - button "🔥 Infernal aura de fogo 45 🪙" [ref=f3e1797] [cursor=pointer]:
+            - generic [ref=f3e1798]: 🔥
+            - generic [ref=f3e1799]:
+              - generic [ref=f3e1800]: Infernal
+              - generic [ref=f3e1801]: aura de fogo
+            - generic [ref=f3e1802]: 45 🪙
+          - button "🌑 Eclipse aura de eclipse 50 🪙" [ref=f3e1803] [cursor=pointer]:
+            - generic [ref=f3e1804]: 🌑
+            - generic [ref=f3e1805]:
+              - generic [ref=f3e1806]: Eclipse
+              - generic [ref=f3e1807]: aura de eclipse
+            - generic [ref=f3e1808]: 50 🪙
+          - button "☀️ Supernova efeito solar 55 🪙" [ref=f3e1809] [cursor=pointer]:
+            - generic [ref=f3e1810]: ☀️
+            - generic [ref=f3e1811]:
+              - generic [ref=f3e1812]: Supernova
+              - generic [ref=f3e1813]: efeito solar
+            - generic [ref=f3e1814]: 55 🪙
+          - button "☄️ Cometa partículas rápidas 35 🪙" [ref=f3e1815] [cursor=pointer]:
+            - generic [ref=f3e1816]: ☄️
+            - generic [ref=f3e1817]:
+              - generic [ref=f3e1818]: Cometa
+              - generic [ref=f3e1819]: partículas rápidas
+            - generic [ref=f3e1820]: 35 🪙
+          - button "💠 Diamante brilho cristalino 40 🪙" [ref=f3e1821] [cursor=pointer]:
+            - generic [ref=f3e1822]: 💠
+            - generic [ref=f3e1823]:
+              - generic [ref=f3e1824]: Diamante
+              - generic [ref=f3e1825]: brilho cristalino
+            - generic [ref=f3e1826]: 40 🪙
+          - button "🪐 Planetário partículas orbitais 50 🪙" [ref=f3e1827] [cursor=pointer]:
+            - generic [ref=f3e1828]: 🪐
+            - generic [ref=f3e1829]:
+              - generic [ref=f3e1830]: Planetário
+              - generic [ref=f3e1831]: partículas orbitais
+            - generic [ref=f3e1832]: 50 🪙
+          - button "🌌 Universal efeito espacial 60 🪙" [ref=f3e1833] [cursor=pointer]:
+            - generic [ref=f3e1834]: 🌌
+            - generic [ref=f3e1835]:
+              - generic [ref=f3e1836]: Universal
+              - generic [ref=f3e1837]: efeito espacial
+            - generic [ref=f3e1838]: 60 🪙
+          - button "🕳️ Void Supremo aura Void intensa 75 🪙" [ref=f3e1839] [cursor=pointer]:
+            - generic [ref=f3e1840]: 🕳️
+            - generic [ref=f3e1841]:
+              - generic [ref=f3e1842]: Void Supremo
+              - generic [ref=f3e1843]: aura Void intensa
+            - generic [ref=f3e1844]: 75 🪙
+          - button "✨ Divino efeito lendário 100 🪙" [ref=f3e1845] [cursor=pointer]:
+            - generic [ref=f3e1846]: ✨
+            - generic [ref=f3e1847]:
+              - generic [ref=f3e1848]: Divino
+              - generic [ref=f3e1849]: efeito lendário
+            - generic [ref=f3e1850]: 100 🪙
+      - generic [ref=f3e1851]:
+        - heading "👤 SKINS DE JOGADOR 🪙" [level=3] [ref=f3e1852]:
+          - generic [ref=f3e1853]: 👤
+          - text: SKINS DE JOGADOR
+          - generic [ref=f3e1854]: 🪙
+        - generic [ref=f3e1855]:
+          - button "🟢 Toxic estilo tóxico 20 🪙" [ref=f3e1856] [cursor=pointer]:
+            - generic [ref=f3e1857]: 🟢
+            - generic [ref=f3e1858]:
+              - generic [ref=f3e1859]: Toxic
+              - generic [ref=f3e1860]: estilo tóxico
+            - generic [ref=f3e1861]: 20 🪙
+          - button "🔵 Ocean estilo oceano 20 🪙" [ref=f3e1862] [cursor=pointer]:
+            - generic [ref=f3e1863]: 🔵
+            - generic [ref=f3e1864]:
+              - generic [ref=f3e1865]: Ocean
+              - generic [ref=f3e1866]: estilo oceano
+            - generic [ref=f3e1867]: 20 🪙
+          - button "🟣 Galaxy estilo galáxia 35 🪙" [ref=f3e1868] [cursor=pointer]:
+            - generic [ref=f3e1869]: 🟣
+            - generic [ref=f3e1870]:
+              - generic [ref=f3e1871]: Galaxy
+              - generic [ref=f3e1872]: estilo galáxia
+            - generic [ref=f3e1873]: 35 🪙
+          - button "🟡 Gold estilo dourado 35 🪙" [ref=f3e1874] [cursor=pointer]:
+            - generic [ref=f3e1875]: 🟡
+            - generic [ref=f3e1876]:
+              - generic [ref=f3e1877]: Gold
+              - generic [ref=f3e1878]: estilo dourado
+            - generic [ref=f3e1879]: 35 🪙
+          - button "⚪ Snow estilo neve 25 🪙" [ref=f3e1880] [cursor=pointer]:
+            - generic [ref=f3e1881]: ⚪
+            - generic [ref=f3e1882]:
+              - generic [ref=f3e1883]: Snow
+              - generic [ref=f3e1884]: estilo neve
+            - generic [ref=f3e1885]: 25 🪙
+          - button "🔥 Inferno Skin estilo infernal 40 🪙" [ref=f3e1886] [cursor=pointer]:
+            - generic [ref=f3e1887]: 🔥
+            - generic [ref=f3e1888]:
+              - generic [ref=f3e1889]: Inferno Skin
+              - generic [ref=f3e1890]: estilo infernal
+            - generic [ref=f3e1891]: 40 🪙
+          - button "❄️ Ice Skin estilo gelo 40 🪙" [ref=f3e1892] [cursor=pointer]:
+            - generic [ref=f3e1893]: ❄️
+            - generic [ref=f3e1894]:
+              - generic [ref=f3e1895]: Ice Skin
+              - generic [ref=f3e1896]: estilo gelo
+            - generic [ref=f3e1897]: 40 🪙
+          - button "⚡ Thunder Skin estilo elétrico 45 🪙" [ref=f3e1898] [cursor=pointer]:
+            - generic [ref=f3e1899]: ⚡
+            - generic [ref=f3e1900]:
+              - generic [ref=f3e1901]: Thunder Skin
+              - generic [ref=f3e1902]: estilo elétrico
+            - generic [ref=f3e1903]: 45 🪙
+          - button "🌑 Dark Skin estilo sombrio 35 🪙" [ref=f3e1904] [cursor=pointer]:
+            - generic [ref=f3e1905]: 🌑
+            - generic [ref=f3e1906]:
+              - generic [ref=f3e1907]: Dark Skin
+              - generic [ref=f3e1908]: estilo sombrio
+            - generic [ref=f3e1909]: 35 🪙
+          - button "🌟 Star Skin estilo estelar 45 🪙" [ref=f3e1910] [cursor=pointer]:
+            - generic [ref=f3e1911]: 🌟
+            - generic [ref=f3e1912]:
+              - generic [ref=f3e1913]: Star Skin
+              - generic [ref=f3e1914]: estilo estelar
+            - generic [ref=f3e1915]: 45 🪙
+          - button "🌈 Rainbow estilo arco-íris 50 🪙" [ref=f3e1916] [cursor=pointer]:
+            - generic [ref=f3e1917]: 🌈
+            - generic [ref=f3e1918]:
+              - generic [ref=f3e1919]: Rainbow
+              - generic [ref=f3e1920]: estilo arco-íris
+            - generic [ref=f3e1921]: 50 🪙
+          - button "🕸️ Spider Skin estilo aranha 35 🪙" [ref=f3e1922] [cursor=pointer]:
+            - generic [ref=f3e1923]: 🕸️
+            - generic [ref=f3e1924]:
+              - generic [ref=f3e1925]: Spider Skin
+              - generic [ref=f3e1926]: estilo aranha
+            - generic [ref=f3e1927]: 35 🪙
+          - button "👻 Ghost Skin estilo fantasma 40 🪙" [ref=f3e1928] [cursor=pointer]:
+            - generic [ref=f3e1929]: 👻
+            - generic [ref=f3e1930]:
+              - generic [ref=f3e1931]: Ghost Skin
+              - generic [ref=f3e1932]: estilo fantasma
+            - generic [ref=f3e1933]: 40 🪙
+          - button "💀 Reaper Skin estilo ceifador 50 🪙" [ref=f3e1934] [cursor=pointer]:
+            - generic [ref=f3e1935]: 💀
+            - generic [ref=f3e1936]:
+              - generic [ref=f3e1937]: Reaper Skin
+              - generic [ref=f3e1938]: estilo ceifador
+            - generic [ref=f3e1939]: 50 🪙
+          - button "😈 Demon Skin estilo demônio 55 🪙" [ref=f3e1940] [cursor=pointer]:
+            - generic [ref=f3e1941]: 😈
+            - generic [ref=f3e1942]:
+              - generic [ref=f3e1943]: Demon Skin
+              - generic [ref=f3e1944]: estilo demônio
+            - generic [ref=f3e1945]: 55 🪙
+          - button "😇 Angel Skin estilo anjo 55 🪙" [ref=f3e1946] [cursor=pointer]:
+            - generic [ref=f3e1947]: 😇
+            - generic [ref=f3e1948]:
+              - generic [ref=f3e1949]: Angel Skin
+              - generic [ref=f3e1950]: estilo anjo
+            - generic [ref=f3e1951]: 55 🪙
+          - button "🐉 Dragon Skin estilo dragão 60 🪙" [ref=f3e1952] [cursor=pointer]:
+            - generic [ref=f3e1953]: 🐉
+            - generic [ref=f3e1954]:
+              - generic [ref=f3e1955]: Dragon Skin
+              - generic [ref=f3e1956]: estilo dragão
+            - generic [ref=f3e1957]: 60 🪙
+          - button "🐲 Dragon Black dragão negro 75 🪙" [ref=f3e1958] [cursor=pointer]:
+            - generic [ref=f3e1959]: 🐲
+            - generic [ref=f3e1960]:
+              - generic [ref=f3e1961]: Dragon Black
+              - generic [ref=f3e1962]: dragão negro
+            - generic [ref=f3e1963]: 75 🪙
+          - button "🤖 Robot estilo robótico 45 🪙" [ref=f3e1964] [cursor=pointer]:
+            - generic [ref=f3e1965]: 🤖
+            - generic [ref=f3e1966]:
+              - generic [ref=f3e1967]: Robot
+              - generic [ref=f3e1968]: estilo robótico
+            - generic [ref=f3e1969]: 45 🪙
+          - button "🦾 Cyber Skin estilo cyber 50 🪙" [ref=f3e1970] [cursor=pointer]:
+            - generic [ref=f3e1971]: 🦾
+            - generic [ref=f3e1972]:
+              - generic [ref=f3e1973]: Cyber Skin
+              - generic [ref=f3e1974]: estilo cyber
+            - generic [ref=f3e1975]: 50 🪙
+          - button "🧪 Mutant Skin estilo mutante 45 🪙" [ref=f3e1976] [cursor=pointer]:
+            - generic [ref=f3e1977]: 🧪
+            - generic [ref=f3e1978]:
+              - generic [ref=f3e1979]: Mutant Skin
+              - generic [ref=f3e1980]: estilo mutante
+            - generic [ref=f3e1981]: 45 🪙
+          - button "🛡️ Knight estilo cavaleiro 40 🪙" [ref=f3e1982] [cursor=pointer]:
+            - generic [ref=f3e1983]: 🛡️
+            - generic [ref=f3e1984]:
+              - generic [ref=f3e1985]: Knight
+              - generic [ref=f3e1986]: estilo cavaleiro
+            - generic [ref=f3e1987]: 40 🪙
+          - button "⚔️ Warrior Skin estilo guerreiro 45 🪙" [ref=f3e1988] [cursor=pointer]:
+            - generic [ref=f3e1989]: ⚔️
+            - generic [ref=f3e1990]:
+              - generic [ref=f3e1991]: Warrior Skin
+              - generic [ref=f3e1992]: estilo guerreiro
+            - generic [ref=f3e1993]: 45 🪙
+          - button "👑 King estilo rei 60 🪙" [ref=f3e1994] [cursor=pointer]:
+            - generic [ref=f3e1995]: 👑
+            - generic [ref=f3e1996]:
+              - generic [ref=f3e1997]: King
+              - generic [ref=f3e1998]: estilo rei
+            - generic [ref=f3e1999]: 60 🪙
+          - button "👑 Queen estilo rainha 60 🪙" [ref=f3e2000] [cursor=pointer]:
+            - generic [ref=f3e2001]: 👑
+            - generic [ref=f3e2002]:
+              - generic [ref=f3e2003]: Queen
+              - generic [ref=f3e2004]: estilo rainha
+            - generic [ref=f3e2005]: 60 🪙
+          - button "🏆 Champion Skin estilo campeão 65 🪙" [ref=f3e2006] [cursor=pointer]:
+            - generic [ref=f3e2007]: 🏆
+            - generic [ref=f3e2008]:
+              - generic [ref=f3e2009]: Champion Skin
+              - generic [ref=f3e2010]: estilo campeão
+            - generic [ref=f3e2011]: 65 🪙
+          - button "💎 Diamond Skin estilo diamante 70 🪙" [ref=f3e2012] [cursor=pointer]:
+            - generic [ref=f3e2013]: 💎
+            - generic [ref=f3e2014]:
+              - generic [ref=f3e2015]: Diamond Skin
+              - generic [ref=f3e2016]: estilo diamante
+            - generic [ref=f3e2017]: 70 🪙
+          - button "🕳️ Void Master Skin Void avançado 80 🪙" [ref=f3e2018] [cursor=pointer]:
+            - generic [ref=f3e2019]: 🕳️
+            - generic [ref=f3e2020]:
+              - generic [ref=f3e2021]: Void Master Skin
+              - generic [ref=f3e2022]: Void avançado
+            - generic [ref=f3e2023]: 80 🪙
+          - button "🌌 Cosmic Skin estilo cósmico 75 🪙" [ref=f3e2024] [cursor=pointer]:
+            - generic [ref=f3e2025]: 🌌
+            - generic [ref=f3e2026]:
+              - generic [ref=f3e2027]: Cosmic Skin
+              - generic [ref=f3e2028]: estilo cósmico
+            - generic [ref=f3e2029]: 75 🪙
+          - button "☄️ Meteor Skin estilo meteoro 55 🪙" [ref=f3e2030] [cursor=pointer]:
+            - generic [ref=f3e2031]: ☄️
+            - generic [ref=f3e2032]:
+              - generic [ref=f3e2033]: Meteor Skin
+              - generic [ref=f3e2034]: estilo meteoro
+            - generic [ref=f3e2035]: 55 🪙
+          - button "🌙 Lunar Skin estilo lunar 45 🪙" [ref=f3e2036] [cursor=pointer]:
+            - generic [ref=f3e2037]: 🌙
+            - generic [ref=f3e2038]:
+              - generic [ref=f3e2039]: Lunar Skin
+              - generic [ref=f3e2040]: estilo lunar
+            - generic [ref=f3e2041]: 45 🪙
+          - button "☀️ Solar Skin estilo solar 45 🪙" [ref=f3e2042] [cursor=pointer]:
+            - generic [ref=f3e2043]: ☀️
+            - generic [ref=f3e2044]:
+              - generic [ref=f3e2045]: Solar Skin
+              - generic [ref=f3e2046]: estilo solar
+            - generic [ref=f3e2047]: 45 🪙
+          - button "🌊 Aqua estilo aquático 30 🪙" [ref=f3e2048] [cursor=pointer]:
+            - generic [ref=f3e2049]: 🌊
+            - generic [ref=f3e2050]:
+              - generic [ref=f3e2051]: Aqua
+              - generic [ref=f3e2052]: estilo aquático
+            - generic [ref=f3e2053]: 30 🪙
+          - button "🌪️ Wind estilo vento 30 🪙" [ref=f3e2054] [cursor=pointer]:
+            - generic [ref=f3e2055]: 🌪️
+            - generic [ref=f3e2056]:
+              - generic [ref=f3e2057]: Wind
+              - generic [ref=f3e2058]: estilo vento
+            - generic [ref=f3e2059]: 30 🪙
+          - button "🌋 Lava Skin estilo lava 50 🪙" [ref=f3e2060] [cursor=pointer]:
+            - generic [ref=f3e2061]: 🌋
+            - generic [ref=f3e2062]:
+              - generic [ref=f3e2063]: Lava Skin
+              - generic [ref=f3e2064]: estilo lava
+            - generic [ref=f3e2065]: 50 🪙
+          - button "🧊 Glacier estilo glacial 50 🪙" [ref=f3e2066] [cursor=pointer]:
+            - generic [ref=f3e2067]: 🧊
+            - generic [ref=f3e2068]:
+              - generic [ref=f3e2069]: Glacier
+              - generic [ref=f3e2070]: estilo glacial
+            - generic [ref=f3e2071]: 50 🪙
+          - button "🔮 Mystic Skin estilo místico 65 🪙" [ref=f3e2072] [cursor=pointer]:
+            - generic [ref=f3e2073]: 🔮
+            - generic [ref=f3e2074]:
+              - generic [ref=f3e2075]: Mystic Skin
+              - generic [ref=f3e2076]: estilo místico
+            - generic [ref=f3e2077]: 65 🪙
+          - button "💫 Starfall estilo estrelas 70 🪙" [ref=f3e2078] [cursor=pointer]:
+            - generic [ref=f3e2079]: 💫
+            - generic [ref=f3e2080]:
+              - generic [ref=f3e2081]: Starfall
+              - generic [ref=f3e2082]: estilo estrelas
+            - generic [ref=f3e2083]: 70 🪙
+          - button "🪐 Planet estilo planetário 70 🪙" [ref=f3e2084] [cursor=pointer]:
+            - generic [ref=f3e2085]: 🪐
+            - generic [ref=f3e2086]:
+              - generic [ref=f3e2087]: Planet
+              - generic [ref=f3e2088]: estilo planetário
+            - generic [ref=f3e2089]: 70 🪙
+          - button "🌠 Comet estilo cometa 65 🪙" [ref=f3e2090] [cursor=pointer]:
+            - generic [ref=f3e2091]: 🌠
+            - generic [ref=f3e2092]:
+              - generic [ref=f3e2093]: Comet
+              - generic [ref=f3e2094]: estilo cometa
+            - generic [ref=f3e2095]: 65 🪙
+          - button "♾️ Infinity Skin estilo infinito 100 🪙" [ref=f3e2096] [cursor=pointer]:
+            - generic [ref=f3e2097]: ♾️
+            - generic [ref=f3e2098]:
+              - generic [ref=f3e2099]: Infinity Skin
+              - generic [ref=f3e2100]: estilo infinito
+            - generic [ref=f3e2101]: 100 🪙
+          - button "🌟 Divine Skin estilo divino 100 🪙" [ref=f3e2102] [cursor=pointer]:
+            - generic [ref=f3e2103]: 🌟
+            - generic [ref=f3e2104]:
+              - generic [ref=f3e2105]: Divine Skin
+              - generic [ref=f3e2106]: estilo divino
+            - generic [ref=f3e2107]: 100 🪙
+          - button "🕳️ Void God Skin Void supremo 150 🪙" [ref=f3e2108] [cursor=pointer]:
+            - generic [ref=f3e2109]: 🕳️
+            - generic [ref=f3e2110]:
+              - generic [ref=f3e2111]: Void God Skin
+              - generic [ref=f3e2112]: Void supremo
+            - generic [ref=f3e2113]: 150 🪙
+          - button "👾 Alien estilo alienígena 45 🪙" [ref=f3e2114] [cursor=pointer]:
+            - generic [ref=f3e2115]: 👾
+            - generic [ref=f3e2116]:
+              - generic [ref=f3e2117]: Alien
+              - generic [ref=f3e2118]: estilo alienígena
+            - generic [ref=f3e2119]: 45 🪙
+          - button "🧛 Vampire estilo vampiro 55 🪙" [ref=f3e2120] [cursor=pointer]:
+            - generic [ref=f3e2121]: 🧛
+            - generic [ref=f3e2122]:
+              - generic [ref=f3e2123]: Vampire
+              - generic [ref=f3e2124]: estilo vampiro
+            - generic [ref=f3e2125]: 55 🪙
+          - button "🧟 Zombie estilo zumbi 40 🪙" [ref=f3e2126] [cursor=pointer]:
+            - generic [ref=f3e2127]: 🧟
+            - generic [ref=f3e2128]:
+              - generic [ref=f3e2129]: Zombie
+              - generic [ref=f3e2130]: estilo zumbi
+            - generic [ref=f3e2131]: 40 🪙
+          - button "🥷 Ninja estilo ninja 50 🪙" [ref=f3e2132] [cursor=pointer]:
+            - generic [ref=f3e2133]: 🥷
+            - generic [ref=f3e2134]:
+              - generic [ref=f3e2135]: Ninja
+              - generic [ref=f3e2136]: estilo ninja
+            - generic [ref=f3e2137]: 50 🪙
+          - button "🤠 Cowboy estilo cowboy 35 🪙" [ref=f3e2138] [cursor=pointer]:
+            - generic [ref=f3e2139]: 🤠
+            - generic [ref=f3e2140]:
+              - generic [ref=f3e2141]: Cowboy
+              - generic [ref=f3e2142]: estilo cowboy
+            - generic [ref=f3e2143]: 35 🪙
+          - button "🏴‍☠️ Pirate estilo pirata 45 🪙" [ref=f3e2144] [cursor=pointer]:
+            - generic [ref=f3e2145]: 🏴‍☠️
+            - generic [ref=f3e2146]:
+              - generic [ref=f3e2147]: Pirate
+              - generic [ref=f3e2148]: estilo pirata
+            - generic [ref=f3e2149]: 45 🪙
+          - button "🌟 Legend estilo lendário 200 🪙" [ref=f3e2150] [cursor=pointer]:
+            - generic [ref=f3e2151]: 🌟
+            - generic [ref=f3e2152]:
+              - generic [ref=f3e2153]: Legend
+              - generic [ref=f3e2154]: estilo lendário
+            - generic [ref=f3e2155]: 200 🪙
+      - generic [ref=f3e2156]:
+        - heading "🎨 SKINS DE ARMAS 🪙" [level=3] [ref=f3e2157]:
+          - generic [ref=f3e2158]: 🎨
+          - text: SKINS DE ARMAS
+          - generic [ref=f3e2159]: 🪙
+        - generic [ref=f3e2160]:
+          - button "🟡 Ouro Skin visual dourado 30 🪙" [ref=f3e2161] [cursor=pointer]:
+            - generic [ref=f3e2162]: 🟡
+            - generic [ref=f3e2163]:
+              - generic [ref=f3e2164]: Ouro Skin
+              - generic [ref=f3e2165]: visual dourado
+            - generic [ref=f3e2166]: 30 🪙
+          - button "💎 Diamante Skin visual cristalino 40 🪙" [ref=f3e2167] [cursor=pointer]:
+            - generic [ref=f3e2168]: 💎
+            - generic [ref=f3e2169]:
+              - generic [ref=f3e2170]: Diamante Skin
+              - generic [ref=f3e2171]: visual cristalino
+            - generic [ref=f3e2172]: 40 🪙
+          - button "🕳️ Void Skin visual Void 50 🪙" [ref=f3e2173] [cursor=pointer]:
+            - generic [ref=f3e2174]: 🕳️
+            - generic [ref=f3e2175]:
+              - generic [ref=f3e2176]: Void Skin
+              - generic [ref=f3e2177]: visual Void
+            - generic [ref=f3e2178]: 50 🪙
+          - button "🔥 Flame Skin visual flamejante 45 🪙" [ref=f3e2179] [cursor=pointer]:
+            - generic [ref=f3e2180]: 🔥
+            - generic [ref=f3e2181]:
+              - generic [ref=f3e2182]: Flame Skin
+              - generic [ref=f3e2183]: visual flamejante
+            - generic [ref=f3e2184]: 45 🪙
+          - button "❄️ Ice Weapon visual congelado 40 🪙" [ref=f3e2185] [cursor=pointer]:
+            - generic [ref=f3e2186]: ❄️
+            - generic [ref=f3e2187]:
+              - generic [ref=f3e2188]: Ice Weapon
+              - generic [ref=f3e2189]: visual congelado
+            - generic [ref=f3e2190]: 40 🪙
+          - button "⚡ Thunder Weapon visual elétrico 50 🪙" [ref=f3e2191] [cursor=pointer]:
+            - generic [ref=f3e2192]: ⚡
+            - generic [ref=f3e2193]:
+              - generic [ref=f3e2194]: Thunder Weapon
+              - generic [ref=f3e2195]: visual elétrico
+            - generic [ref=f3e2196]: 50 🪙
+          - button "🌈 Rainbow Weapon visual colorido 55 🪙" [ref=f3e2197] [cursor=pointer]:
+            - generic [ref=f3e2198]: 🌈
+            - generic [ref=f3e2199]:
+              - generic [ref=f3e2200]: Rainbow Weapon
+              - generic [ref=f3e2201]: visual colorido
+            - generic [ref=f3e2202]: 55 🪙
+          - button "🌑 Dark Weapon visual sombrio 35 🪙" [ref=f3e2203] [cursor=pointer]:
+            - generic [ref=f3e2204]: 🌑
+            - generic [ref=f3e2205]:
+              - generic [ref=f3e2206]: Dark Weapon
+              - generic [ref=f3e2207]: visual sombrio
+            - generic [ref=f3e2208]: 35 🪙
+          - button "👻 Ghost Weapon visual fantasma 45 🪙" [ref=f3e2209] [cursor=pointer]:
+            - generic [ref=f3e2210]: 👻
+            - generic [ref=f3e2211]:
+              - generic [ref=f3e2212]: Ghost Weapon
+              - generic [ref=f3e2213]: visual fantasma
+            - generic [ref=f3e2214]: 45 🪙
+          - button "💀 Reaper Weapon visual ceifador 55 🪙" [ref=f3e2215] [cursor=pointer]:
+            - generic [ref=f3e2216]: 💀
+            - generic [ref=f3e2217]:
+              - generic [ref=f3e2218]: Reaper Weapon
+              - generic [ref=f3e2219]: visual ceifador
+            - generic [ref=f3e2220]: 55 🪙
+          - button "🌟 Star Weapon visual estelar 50 🪙" [ref=f3e2221] [cursor=pointer]:
+            - generic [ref=f3e2222]: 🌟
+            - generic [ref=f3e2223]:
+              - generic [ref=f3e2224]: Star Weapon
+              - generic [ref=f3e2225]: visual estelar
+            - generic [ref=f3e2226]: 50 🪙
+          - button "🌌 Galaxy Weapon visual galáctico 65 🪙" [ref=f3e2227] [cursor=pointer]:
+            - generic [ref=f3e2228]: 🌌
+            - generic [ref=f3e2229]:
+              - generic [ref=f3e2230]: Galaxy Weapon
+              - generic [ref=f3e2231]: visual galáctico
+            - generic [ref=f3e2232]: 65 🪙
+          - button "☀️ Solar Weapon visual solar 55 🪙" [ref=f3e2233] [cursor=pointer]:
+            - generic [ref=f3e2234]: ☀️
+            - generic [ref=f3e2235]:
+              - generic [ref=f3e2236]: Solar Weapon
+              - generic [ref=f3e2237]: visual solar
+            - generic [ref=f3e2238]: 55 🪙
+          - button "🌙 Lunar Weapon visual lunar 55 🪙" [ref=f3e2239] [cursor=pointer]:
+            - generic [ref=f3e2240]: 🌙
+            - generic [ref=f3e2241]:
+              - generic [ref=f3e2242]: Lunar Weapon
+              - generic [ref=f3e2243]: visual lunar
+            - generic [ref=f3e2244]: 55 🪙
+          - button "🐉 Dragon Weapon visual dragão 70 🪙" [ref=f3e2245] [cursor=pointer]:
+            - generic [ref=f3e2246]: 🐉
+            - generic [ref=f3e2247]:
+              - generic [ref=f3e2248]: Dragon Weapon
+              - generic [ref=f3e2249]: visual dragão
+            - generic [ref=f3e2250]: 70 🪙
+          - button "🐲 Dragon Black Weapon dragão negro 90 🪙" [ref=f3e2251] [cursor=pointer]:
+            - generic [ref=f3e2252]: 🐲
+            - generic [ref=f3e2253]:
+              - generic [ref=f3e2254]: Dragon Black Weapon
+              - generic [ref=f3e2255]: dragão negro
+            - generic [ref=f3e2256]: 90 🪙
+          - button "🧊 Glacier Weapon visual glacial 50 🪙" [ref=f3e2257] [cursor=pointer]:
+            - generic [ref=f3e2258]: 🧊
+            - generic [ref=f3e2259]:
+              - generic [ref=f3e2260]: Glacier Weapon
+              - generic [ref=f3e2261]: visual glacial
+            - generic [ref=f3e2262]: 50 🪙
+          - button "🌋 Lava Weapon visual lava 60 🪙" [ref=f3e2263] [cursor=pointer]:
+            - generic [ref=f3e2264]: 🌋
+            - generic [ref=f3e2265]:
+              - generic [ref=f3e2266]: Lava Weapon
+              - generic [ref=f3e2267]: visual lava
+            - generic [ref=f3e2268]: 60 🪙
+          - button "🌀 Gravity Weapon visual gravitacional 75 🪙" [ref=f3e2269] [cursor=pointer]:
+            - generic [ref=f3e2270]: 🌀
+            - generic [ref=f3e2271]:
+              - generic [ref=f3e2272]: Gravity Weapon
+              - generic [ref=f3e2273]: visual gravitacional
+            - generic [ref=f3e2274]: 75 🪙
+          - button "🔮 Mystic Weapon visual místico 65 🪙" [ref=f3e2275] [cursor=pointer]:
+            - generic [ref=f3e2276]: 🔮
+            - generic [ref=f3e2277]:
+              - generic [ref=f3e2278]: Mystic Weapon
+              - generic [ref=f3e2279]: visual místico
+            - generic [ref=f3e2280]: 65 🪙
+          - button "🧪 Toxic Weapon visual tóxico 45 🪙" [ref=f3e2281] [cursor=pointer]:
+            - generic [ref=f3e2282]: 🧪
+            - generic [ref=f3e2283]:
+              - generic [ref=f3e2284]: Toxic Weapon
+              - generic [ref=f3e2285]: visual tóxico
+            - generic [ref=f3e2286]: 45 🪙
+          - button "🕸️ Spider Weapon visual aranha 35 🪙" [ref=f3e2287] [cursor=pointer]:
+            - generic [ref=f3e2288]: 🕸️
+            - generic [ref=f3e2289]:
+              - generic [ref=f3e2290]: Spider Weapon
+              - generic [ref=f3e2291]: visual aranha
+            - generic [ref=f3e2292]: 35 🪙
+          - button "⚡ Plasma Weapon visual plasma 70 🪙" [ref=f3e2293] [cursor=pointer]:
+            - generic [ref=f3e2294]: ⚡
+            - generic [ref=f3e2295]:
+              - generic [ref=f3e2296]: Plasma Weapon
+              - generic [ref=f3e2297]: visual plasma
+            - generic [ref=f3e2298]: 70 🪙
+          - button "🤖 Cyber Weapon visual cyber 60 🪙" [ref=f3e2299] [cursor=pointer]:
+            - generic [ref=f3e2300]: 🤖
+            - generic [ref=f3e2301]:
+              - generic [ref=f3e2302]: Cyber Weapon
+              - generic [ref=f3e2303]: visual cyber
+            - generic [ref=f3e2304]: 60 🪙
+          - button "🏆 Champion Weapon visual campeão 75 🪙" [ref=f3e2305] [cursor=pointer]:
+            - generic [ref=f3e2306]: 🏆
+            - generic [ref=f3e2307]:
+              - generic [ref=f3e2308]: Champion Weapon
+              - generic [ref=f3e2309]: visual campeão
+            - generic [ref=f3e2310]: 75 🪙
+          - button "👑 Royal Weapon visual real 80 🪙" [ref=f3e2311] [cursor=pointer]:
+            - generic [ref=f3e2312]: 👑
+            - generic [ref=f3e2313]:
+              - generic [ref=f3e2314]: Royal Weapon
+              - generic [ref=f3e2315]: visual real
+            - generic [ref=f3e2316]: 80 🪙
+          - button "✨ Divine Weapon visual divino 100 🪙" [ref=f3e2317] [cursor=pointer]:
+            - generic [ref=f3e2318]: ✨
+            - generic [ref=f3e2319]:
+              - generic [ref=f3e2320]: Divine Weapon
+              - generic [ref=f3e2321]: visual divino
+            - generic [ref=f3e2322]: 100 🪙
+          - button "♾️ Infinity Weapon visual infinito 120 🪙" [ref=f3e2323] [cursor=pointer]:
+            - generic [ref=f3e2324]: ♾️
+            - generic [ref=f3e2325]:
+              - generic [ref=f3e2326]: Infinity Weapon
+              - generic [ref=f3e2327]: visual infinito
+            - generic [ref=f3e2328]: 120 🪙
+          - button "☄️ Meteor Weapon visual meteoro 70 🪙" [ref=f3e2329] [cursor=pointer]:
+            - generic [ref=f3e2330]: ☄️
+            - generic [ref=f3e2331]:
+              - generic [ref=f3e2332]: Meteor Weapon
+              - generic [ref=f3e2333]: visual meteoro
+            - generic [ref=f3e2334]: 70 🪙
+          - button "🌠 Comet Weapon visual cometa 65 🪙" [ref=f3e2335] [cursor=pointer]:
+            - generic [ref=f3e2336]: 🌠
+            - generic [ref=f3e2337]:
+              - generic [ref=f3e2338]: Comet Weapon
+              - generic [ref=f3e2339]: visual cometa
+            - generic [ref=f3e2340]: 65 🪙
+          - button "💠 Crystal Weapon visual cristal 55 🪙" [ref=f3e2341] [cursor=pointer]:
+            - generic [ref=f3e2342]: 💠
+            - generic [ref=f3e2343]:
+              - generic [ref=f3e2344]: Crystal Weapon
+              - generic [ref=f3e2345]: visual cristal
+            - generic [ref=f3e2346]: 55 🪙
+          - button "🌊 Aqua Weapon visual água 35 🪙" [ref=f3e2347] [cursor=pointer]:
+            - generic [ref=f3e2348]: 🌊
+            - generic [ref=f3e2349]:
+              - generic [ref=f3e2350]: Aqua Weapon
+              - generic [ref=f3e2351]: visual água
+            - generic [ref=f3e2352]: 35 🪙
+          - button "🌪️ Wind Weapon visual vento 35 🪙" [ref=f3e2353] [cursor=pointer]:
+            - generic [ref=f3e2354]: 🌪️
+            - generic [ref=f3e2355]:
+              - generic [ref=f3e2356]: Wind Weapon
+              - generic [ref=f3e2357]: visual vento
+            - generic [ref=f3e2358]: 35 🪙
+          - button "🌟 Stellar Weapon visual estelar 75 🪙" [ref=f3e2359] [cursor=pointer]:
+            - generic [ref=f3e2360]: 🌟
+            - generic [ref=f3e2361]:
+              - generic [ref=f3e2362]: Stellar Weapon
+              - generic [ref=f3e2363]: visual estelar
+            - generic [ref=f3e2364]: 75 🪙
+          - button "🕳️ Void Energy energia Void 90 🪙" [ref=f3e2365] [cursor=pointer]:
+            - generic [ref=f3e2366]: 🕳️
+            - generic [ref=f3e2367]:
+              - generic [ref=f3e2368]: Void Energy
+              - generic [ref=f3e2369]: energia Void
+            - generic [ref=f3e2370]: 90 🪙
+          - button "🔥 Inferno Weapon visual infernal 80 🪙" [ref=f3e2371] [cursor=pointer]:
+            - generic [ref=f3e2372]: 🔥
+            - generic [ref=f3e2373]:
+              - generic [ref=f3e2374]: Inferno Weapon
+              - generic [ref=f3e2375]: visual infernal
+            - generic [ref=f3e2376]: 80 🪙
+          - button "🧊 Frost Weapon visual congelante 70 🪙" [ref=f3e2377] [cursor=pointer]:
+            - generic [ref=f3e2378]: 🧊
+            - generic [ref=f3e2379]:
+              - generic [ref=f3e2380]: Frost Weapon
+              - generic [ref=f3e2381]: visual congelante
+            - generic [ref=f3e2382]: 70 🪙
+          - button "⚡ Lightning Weapon visual raio 80 🪙" [ref=f3e2383] [cursor=pointer]:
+            - generic [ref=f3e2384]: ⚡
+            - generic [ref=f3e2385]:
+              - generic [ref=f3e2386]: Lightning Weapon
+              - generic [ref=f3e2387]: visual raio
+            - generic [ref=f3e2388]: 80 🪙
+          - button "💥 Explosive Weapon visual explosivo 65 🪙" [ref=f3e2389] [cursor=pointer]:
+            - generic [ref=f3e2390]: 💥
+            - generic [ref=f3e2391]:
+              - generic [ref=f3e2392]: Explosive Weapon
+              - generic [ref=f3e2393]: visual explosivo
+            - generic [ref=f3e2394]: 65 🪙
+          - button "🧲 Magnetic Weapon visual magnético 60 🪙" [ref=f3e2395] [cursor=pointer]:
+            - generic [ref=f3e2396]: 🧲
+            - generic [ref=f3e2397]:
+              - generic [ref=f3e2398]: Magnetic Weapon
+              - generic [ref=f3e2399]: visual magnético
+            - generic [ref=f3e2400]: 60 🪙
+          - button "🌀 Vortex Weapon visual vórtice 75 🪙" [ref=f3e2401] [cursor=pointer]:
+            - generic [ref=f3e2402]: 🌀
+            - generic [ref=f3e2403]:
+              - generic [ref=f3e2404]: Vortex Weapon
+              - generic [ref=f3e2405]: visual vórtice
+            - generic [ref=f3e2406]: 75 🪙
+          - button "🪐 Cosmic Weapon visual cósmico 90 🪙" [ref=f3e2407] [cursor=pointer]:
+            - generic [ref=f3e2408]: 🪐
+            - generic [ref=f3e2409]:
+              - generic [ref=f3e2410]: Cosmic Weapon
+              - generic [ref=f3e2411]: visual cósmico
+            - generic [ref=f3e2412]: 90 🪙
+          - button "🌑 Eclipse Weapon visual eclipse 85 🪙" [ref=f3e2413] [cursor=pointer]:
+            - generic [ref=f3e2414]: 🌑
+            - generic [ref=f3e2415]:
+              - generic [ref=f3e2416]: Eclipse Weapon
+              - generic [ref=f3e2417]: visual eclipse
+            - generic [ref=f3e2418]: 85 🪙
+          - button "🌈 Prism Weapon visual prisma 80 🪙" [ref=f3e2419] [cursor=pointer]:
+            - generic [ref=f3e2420]: 🌈
+            - generic [ref=f3e2421]:
+              - generic [ref=f3e2422]: Prism Weapon
+              - generic [ref=f3e2423]: visual prisma
+            - generic [ref=f3e2424]: 80 🪙
+          - button "🩸 Crimson vermelho intenso 50 🪙" [ref=f3e2425] [cursor=pointer]:
+            - generic [ref=f3e2426]: 🩸
+            - generic [ref=f3e2427]:
+              - generic [ref=f3e2428]: Crimson
+              - generic [ref=f3e2429]: vermelho intenso
+            - generic [ref=f3e2430]: 50 🪙
+          - button "🟢 Emerald visual esmeralda 55 🪙" [ref=f3e2431] [cursor=pointer]:
+            - generic [ref=f3e2432]: 🟢
+            - generic [ref=f3e2433]:
+              - generic [ref=f3e2434]: Emerald
+              - generic [ref=f3e2435]: visual esmeralda
+            - generic [ref=f3e2436]: 55 🪙
+          - button "🔵 Sapphire visual safira 55 🪙" [ref=f3e2437] [cursor=pointer]:
+            - generic [ref=f3e2438]: 🔵
+            - generic [ref=f3e2439]:
+              - generic [ref=f3e2440]: Sapphire
+              - generic [ref=f3e2441]: visual safira
+            - generic [ref=f3e2442]: 55 🪙
+          - button "🟣 Amethyst visual ametista 55 🪙" [ref=f3e2443] [cursor=pointer]:
+            - generic [ref=f3e2444]: 🟣
+            - generic [ref=f3e2445]:
+              - generic [ref=f3e2446]: Amethyst
+              - generic [ref=f3e2447]: visual ametista
+            - generic [ref=f3e2448]: 55 🪙
+          - button "🖤 Obsidian visual obsidiana 70 🪙" [ref=f3e2449] [cursor=pointer]:
+            - generic [ref=f3e2450]: 🖤
+            - generic [ref=f3e2451]:
+              - generic [ref=f3e2452]: Obsidian
+              - generic [ref=f3e2453]: visual obsidiana
+            - generic [ref=f3e2454]: 70 🪙
+          - button "🌟 Ultimate Weapon visual lendário 150 🪙" [ref=f3e2455] [cursor=pointer]:
+            - generic [ref=f3e2456]: 🌟
+            - generic [ref=f3e2457]:
+              - generic [ref=f3e2458]: Ultimate Weapon
+              - generic [ref=f3e2459]: visual lendário
+            - generic [ref=f3e2460]: 150 🪙
+      - generic [ref=f3e2461]:
+        - heading "❤️ REVIVES R$" [level=3] [ref=f3e2462]:
+          - generic [ref=f3e2463]: ❤️
+          - text: REVIVES
+          - generic [ref=f3e2464]: R$
+        - generic [ref=f3e2465]:
+          - button "💖 Revive Básico reaparece uma vez R$ 5.750" [ref=f3e2466] [cursor=pointer]:
+            - generic [ref=f3e2467]: 💖
+            - generic [ref=f3e2468]:
+              - generic [ref=f3e2469]: Revive Básico
+              - generic [ref=f3e2470]: reaparece uma vez
+            - generic [ref=f3e2471]: R$ 5.750
+          - button "💖 Revive Rápido reaparece instantâneo R$ 7.500" [ref=f3e2472] [cursor=pointer]:
+            - generic [ref=f3e2473]: 💖
+            - generic [ref=f3e2474]:
+              - generic [ref=f3e2475]: Revive Rápido
+              - generic [ref=f3e2476]: reaparece instantâneo
+            - generic [ref=f3e2477]: R$ 7.500
+          - button "💖 Revive Seguro reaparece com 50% HP R$ 8.000" [ref=f3e2478] [cursor=pointer]:
+            - generic [ref=f3e2479]: 💖
+            - generic [ref=f3e2480]:
+              - generic [ref=f3e2481]: Revive Seguro
+              - generic [ref=f3e2482]: reaparece com 50% HP
+            - generic [ref=f3e2483]: R$ 8.000
+          - button "💖 Revive Forte reaparece com 100% HP R$ 10.000" [ref=f3e2484] [cursor=pointer]:
+            - generic [ref=f3e2485]: 💖
+            - generic [ref=f3e2486]:
+              - generic [ref=f3e2487]: Revive Forte
+              - generic [ref=f3e2488]: reaparece com 100% HP
+            - generic [ref=f3e2489]: R$ 10.000
+          - button "💖 Revive Blindado reaparece com escudo R$ 12.500" [ref=f3e2490] [cursor=pointer]:
+            - generic [ref=f3e2491]: 💖
+            - generic [ref=f3e2492]:
+              - generic [ref=f3e2493]: Revive Blindado
+              - generic [ref=f3e2494]: reaparece com escudo
+            - generic [ref=f3e2495]: R$ 12.500
+          - button "💖 Revive Void reaparece com 500 HP R$ 20.000" [ref=f3e2496] [cursor=pointer]:
+            - generic [ref=f3e2497]: 💖
+            - generic [ref=f3e2498]:
+              - generic [ref=f3e2499]: Revive Void
+              - generic [ref=f3e2500]: reaparece com 500 HP
+            - generic [ref=f3e2501]: R$ 20.000
+          - button "💖 Revive Duplo 2 usos R$ 15.000" [ref=f3e2502] [cursor=pointer]:
+            - generic [ref=f3e2503]: 💖
+            - generic [ref=f3e2504]:
+              - generic [ref=f3e2505]: Revive Duplo
+              - generic [ref=f3e2506]: 2 usos
+            - generic [ref=f3e2507]: R$ 15.000
+          - button "💖 Revive Triplo 3 usos R$ 22.500" [ref=f3e2508] [cursor=pointer]:
+            - generic [ref=f3e2509]: 💖
+            - generic [ref=f3e2510]:
+              - generic [ref=f3e2511]: Revive Triplo
+              - generic [ref=f3e2512]: 3 usos
+            - generic [ref=f3e2513]: R$ 22.500
+          - button "💖 Revive Elite reaparece com +100 HP R$ 15.000" [ref=f3e2514] [cursor=pointer]:
+            - generic [ref=f3e2515]: 💖
+            - generic [ref=f3e2516]:
+              - generic [ref=f3e2517]: Revive Elite
+              - generic [ref=f3e2518]: reaparece com +100 HP
+            - generic [ref=f3e2519]: R$ 15.000
+          - button "💖 Revive Supremo reaparece com +250 HP R$ 25.000" [ref=f3e2520] [cursor=pointer]:
+            - generic [ref=f3e2521]: 💖
+            - generic [ref=f3e2522]:
+              - generic [ref=f3e2523]: Revive Supremo
+              - generic [ref=f3e2524]: reaparece com +250 HP
+            - generic [ref=f3e2525]: R$ 25.000
+          - button "💖 Revive Instantâneo sem atraso R$ 18.000" [ref=f3e2526] [cursor=pointer]:
+            - generic [ref=f3e2527]: 💖
+            - generic [ref=f3e2528]:
+              - generic [ref=f3e2529]: Revive Instantâneo
+              - generic [ref=f3e2530]: sem atraso
+            - generic [ref=f3e2531]: R$ 18.000
+          - button "💖 Revive Protegido invulnerabilidade breve R$ 20.000" [ref=f3e2532] [cursor=pointer]:
+            - generic [ref=f3e2533]: 💖
+            - generic [ref=f3e2534]:
+              - generic [ref=f3e2535]: Revive Protegido
+              - generic [ref=f3e2536]: invulnerabilidade breve
+            - generic [ref=f3e2537]: R$ 20.000
+          - button "💖 Revive Ouro bônus de dinheiro R$ 17.500" [ref=f3e2538] [cursor=pointer]:
+            - generic [ref=f3e2539]: 💖
+            - generic [ref=f3e2540]:
+              - generic [ref=f3e2541]: Revive Ouro
+              - generic [ref=f3e2542]: bônus de dinheiro
+            - generic [ref=f3e2543]: R$ 17.500
+          - button "💖 Revive Diamante reaparece com escudo R$ 30.000" [ref=f3e2544] [cursor=pointer]:
+            - generic [ref=f3e2545]: 💖
+            - generic [ref=f3e2546]:
+              - generic [ref=f3e2547]: Revive Diamante
+              - generic [ref=f3e2548]: reaparece com escudo
+            - generic [ref=f3e2549]: R$ 30.000
+          - button "💖 Revive Void X efeito Void R$ 35.000" [ref=f3e2550] [cursor=pointer]:
+            - generic [ref=f3e2551]: 💖
+            - generic [ref=f3e2552]:
+              - generic [ref=f3e2553]: Revive Void X
+              - generic [ref=f3e2554]: efeito Void
+            - generic [ref=f3e2555]: R$ 35.000
+          - button "💖 Revive Angel efeito angelical R$ 40.000" [ref=f3e2556] [cursor=pointer]:
+            - generic [ref=f3e2557]: 💖
+            - generic [ref=f3e2558]:
+              - generic [ref=f3e2559]: Revive Angel
+              - generic [ref=f3e2560]: efeito angelical
+            - generic [ref=f3e2561]: R$ 40.000
+          - button "💖 Revive Reaper efeito sombrio R$ 40.000" [ref=f3e2562] [cursor=pointer]:
+            - generic [ref=f3e2563]: 💖
+            - generic [ref=f3e2564]:
+              - generic [ref=f3e2565]: Revive Reaper
+              - generic [ref=f3e2566]: efeito sombrio
+            - generic [ref=f3e2567]: R$ 40.000
+          - button "💖 Revive Dragon efeito dragão R$ 45.000" [ref=f3e2568] [cursor=pointer]:
+            - generic [ref=f3e2569]: 💖
+            - generic [ref=f3e2570]:
+              - generic [ref=f3e2571]: Revive Dragon
+              - generic [ref=f3e2572]: efeito dragão
+            - generic [ref=f3e2573]: R$ 45.000
+          - button "💖 Revive Cosmic efeito cósmico R$ 50.000" [ref=f3e2574] [cursor=pointer]:
+            - generic [ref=f3e2575]: 💖
+            - generic [ref=f3e2576]:
+              - generic [ref=f3e2577]: Revive Cosmic
+              - generic [ref=f3e2578]: efeito cósmico
+            - generic [ref=f3e2579]: R$ 50.000
+          - button "💖 Revive Infinity X efeito especial R$ 75.000" [ref=f3e2580] [cursor=pointer]:
+            - generic [ref=f3e2581]: 💖
+            - generic [ref=f3e2582]:
+              - generic [ref=f3e2583]: Revive Infinity X
+              - generic [ref=f3e2584]: efeito especial
+            - generic [ref=f3e2585]: R$ 75.000
+          - button "💖 Revive Econômico preço reduzido R$ 4.500" [ref=f3e2586] [cursor=pointer]:
+            - generic [ref=f3e2587]: 💖
+            - generic [ref=f3e2588]:
+              - generic [ref=f3e2589]: Revive Econômico
+              - generic [ref=f3e2590]: preço reduzido
+            - generic [ref=f3e2591]: R$ 4.500
+          - button "💖 Revive Premium versão premium R$ 12.000" [ref=f3e2592] [cursor=pointer]:
+            - generic [ref=f3e2593]: 💖
+            - generic [ref=f3e2594]:
+              - generic [ref=f3e2595]: Revive Premium
+              - generic [ref=f3e2596]: versão premium
+            - generic [ref=f3e2597]: R$ 12.000
+          - button "💖 Revive Tático local seguro R$ 14.000" [ref=f3e2598] [cursor=pointer]:
+            - generic [ref=f3e2599]: 💖
+            - generic [ref=f3e2600]:
+              - generic [ref=f3e2601]: Revive Tático
+              - generic [ref=f3e2602]: local seguro
+            - generic [ref=f3e2603]: R$ 14.000
+          - button "💖 Revive Emergência ativação automática R$ 16.000" [ref=f3e2604] [cursor=pointer]:
+            - generic [ref=f3e2605]: 💖
+            - generic [ref=f3e2606]:
+              - generic [ref=f3e2607]: Revive Emergência
+              - generic [ref=f3e2608]: ativação automática
+            - generic [ref=f3e2609]: R$ 16.000
+          - button "💖 Revive Guardião escudo ao reaparecer R$ 20.000" [ref=f3e2610] [cursor=pointer]:
+            - generic [ref=f3e2611]: 💖
+            - generic [ref=f3e2612]:
+              - generic [ref=f3e2613]: Revive Guardião
+              - generic [ref=f3e2614]: escudo ao reaparecer
+            - generic [ref=f3e2615]: R$ 20.000
+          - button "💖 Revive Flame efeito de fogo R$ 25.000" [ref=f3e2616] [cursor=pointer]:
+            - generic [ref=f3e2617]: 💖
+            - generic [ref=f3e2618]:
+              - generic [ref=f3e2619]: Revive Flame
+              - generic [ref=f3e2620]: efeito de fogo
+            - generic [ref=f3e2621]: R$ 25.000
+          - button "💖 Revive Ice efeito de gelo R$ 25.000" [ref=f3e2622] [cursor=pointer]:
+            - generic [ref=f3e2623]: 💖
+            - generic [ref=f3e2624]:
+              - generic [ref=f3e2625]: Revive Ice
+              - generic [ref=f3e2626]: efeito de gelo
+            - generic [ref=f3e2627]: R$ 25.000
+          - button "💖 Revive Thunder efeito elétrico R$ 28.000" [ref=f3e2628] [cursor=pointer]:
+            - generic [ref=f3e2629]: 💖
+            - generic [ref=f3e2630]:
+              - generic [ref=f3e2631]: Revive Thunder
+              - generic [ref=f3e2632]: efeito elétrico
+            - generic [ref=f3e2633]: R$ 28.000
+          - button "💖 Revive Ghost efeito fantasma R$ 30.000" [ref=f3e2634] [cursor=pointer]:
+            - generic [ref=f3e2635]: 💖
+            - generic [ref=f3e2636]:
+              - generic [ref=f3e2637]: Revive Ghost
+              - generic [ref=f3e2638]: efeito fantasma
+            - generic [ref=f3e2639]: R$ 30.000
+          - button "💖 Revive Dark efeito sombrio R$ 30.000" [ref=f3e2640] [cursor=pointer]:
+            - generic [ref=f3e2641]: 💖
+            - generic [ref=f3e2642]:
+              - generic [ref=f3e2643]: Revive Dark
+              - generic [ref=f3e2644]: efeito sombrio
+            - generic [ref=f3e2645]: R$ 30.000
+          - button "💖 Revive Solar efeito solar R$ 35.000" [ref=f3e2646] [cursor=pointer]:
+            - generic [ref=f3e2647]: 💖
+            - generic [ref=f3e2648]:
+              - generic [ref=f3e2649]: Revive Solar
+              - generic [ref=f3e2650]: efeito solar
+            - generic [ref=f3e2651]: R$ 35.000
+          - button "💖 Revive Lunar efeito lunar R$ 35.000" [ref=f3e2652] [cursor=pointer]:
+            - generic [ref=f3e2653]: 💖
+            - generic [ref=f3e2654]:
+              - generic [ref=f3e2655]: Revive Lunar
+              - generic [ref=f3e2656]: efeito lunar
+            - generic [ref=f3e2657]: R$ 35.000
+          - button "💖 Revive Galaxy efeito galáctico R$ 45.000" [ref=f3e2658] [cursor=pointer]:
+            - generic [ref=f3e2659]: 💖
+            - generic [ref=f3e2660]:
+              - generic [ref=f3e2661]: Revive Galaxy
+              - generic [ref=f3e2662]: efeito galáctico
+            - generic [ref=f3e2663]: R$ 45.000
+          - button "💖 Revive Star efeito estelar R$ 40.000" [ref=f3e2664] [cursor=pointer]:
+            - generic [ref=f3e2665]: 💖
+            - generic [ref=f3e2666]:
+              - generic [ref=f3e2667]: Revive Star
+              - generic [ref=f3e2668]: efeito estelar
+            - generic [ref=f3e2669]: R$ 40.000
+          - button "💖 Revive Meteor efeito meteoro R$ 42.500" [ref=f3e2670] [cursor=pointer]:
+            - generic [ref=f3e2671]: 💖
+            - generic [ref=f3e2672]:
+              - generic [ref=f3e2673]: Revive Meteor
+              - generic [ref=f3e2674]: efeito meteoro
+            - generic [ref=f3e2675]: R$ 42.500
+          - button "💖 Revive Prism efeito prisma R$ 45.000" [ref=f3e2676] [cursor=pointer]:
+            - generic [ref=f3e2677]: 💖
+            - generic [ref=f3e2678]:
+              - generic [ref=f3e2679]: Revive Prism
+              - generic [ref=f3e2680]: efeito prisma
+            - generic [ref=f3e2681]: R$ 45.000
+          - button "💖 Revive Mystic efeito místico R$ 50.000" [ref=f3e2682] [cursor=pointer]:
+            - generic [ref=f3e2683]: 💖
+            - generic [ref=f3e2684]:
+              - generic [ref=f3e2685]: Revive Mystic
+              - generic [ref=f3e2686]: efeito místico
+            - generic [ref=f3e2687]: R$ 50.000
+          - button "💖 Revive Titan efeito titã R$ 55.000" [ref=f3e2688] [cursor=pointer]:
+            - generic [ref=f3e2689]: 💖
+            - generic [ref=f3e2690]:
+              - generic [ref=f3e2691]: Revive Titan
+              - generic [ref=f3e2692]: efeito titã
+            - generic [ref=f3e2693]: R$ 55.000
+          - button "💖 Revive King efeito real R$ 60.000" [ref=f3e2694] [cursor=pointer]:
+            - generic [ref=f3e2695]: 💖
+            - generic [ref=f3e2696]:
+              - generic [ref=f3e2697]: Revive King
+              - generic [ref=f3e2698]: efeito real
+            - generic [ref=f3e2699]: R$ 60.000
+          - button "💖 Revive Champion efeito campeão R$ 65.000" [ref=f3e2700] [cursor=pointer]:
+            - generic [ref=f3e2701]: 💖
+            - generic [ref=f3e2702]:
+              - generic [ref=f3e2703]: Revive Champion
+              - generic [ref=f3e2704]: efeito campeão
+            - generic [ref=f3e2705]: R$ 65.000
+          - button "💖 Revive Legendary efeito lendário R$ 75.000" [ref=f3e2706] [cursor=pointer]:
+            - generic [ref=f3e2707]: 💖
+            - generic [ref=f3e2708]:
+              - generic [ref=f3e2709]: Revive Legendary
+              - generic [ref=f3e2710]: efeito lendário
+            - generic [ref=f3e2711]: R$ 75.000
+          - button "💖 Revive Ancient efeito antigo R$ 80.000" [ref=f3e2712] [cursor=pointer]:
+            - generic [ref=f3e2713]: 💖
+            - generic [ref=f3e2714]:
+              - generic [ref=f3e2715]: Revive Ancient
+              - generic [ref=f3e2716]: efeito antigo
+            - generic [ref=f3e2717]: R$ 80.000
+          - button "💖 Revive Divine efeito divino R$ 100.000" [ref=f3e2718] [cursor=pointer]:
+            - generic [ref=f3e2719]: 💖
+            - generic [ref=f3e2720]:
+              - generic [ref=f3e2721]: Revive Divine
+              - generic [ref=f3e2722]: efeito divino
+            - generic [ref=f3e2723]: R$ 100.000
+          - button "💖 Revive Eternal efeito eterno R$ 125.000" [ref=f3e2724] [cursor=pointer]:
+            - generic [ref=f3e2725]: 💖
+            - generic [ref=f3e2726]:
+              - generic [ref=f3e2727]: Revive Eternal
+              - generic [ref=f3e2728]: efeito eterno
+            - generic [ref=f3e2729]: R$ 125.000
+          - button "💖 Revive Ultimate efeito supremo R$ 150.000" [ref=f3e2730] [cursor=pointer]:
+            - generic [ref=f3e2731]: 💖
+            - generic [ref=f3e2732]:
+              - generic [ref=f3e2733]: Revive Ultimate
+              - generic [ref=f3e2734]: efeito supremo
+            - generic [ref=f3e2735]: R$ 150.000
+          - button "💖 Revive 5x 5 usos R$ 50.000" [ref=f3e2736] [cursor=pointer]:
+            - generic [ref=f3e2737]: 💖
+            - generic [ref=f3e2738]:
+              - generic [ref=f3e2739]: Revive 5x
+              - generic [ref=f3e2740]: 5 usos
+            - generic [ref=f3e2741]: R$ 50.000
+          - button "💖 Revive 10x 10 usos R$ 90.000" [ref=f3e2742] [cursor=pointer]:
+            - generic [ref=f3e2743]: 💖
+            - generic [ref=f3e2744]:
+              - generic [ref=f3e2745]: Revive 10x
+              - generic [ref=f3e2746]: 10 usos
+            - generic [ref=f3e2747]: R$ 90.000
+          - button "💖 Revive Pack 25 usos R$ 200.000" [ref=f3e2748] [cursor=pointer]:
+            - generic [ref=f3e2749]: 💖
+            - generic [ref=f3e2750]:
+              - generic [ref=f3e2751]: Revive Pack
+              - generic [ref=f3e2752]: 25 usos
+            - generic [ref=f3e2753]: R$ 200.000
+          - button "💖 Revive Master pacote especial R$ 250.000" [ref=f3e2754] [cursor=pointer]:
+            - generic [ref=f3e2755]: 💖
+            - generic [ref=f3e2756]:
+              - generic [ref=f3e2757]: Revive Master
+              - generic [ref=f3e2758]: pacote especial
+            - generic [ref=f3e2759]: R$ 250.000
+          - button "♾️ Revive Infinity usos ilimitados · em breve R$ 0" [ref=f3e2760] [cursor=pointer]:
+            - generic [ref=f3e2761]: ♾️
+            - generic [ref=f3e2762]:
+              - generic [ref=f3e2763]: Revive Infinity
+              - generic [ref=f3e2764]: usos ilimitados · em breve
+            - generic [ref=f3e2765]: R$ 0
+    - generic [ref=f3e2766]: "Comprado: weapons"
+    - button "FECHAR" [ref=f3e2767] [cursor=pointer]
+  - generic:
+    - generic: 🏆
+    - generic:
+      - heading "CONQUISTA DESBLOQUEADA" [level=4]
+      - paragraph

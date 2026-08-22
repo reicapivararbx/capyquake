@@ -1,0 +1,67 @@
+- generic:
+  - generic [ref=e1]:
+    - heading "CAPIQUAKE" [level=1] [ref=e2]
+    - generic [ref=e3]: A Grande Caçada
+    - textbox "Seu nome" [ref=e4]
+    - button "Singleplayer" [ref=e5] [cursor=pointer]
+    - button "Multiplayer" [ref=e6] [cursor=pointer]
+    - button "Loja" [ref=e7] [cursor=pointer]
+    - button "Conquistas" [ref=e8] [cursor=pointer]
+    - button "MODO TESTE" [ref=e9] [cursor=pointer]
+    - button "⚙" [active] [ref=e10] [cursor=pointer]
+  - generic [ref=e13]:
+    - heading "CONFIGURAÇÕES" [level=2] [ref=e14]
+    - generic [ref=e15]:
+      - heading "CONTROLES" [level=3] [ref=e16]
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: "Mover Frente:"
+          - textbox [ref=e20]: W
+        - generic [ref=e21]:
+          - generic [ref=e22]: "Mover Trás:"
+          - textbox [ref=e23]: S
+        - generic [ref=e24]:
+          - generic [ref=e25]: "Esquerda:"
+          - textbox [ref=e26]: A
+        - generic [ref=e27]:
+          - generic [ref=e28]: "Direita:"
+          - textbox [ref=e29]: D
+        - generic [ref=e30]:
+          - generic [ref=e31]: "Pular:"
+          - textbox [ref=e32]
+        - generic [ref=e33]:
+          - generic [ref=e34]: "Correr:"
+          - textbox [ref=e35]: SHIFT
+        - generic [ref=e36]:
+          - generic [ref=e37]: "Pegar Item [E]:"
+          - textbox [ref=e38]: E
+        - generic [ref=e39]:
+          - generic [ref=e40]: "Habilidade Void [F]:"
+          - textbox [ref=e41]: F
+        - generic [ref=e42]:
+          - generic [ref=e43]: "Alternar Câmera [F3]:"
+          - textbox [ref=e44]: F3
+        - generic [ref=e45]:
+          - generic [ref=e46]: "Peido [T]:"
+          - textbox [ref=e47]: T
+        - generic [ref=e48]:
+          - generic [ref=e49]: "Emotes [B]:"
+          - textbox [ref=e50]: B
+        - generic [ref=e51]:
+          - generic [ref=e52]: "Mira Sniper [Ctrl]:"
+          - textbox [ref=e53]: CTRL
+        - generic [ref=e54]:
+          - generic [ref=e55]: "Abrir Inventário [ESC]:"
+          - textbox [ref=e56]: ESC
+        - generic [ref=e57]:
+          - generic [ref=e58]: "Soltar Arma [Z]:"
+          - textbox [ref=e59]: Z
+      - button "Restaurar teclas padrão" [ref=e60] [cursor=pointer]
+    - generic [ref=e61]:
+      - button "Repetir tutorial" [ref=e62] [cursor=pointer]
+      - button "Sair" [ref=e63] [cursor=pointer]
+  - generic:
+    - generic: 🏆
+    - generic:
+      - heading "CONQUISTA DESBLOQUEADA" [level=4]
+      - paragraph

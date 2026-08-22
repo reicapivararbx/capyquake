@@ -1,0 +1,16 @@
+- generic [active]:
+  - generic [ref=f12e1]:
+    - heading "CAPIQUAKE" [level=1] [ref=f12e2]
+    - generic [ref=f12e3]: A Grande Caçada
+    - textbox "Seu nome" [ref=f12e4]
+    - button "Singleplayer" [ref=f12e5] [cursor=pointer]
+    - button "Multiplayer" [ref=f12e6] [cursor=pointer]
+    - button "Loja" [ref=f12e7] [cursor=pointer]
+    - button "Conquistas" [ref=f12e8] [cursor=pointer]
+    - button "MODO TESTE" [ref=f12e9] [cursor=pointer]
+    - button "⚙" [ref=f12e10] [cursor=pointer]
+  - generic:
+    - generic: 🏆
+    - generic:
+      - heading "CONQUISTA DESBLOQUEADA" [level=4]
+      - paragraph

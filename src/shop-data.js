@@ -560,7 +560,7 @@ export const SHOP_SECTIONS = [
   { item: 'revive2-revive-10x', name: 'Revive 10x', desc: '10 usos', cost: 90000, currency: 'money', icon: '💖', grant: { type: 'revive', count: 10 } },
   { item: 'revive2-revive-pack', name: 'Revive Pack', desc: '25 usos', cost: 200000, currency: 'money', icon: '💖', grant: { type: 'revive', count: 25 } },
   { item: 'revive2-revive-master', name: 'Revive Master', desc: 'pacote especial', cost: 250000, currency: 'money', icon: '💖', grant: { type: 'revive', count: 3 } },
-  { item: 'revive-infinity', name: 'Revive Infinity', desc: 'usos ilimitados · em breve', cost: 0, currency: 'money', icon: '♾️', purchasable: false },
+  { item: 'revive-infinity', name: 'Revive Infinity', desc: 'usos ilimitados · Desponivel apenas em conquistas', cost: 0, currency: 'money', icon: '♾️', purchasable: false },
     ]
   }
 ];

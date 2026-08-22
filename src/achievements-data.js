@@ -238,6 +238,11 @@ export const ACHIEVEMENTS = [
   { id: 'mode_oneshot', name: 'Modo One Shot', description: 'Jogue uma partida no modo One Shot.', rarity: 'MYTHIC', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.oneshot >= 1) },
   { id: 'mode_bossrush', name: 'Modo Boss Rush', description: 'Jogue uma partida no modo Boss Rush.', rarity: 'DIVINE', type: 'instant', test: g => !!(g.stats && g.stats.modePlays && g.stats.modePlays.bossrush >= 1) },
   { id: 'mode_all', name: 'Colecionador de Modos', description: 'Jogue pelo menos uma partida em TODOS os 13 modos.', rarity: 'DIVINE', type: 'instant', test: g => { if (!(g.stats && g.stats.modePlays)) return false; const ids = ['normal','reverse','turbo','mini','giant','moon','vampire','gold','ghost','horde','chaos','oneshot','bossrush']; return ids.every(id => (g.stats.modePlays[id] || 0) >= 1); } },
+  { id: 'revive_inf_1', name: 'Caminho do Retorno', description: 'Use 10 revives no total.', rarity: 'EPIC', type: 'instant', test: g => (g.stats && g.stats.revivesUsed || 0) >= 10 },
+  { id: 'revive_inf_2', name: 'Voltando da Morte', description: 'Venca uma partida tendo usado revive nela.', rarity: 'LEGENDARY', type: 'instant', test: g => (g.stats && g.stats.reviveWins || 0) >= 1 },
+  { id: 'revive_inf_3', name: 'Nove Vidas', description: 'Use 25 revives no total.', rarity: 'MYTHIC', type: 'instant', test: g => (g.stats && g.stats.revivesUsed || 0) >= 25 },
+  { id: 'revive_inf_4', name: 'Imortal de Verdade', description: 'Venca 3 partidas usando revive em cada.', rarity: 'DIVINE', type: 'instant', test: g => (g.stats && g.stats.reviveWins || 0) >= 3 },
+  { id: 'revive_inf_5', name: 'Alem da Vida', description: 'Use 50 revives e venca 5 partidas com revive. Recompensa: REVIVE INFINITO.', rarity: 'DIVINE', type: 'instant', test: g => (g.stats && g.stats.revivesUsed || 0) >= 50 && (g.stats && g.stats.reviveWins || 0) >= 5 },
 ];
 
 const RARITY_REWARDS = {
