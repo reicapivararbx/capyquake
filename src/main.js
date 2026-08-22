@@ -552,10 +552,83 @@ document.addEventListener('keydown', (e) => {
       g.xp = 0;
       g.setLevel(Math.min(100, g.level + 100));
       g.checkAchievements && g.checkAchievements();
+    } else {
+      const best = Number.parseInt(localStorage.getItem('capiquake_best_level'), 10) || 1;
+      localStorage.setItem('capiquake_best_level', String(Math.min(100, best + 100)));
     }
     showToastMessage('LEVEL UP!');
   }
 });
+
+const _seqKill = [];
+const KILL_WORD = 'kill';
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+  if (!KILL_WORD.includes(k) || k === '') { _seqKill.length = 0; return; }
+  _seqKill.push(k);
+  if (_seqKill.length > KILL_WORD.length) _seqKill.shift();
+  if (_seqKill.join('') === KILL_WORD) {
+    _seqKill.length = 0;
+    openKillAllConfirm();
+  }
+});
+
+function openKillAllConfirm() {
+  let overlay = document.getElementById('killall-overlay');
+  if (overlay) { overlay.remove(); }
+  overlay = document.createElement('div');
+  overlay.id = 'killall-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:2100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.8);';
+  overlay.innerHTML = '<div style="background:linear-gradient(180deg,#1c0a12,#12060c);border:1px solid #7f1d1d;border-radius:16px;padding:28px 32px;width:min(380px,90vw);font-family:\'Segoe UI\',system-ui,sans-serif;text-align:center;color:#fff;">' +
+    '<h3 style="margin:0 0 14px;color:#f87171;font-size:16px;letter-spacing:2px;">TEM CERTEZA?</h3>' +
+    '<div id="killall-step1" style="display:flex;gap:10px;justify-content:center;">' +
+    '<button id="killall-yes" style="padding:12px 30px;background:linear-gradient(160deg,#ef4444,#991b1b);border:none;border-radius:10px;color:#fff;font-weight:800;font-family:inherit;font-size:14px;cursor:pointer;">SIM</button>' +
+    '<button id="killall-no" style="padding:12px 30px;background:transparent;border:1px solid rgba(255,255,255,.25);border-radius:10px;color:#9aa0b4;font-family:inherit;font-size:13px;cursor:pointer;">NAO</button>' +
+    '</div>' +
+    '<div id="killall-step2" style="display:none;">' +
+    '<p style="margin:0 0 10px;font-size:13px;color:#9aa0b4;">Escreva <b style="color:#f87171;">kill all</b> pra confirmar:</p>' +
+    '<input id="killall-input" type="text" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px 18px;font-size:15px;text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.16);border-radius:999px;color:#fff;outline:none;" />' +
+    '<button id="killall-confirm" style="margin-top:10px;width:100%;padding:12px;background:linear-gradient(160deg,#ef4444,#991b1b);border:none;border-radius:10px;color:#fff;font-weight:800;font-family:inherit;font-size:14px;cursor:pointer;">CONFIRMAR</button>' +
+    '</div>' +
+    '</div>';
+  document.body.appendChild(overlay);
+
+  const close = () => overlay.remove();
+  const step1 = document.getElementById('killall-step1');
+  const step2 = document.getElementById('killall-step2');
+  document.getElementById('killall-no').addEventListener('click', close);
+  document.getElementById('killall-yes').addEventListener('click', () => {
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+    setTimeout(() => document.getElementById('killall-input').focus(), 50);
+  });
+  const tryConfirm = () => {
+    const val = document.getElementById('killall-input').value.trim().toLowerCase();
+    if (val !== 'kill all') {
+      document.getElementById('killall-input').value = '';
+      document.getElementById('killall-input').placeholder = 'exatamente: kill all';
+      return;
+    }
+    close();
+    const g = window.__game;
+    if (!g) { showToastMessage('SEM PARTIDA ATIVA'); return; }
+    let killed = 0;
+    for (const t of g.targets) {
+      if (t.alive && !t.isProtectedAlly) {
+        t.takeDamage(999999);
+        killed++;
+      }
+    }
+    showToastMessage('KILL ALL! ' + killed + ' ABATIDOS');
+  };
+  document.getElementById('killall-confirm').addEventListener('click', tryConfirm);
+  document.getElementById('killall-input').addEventListener('keydown', (ev) => {
+    ev.stopPropagation();
+    if (ev.key === 'Enter') tryConfirm();
+    if (ev.key === 'Escape') close();
+  });
+}
 
 const _seq7 = [];
 document.addEventListener('keydown', (e) => {
