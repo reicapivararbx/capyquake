@@ -1,6 +1,23 @@
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
+const masterGain = audioCtx.createGain();
+masterGain.connect(audioCtx.destination);
+const sfxGain = audioCtx.createGain();
+sfxGain.connect(masterGain);
+
 export class Audio {
+  static master() {
+    return sfxGain;
+  }
+
+  static setMasterVolume(v) {
+    masterGain.gain.value = Math.max(0, Math.min(1, v));
+  }
+
+  static setSfxVolume(v) {
+    sfxGain.gain.value = Math.max(0, Math.min(1, v));
+  }
+
   static resume() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
   }
@@ -16,7 +33,7 @@ export class Audio {
 
     osc.connect(distortion);
     distortion.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(Audio.master());
 
     const now = audioCtx.currentTime;
     osc.type = 'sawtooth';
@@ -63,7 +80,7 @@ export class Audio {
     gain.gain.setValueAtTime(0.5, now);
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
     noise.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(Audio.master());
     noise.start(now);
 
     // Low thump
@@ -153,7 +170,7 @@ export class Audio {
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(Audio.master());
     noise.start(now);
   }
 
@@ -246,7 +263,7 @@ export class Audio {
     gain.gain.setValueAtTime(0.4, now);
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(Audio.master());
     osc.start(now);
     osc.stop(now + 0.2);
 
@@ -275,7 +292,7 @@ export class Audio {
     gain.gain.setValueAtTime(0.3, now);
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(Audio.master());
     osc.start(now);
     osc.stop(now + 0.2);
 
@@ -304,7 +321,7 @@ export class Audio {
     gain.gain.setValueAtTime(0.5, now);
     gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
     osc.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(Audio.master());
     osc.start(now);
     osc.stop(now + 0.15);
 
@@ -350,7 +367,7 @@ export class Audio {
 
     noise.connect(filter);
     filter.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(Audio.master());
     noise.start(now);
   }
 
@@ -366,7 +383,7 @@ export class Audio {
       gain.gain.setValueAtTime(0.2, now + i * 0.15);
       gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.15 + 0.4);
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(Audio.master());
       osc.start(now + i * 0.15);
       osc.stop(now + i * 0.15 + 0.4);
     });
@@ -396,7 +413,7 @@ export class Audio {
       gain.gain.setValueAtTime(0.2, now + i * 0.3);
       gain.gain.exponentialRampToValueAtTime(0.01, now + i * 0.3 + 0.5);
       osc.connect(gain);
-      gain.connect(audioCtx.destination);
+      gain.connect(Audio.master());
       osc.start(now + i * 0.3);
       osc.stop(now + i * 0.3 + 0.5);
     });

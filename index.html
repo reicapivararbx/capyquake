@@ -1140,6 +1140,32 @@
       border-radius: 16px;
       font-family: 'Segoe UI', system-ui, sans-serif;
     }
+    .settings-extra { display: flex; flex-direction: column; gap: 12px; }
+    .set-row {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-align: left;
+    }
+    .set-row label { font-size: 12.5px; color: #9aa0b4; }
+    .set-row label b { color: #a78bfa; }
+    .set-row input[type="range"] {
+      width: 100%;
+      accent-color: #8b5cf6;
+      cursor: pointer;
+    }
+    .set-row select {
+      padding: 9px 12px;
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.16);
+      border-radius: 8px;
+      color: #f5f5f7;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+    }
+    .set-row select option { background: #14121d; }
+
     .settings-panel h2 {
       background: linear-gradient(95deg, #c4b5fd, #8b5cf6);
       -webkit-background-clip: text;
@@ -1448,6 +1474,47 @@
           </div>
           <div id="key-conflict-warning" style="display:none; color:#ff4444; margin-top:10px; font-size:12px;">Tecla duplicada!</div>
           <button id="btn-reset-keys" class="settings-btn">Restaurar teclas padrão</button>
+        </div>
+        <div class="settings-section">
+          <h3>JOGABILIDADE</h3>
+          <div class="settings-extra">
+            <div class="set-row">
+              <label>Sensibilidade do mouse: <b id="val-sens">1.0</b></label>
+              <input type="range" id="set-sensitivity" min="0.2" max="3" step="0.1" value="1">
+            </div>
+            <div class="set-row">
+              <label>Campo de visão (FOV): <b id="val-fov">90</b></label>
+              <input type="range" id="set-fov" min="60" max="110" step="1" value="90">
+            </div>
+            <div class="set-row">
+              <label>Mira (crosshair)</label>
+              <select id="set-crosshair">
+                <option value="on">Visível</option>
+                <option value="off">Oculta</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="settings-section">
+          <h3>SOM E GRÁFICOS</h3>
+          <div class="settings-extra">
+            <div class="set-row">
+              <label>Volume geral: <b id="val-vol">80%</b></label>
+              <input type="range" id="set-volume" min="0" max="100" step="5" value="80">
+            </div>
+            <div class="set-row">
+              <label>Volume de efeitos: <b id="val-sfx">100%</b></label>
+              <input type="range" id="set-sfx" min="0" max="100" step="5" value="100">
+            </div>
+            <div class="set-row">
+              <label>Qualidade gráfica</label>
+              <select id="set-quality">
+                <option value="low">Baixa (sem sombras)</option>
+                <option value="medium">Média</option>
+                <option value="high" selected>Alta (sombras suaves)</option>
+              </select>
+            </div>
+          </div>
         </div>
         <div class="settings-section">
           <button id="btn-repeat-tutorial" class="settings-btn">Repetir tutorial</button>

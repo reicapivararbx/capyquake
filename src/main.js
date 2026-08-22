@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import { Menu } from './menu.js';
 import { Game } from './game.js';
 import { Network } from './network.js';
@@ -515,6 +516,7 @@ document.getElementById('btn-do-rebirth').addEventListener('click', function() {
 const settingsScreen = document.getElementById('settings-screen');
 document.getElementById('btn-settings').addEventListener('click', () => {
   settingsScreen.style.display = settingsScreen.style.display === 'none' ? 'flex' : 'none';
+  if (settingsScreen.style.display === 'flex') loadGameplaySettingsUI();
 });
 
 document.getElementById('btn-settings-quit').addEventListener('click', () => {
@@ -855,6 +857,98 @@ function loadSettings() {
     }
   }
 }
+
+function getGameplaySettings() {
+  let s = {};
+  try { s = JSON.parse(localStorage.getItem('capiquake_gameplay') || '{}'); } catch (e) { s = {}; }
+  return {
+    sensitivity: s.sensitivity ?? 1,
+    fov: s.fov ?? 90,
+    crosshair: s.crosshair ?? 'on',
+    volume: s.volume ?? 80,
+    sfx: s.sfx ?? 100,
+    quality: s.quality ?? 'high'
+  };
+}
+
+function applyQuality(quality) {
+  const g = window.__game;
+  if (!g || !g.renderer || !g.renderer.renderer) return;
+  const r = g.renderer.renderer;
+  if (quality === 'low') {
+    r.setPixelRatio(Math.min(window.devicePixelRatio, 1) * 0.75);
+    r.shadowMap.enabled = false;
+  } else if (quality === 'medium') {
+    r.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
+    r.shadowMap.enabled = true;
+    r.shadowMap.type = THREE.PCFShadowMap;
+  } else {
+    r.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    r.shadowMap.enabled = true;
+    r.shadowMap.type = THREE.PCFSoftShadowMap;
+  }
+  r.shadowMap.needsUpdate = true;
+}
+
+function applyCrosshair(mode) {
+  const ch = document.getElementById('crosshair');
+  if (ch) ch.style.display = mode === 'off' ? 'none' : 'block';
+}
+
+function applyGameplaySettings() {
+  const s = getGameplaySettings();
+  Audio.setMasterVolume(s.volume / 100);
+  Audio.setSfxVolume(s.sfx / 100);
+  const g = window.__game;
+  if (g && g.player) g.player.sensitivity = 0.002 * s.sensitivity;
+  if (g && g.camera) {
+    g.camera.fov = s.fov;
+    g.camera.updateProjectionMatrix();
+  }
+  applyQuality(s.quality);
+  applyCrosshair(s.crosshair);
+}
+
+function saveGameplaySettings() {
+  const s = {
+    sensitivity: parseFloat(document.getElementById('set-sensitivity').value),
+    fov: parseInt(document.getElementById('set-fov').value, 10),
+    crosshair: document.getElementById('set-crosshair').value,
+    volume: parseInt(document.getElementById('set-volume').value, 10),
+    sfx: parseInt(document.getElementById('set-sfx').value, 10),
+    quality: document.getElementById('set-quality').value
+  };
+  localStorage.setItem('capiquake_gameplay', JSON.stringify(s));
+  document.getElementById('val-sens').textContent = s.sensitivity.toFixed(1);
+  document.getElementById('val-fov').textContent = s.fov;
+  document.getElementById('val-vol').textContent = s.volume + '%';
+  document.getElementById('val-sfx').textContent = s.sfx + '%';
+  applyGameplaySettings();
+}
+
+function loadGameplaySettingsUI() {
+  const s = getGameplaySettings();
+  document.getElementById('set-sensitivity').value = s.sensitivity;
+  document.getElementById('val-sens').textContent = Number(s.sensitivity).toFixed(1);
+  document.getElementById('set-fov').value = s.fov;
+  document.getElementById('val-fov').textContent = s.fov;
+  document.getElementById('set-crosshair').value = s.crosshair;
+  document.getElementById('set-volume').value = s.volume;
+  document.getElementById('val-vol').textContent = s.volume + '%';
+  document.getElementById('set-sfx').value = s.sfx;
+  document.getElementById('val-sfx').textContent = s.sfx + '%';
+  document.getElementById('set-quality').value = s.quality;
+}
+
+['set-sensitivity', 'set-fov', 'set-volume', 'set-sfx'].forEach(id => {
+  document.getElementById(id).addEventListener('input', saveGameplaySettings);
+});
+['set-crosshair', 'set-quality'].forEach(id => {
+  document.getElementById(id).addEventListener('change', saveGameplaySettings);
+});
+
+// Aplicar volumes/qualidade assim que o jogo carrega
+applyGameplaySettings();
 
 function keyLabelFromEvent(e) {
   if (e.code === 'Space') return ' ';
