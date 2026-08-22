@@ -1925,14 +1925,20 @@ export class Game {
     if (this.level >= 100) this.xp = Math.min(this.xp, 99 * 100);
     if (this.hud && this.hud.updateLevel) this.hud.updateLevel(this.level, this.xp);
     if (leveled) {
-      this.hud.showMessage(`NIVEL ${this.level}!`);
-      this.stats.level = this.level;
-      if (this.mode !== 'test') {
-        const best = Number.parseInt(localStorage.getItem('capiquake_best_level'), 10) || 1;
-        if (this.level > best) localStorage.setItem('capiquake_best_level', String(this.level));
-      }
+      this.setLevel(this.level);
       this.checkAchievements();
     }
+  }
+
+  setLevel(newLevel) {
+    this.level = newLevel;
+    this.stats.level = newLevel;
+    if (this.mode !== 'test') {
+      const best = Number.parseInt(localStorage.getItem('capiquake_best_level'), 10) || 1;
+      if (newLevel > best) localStorage.setItem('capiquake_best_level', String(newLevel));
+    }
+    if (this.hud && this.hud.updateLevel) this.hud.updateLevel(this.level, this.xp);
+    this.hud.showMessage(`NIVEL ${this.level}!`);
   }
 
   tryRebirth() {

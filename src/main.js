@@ -509,7 +509,8 @@ document.addEventListener('keydown', (e) => {
     _seqInf.length = 0;
     const g = window.__game;
     if (g) {
-      g.infiniteAmmo = true;
+      g.setLevel && g.setLevel(100);
+    g.infiniteAmmo = true;
       const infBtn = document.getElementById('btn-inf-ammo');
       if (infBtn) infBtn.textContent = 'INFINITA: TRUE';
     }
@@ -548,11 +549,8 @@ document.addEventListener('keydown', (e) => {
     _seqLv.length = 0;
     const g = window.__game;
     if (g) {
-      g.level = Math.min(100, g.level + 100);
       g.xp = 0;
-      g.stats.level = g.level;
-      if (g.hud && g.hud.updateLevel) g.hud.updateLevel(g.level, g.xp);
-      if (g.hud) g.hud.showMessage('NIVEL ' + g.level + '!');
+      g.setLevel(Math.min(100, g.level + 100));
       g.checkAchievements && g.checkAchievements();
     }
     showToastMessage('LEVEL UP!');
@@ -631,9 +629,6 @@ function grantAdminPowers() {
     g.invincibleTimer = Infinity;
     g.playerHealth = g.playerMaxHealth;
     if (g.hud) g.hud.updateHealth(g.playerHealth, g.playerMaxHealth);
-    g.level = 100;
-    g.xp = 0;
-    g.stats.level = 100;
     g.checkAchievements && g.checkAchievements();
   } catch (err) { console.warn(err); }
   showToastMessage('MODO ADMIN ATIVADO');
