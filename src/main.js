@@ -614,12 +614,16 @@ function openKillAllConfirm() {
     const g = window.__game;
     if (!g) { showToastMessage('SEM PARTIDA ATIVA'); return; }
     let killed = 0;
-    for (const t of g.targets) {
+    for (const t of [...g.targets]) {
       if (t.alive && !t.isProtectedAlly) {
         t.takeDamage(999999);
-        killed++;
+        if (!t.alive) {
+          g.resolveKill(t, g.playerName);
+          killed++;
+        }
       }
     }
+    g.checkAchievements && g.checkAchievements();
     showToastMessage('KILL ALL! ' + killed + ' ABATIDOS');
   };
   document.getElementById('killall-confirm').addEventListener('click', tryConfirm);
