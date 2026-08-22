@@ -13,6 +13,8 @@ Sobreviva. Evolua. Domine.
 
 **🎮 Jogue agora: [reicapivararbx.github.io/capyquake](https://reicapivararbx.github.io/capyquake/)**
 
+**📚 Wiki do jogo: [wiki/Home.md](wiki/Home.md)** — armas, loja, conquistas, modos, bestiário e multiplayer
+
 </div>
 
 ---
