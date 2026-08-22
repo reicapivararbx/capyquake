@@ -1303,8 +1303,8 @@
     .stat-box .sl { font-size: 10.5px; color: #8b90a3; margin-top: 2px; }
 
   </style>
-  <script type="module" crossorigin src="./assets/index-B6Lo2RyC.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-DP6qyewS.css">
+  <script type="module" crossorigin src="./assets/index-wFxxqcVO.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-Bukr86hn.css">
 </head>
 <body>
   <div id="menu">
@@ -1342,7 +1342,10 @@
         <span id="shop-money">R$: 0</span>
       </div>
     </div>
-    <button id="btn-convert-tokens" class="shop-convert">🔄 Trocar R$ 1.000 por 1 token</button>
+    <div class="shop-convert-row">
+      <button id="btn-convert-tokens" class="shop-convert">🔄 Trocar R$ 1.000 por 1 token</button>
+      <button id="btn-convert-token-money" class="shop-convert token-to-money">🔄 Trocar 1 token por R$ 1.000</button>
+    </div>
     <div id="shop-convert-error" class="shop-convert-error" hidden></div>
     <div id="shop-sections"></div>
 
@@ -1538,6 +1541,7 @@
       <h2>🔄 REBIRTH</h2>
       <div class="rb-level">Nível de Rebirth: <b id="rb-current">0</b></div>
       <div class="rb-rt">Rebirth Tokens: <b id="rb-rt">0</b> RT <small>(1 RT = 1.000.000 tokens)</small></div>
+      <button id="btn-rt-exchange" class="settings-btn">💱 Trocar 1 RT por 1.000.000 tokens</button>
       <div class="rb-buffs">
         <div>💰 Dinheiro: <span id="rb-mult-money">x1</span></div>
         <div>🪙 Tokens: <span id="rb-mult-tokens">x1</span></div>
