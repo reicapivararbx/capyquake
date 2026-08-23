@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAPYQUAKE ADMIN</title>
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body class="login-body">
+  <main class="login-card" aria-label="Login administrativo">
+    <h1>CAPYQUAKE <span>ADMIN</span></h1>
+
+    <section>
+      <h2>Login with user</h2>
+      <form id="form-user">
+        <label for="lu">Username</label>
+        <input id="lu" name="username" autocomplete="username" required maxlength="24">
+        <label for="lp">Password</label>
+        <input id="lp" name="password" type="password" autocomplete="current-password" required>
+        <button type="submit" id="btn-user">LOGIN</button>
+      </form>
+      <p class="err" id="err-user" role="alert" hidden></p>
+    </section>
+
+    <div class="divider"><span>OR</span></div>
+
+    <section>
+      <h2>Access code</h2>
+      <form id="form-code">
+        <label for="ac">Admin Code</label>
+        <input id="ac" name="code" type="password" autocomplete="off" required>
+        <button type="submit" id="btn-code">VERIFY CODE</button>
+      </form>
+      <p class="err" id="err-code" role="alert" hidden></p>
+    </section>
+
+    <a class="back" href="/">← voltar ao jogo</a>
+  </main>
+  <script>
+    function bind(formId, btnId, errId, url, build) {
+      const form = document.getElementById(formId);
+      const btn = document.getElementById(btnId);
+      const err = document.getElementById(errId);
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        err.hidden = true;
+        btn.disabled = true;
+        const original = btn.textContent;
+        btn.textContent = 'PROCESSING...';
+        try {
+          const r = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(build())
+          });
+          const data = await r.json().catch(() => ({}));
+          if (r.ok) { location.href = '/admin'; return; }
+          throw new Error(data?.error?.message || 'Falha na autenticação.');
+        } catch (ex) {
+          err.textContent = ex.message === 'Failed to fetch'
+            ? 'Servidor indisponível.' : ex.message;
+          err.hidden = false;
+          btn.disabled = false;
+          btn.textContent = original;
+        }
+      });
+    }
+    bind('form-user', 'btn-user', 'err-user', '/api/auth/login', () => ({
+      username: document.getElementById('lu').value,
+      password: document.getElementById('lp').value
+    }));
+    bind('form-code', 'btn-code', 'err-code', '/api/admin/code', () => ({
+      code: document.getElementById('ac').value
+    }));
+    fetch('/api/admin/me').then(r => { if (r.ok) location.href = '/admin'; }).catch(() => {});
+  </script>
+</body>
+</html>

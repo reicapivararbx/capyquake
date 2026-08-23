@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CAPYQUAKE · Admin</title>
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">CAPYQUAKE<span>ADMIN</span></div>
+    <nav aria-label="Administração">
+      <a href="#/dashboard" data-nav>📊 Dashboard</a>
+      <a href="#/players" data-nav>👥 Players</a>
+      <a href="#/game-tools" data-nav>🛠️ Game Tools</a>
+      <a href="#/logs" data-nav>📜 Logs</a>
+      <a href="#/settings" data-nav>⚙️ Settings</a>
+    </nav>
+    <div class="me" id="me"></div>
+    <button id="btn-logout" class="ghost">SAIR</button>
+  </aside>
+  <main id="content" class="content" tabindex="-1"></main>
+</div>
+<div id="modal-root"></div>
+<script src="/admin/app.js"></script>
+</body>
+</html>

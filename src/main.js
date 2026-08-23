@@ -1280,3 +1280,31 @@ function renderAchievements(unlockedSet, statusFilter, rarityFilter) {
     list.appendChild(card);
   });
 }
+
+// Atalho secreto: digite "admin" (fora de inputs) para revelar o painel administrativo.
+(() => {
+  let buffer = '';
+  const TARGET = 'admin';
+  window.addEventListener('keydown', (e) => {
+    const t = e.target;
+    if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+    if (e.key && e.key.length === 1) {
+      buffer = (buffer + e.key.toLowerCase()).slice(-TARGET.length);
+      if (buffer === TARGET) {
+        buffer = '';
+        if (document.getElementById('admin-secret-btn')) return;
+        const btn = document.createElement('a');
+        btn.id = 'admin-secret-btn';
+        btn.href = '/admin/login';
+        btn.target = '_blank';
+        btn.rel = 'noopener';
+        btn.textContent = '🔐 PAINEL ADMIN';
+        btn.style.cssText = 'position:fixed;bottom:18px;right:18px;z-index:3000;background:#ff9f43;color:#161005;font-weight:800;padding:12px 18px;border-radius:10px;text-decoration:none;box-shadow:0 4px 20px rgba(255,159,67,.45)';
+        document.body.appendChild(btn);
+        setTimeout(() => { btn.remove(); }, 12000);
+      }
+    } else if (e.key === 'Escape') {
+      document.getElementById('admin-secret-btn')?.remove();
+    }
+  });
+})();

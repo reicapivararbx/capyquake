@@ -1,0 +1,2673 @@
+{
+  "generatedFrom": "src/shop-data.js",
+  "count": 381,
+  "items": [
+    {
+      "id": "minigun",
+      "name": "Minigun",
+      "section": "armas",
+      "cost": 5000,
+      "currency": "money"
+    },
+    {
+      "id": "ak47",
+      "name": "AK-47",
+      "section": "armas",
+      "cost": 3000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-glock",
+      "name": "Glock",
+      "section": "armas",
+      "cost": 750,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-desert-eagle",
+      "name": "Desert Eagle",
+      "section": "armas",
+      "cost": 1500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-uzi",
+      "name": "Uzi",
+      "section": "armas",
+      "cost": 2000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-mp5",
+      "name": "MP5",
+      "section": "armas",
+      "cost": 2500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-p90",
+      "name": "P90",
+      "section": "armas",
+      "cost": 3000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-vector",
+      "name": "Vector",
+      "section": "armas",
+      "cost": 3500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-m4a1",
+      "name": "M4A1",
+      "section": "armas",
+      "cost": 4000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-scar-h",
+      "name": "SCAR-H",
+      "section": "armas",
+      "cost": 6000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-famas",
+      "name": "FAMAS",
+      "section": "armas",
+      "cost": 4500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-aug",
+      "name": "AUG",
+      "section": "armas",
+      "cost": 5000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-g36",
+      "name": "G36",
+      "section": "armas",
+      "cost": 4750,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-m16",
+      "name": "M16",
+      "section": "armas",
+      "cost": 4250,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-ak-74",
+      "name": "AK-74",
+      "section": "armas",
+      "cost": 5250,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-galil",
+      "name": "Galil",
+      "section": "armas",
+      "cost": 3750,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-tar-21",
+      "name": "TAR-21",
+      "section": "armas",
+      "cost": 5500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-spas-12",
+      "name": "SPAS-12",
+      "section": "armas",
+      "cost": 4500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-m870",
+      "name": "M870",
+      "section": "armas",
+      "cost": 3000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-double-barrel",
+      "name": "Double Barrel",
+      "section": "armas",
+      "cost": 2250,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-aa-12",
+      "name": "AA-12",
+      "section": "armas",
+      "cost": 7000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-s12k",
+      "name": "S12K",
+      "section": "armas",
+      "cost": 6500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-kar98k",
+      "name": "Kar98k",
+      "section": "armas",
+      "cost": 4000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-m24",
+      "name": "M24",
+      "section": "armas",
+      "cost": 5000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-awp",
+      "name": "AWP",
+      "section": "armas",
+      "cost": 10000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-barrett",
+      "name": "Barrett",
+      "section": "armas",
+      "cost": 15000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-dragunov",
+      "name": "Dragunov",
+      "section": "armas",
+      "cost": 8000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-railgun",
+      "name": "Railgun",
+      "section": "armas",
+      "cost": 20000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-plasma-gun",
+      "name": "Plasma Gun",
+      "section": "armas",
+      "cost": 25000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-laser-rifle",
+      "name": "Laser Rifle",
+      "section": "armas",
+      "cost": 30000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-rocket-launcher",
+      "name": "Rocket Launcher",
+      "section": "armas",
+      "cost": 12000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-bazuca",
+      "name": "Bazuca",
+      "section": "armas",
+      "cost": 10000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-grenade-launcher",
+      "name": "Grenade Launcher",
+      "section": "armas",
+      "cost": 9000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-crossbow",
+      "name": "Crossbow",
+      "section": "armas",
+      "cost": 3500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-heavy-crossbow",
+      "name": "Heavy Crossbow",
+      "section": "armas",
+      "cost": 6000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-flamethrower",
+      "name": "Flamethrower",
+      "section": "armas",
+      "cost": 11000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-ice-gun",
+      "name": "Ice Gun",
+      "section": "armas",
+      "cost": 14000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-thunder-gun",
+      "name": "Thunder Gun",
+      "section": "armas",
+      "cost": 18000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-void-gun",
+      "name": "Void Gun",
+      "section": "armas",
+      "cost": 40000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-golden-gun",
+      "name": "Golden Gun",
+      "section": "armas",
+      "cost": 25000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-plasma-shotgun",
+      "name": "Plasma Shotgun",
+      "section": "armas",
+      "cost": 22000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-heavy-rifle",
+      "name": "Heavy Rifle",
+      "section": "armas",
+      "cost": 13000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-tactical-smg",
+      "name": "Tactical SMG",
+      "section": "armas",
+      "cost": 5500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-combat-rifle",
+      "name": "Combat Rifle",
+      "section": "armas",
+      "cost": 7500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-burst-rifle",
+      "name": "Burst Rifle",
+      "section": "armas",
+      "cost": 6250,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-auto-sniper",
+      "name": "Auto Sniper",
+      "section": "armas",
+      "cost": 12500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-hand-cannon",
+      "name": "Hand Cannon",
+      "section": "armas",
+      "cost": 17500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-energy-cannon",
+      "name": "Energy Cannon",
+      "section": "armas",
+      "cost": 27500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-void-blaster",
+      "name": "Void Blaster",
+      "section": "armas",
+      "cost": 45000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-mini-rocket",
+      "name": "Mini Rocket",
+      "section": "armas",
+      "cost": 8500,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-heavy-minigun",
+      "name": "Heavy Minigun",
+      "section": "armas",
+      "cost": 25000,
+      "currency": "money"
+    },
+    {
+      "id": "weapon-hyper-gun",
+      "name": "Hyper Gun",
+      "section": "armas",
+      "cost": 50000,
+      "currency": "money"
+    },
+    {
+      "id": "boost-velocidade-ii",
+      "name": "Velocidade II",
+      "section": "boosts",
+      "cost": 2,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-velocidade-iii",
+      "name": "Velocidade III",
+      "section": "boosts",
+      "cost": 3,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-vida-maxima-ii",
+      "name": "Vida Máxima II",
+      "section": "boosts",
+      "cost": 2,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-vida-maxima-iii",
+      "name": "Vida Máxima III",
+      "section": "boosts",
+      "cost": 3,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-defesa",
+      "name": "Defesa",
+      "section": "boosts",
+      "cost": 2,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-defesa-ii",
+      "name": "Defesa II",
+      "section": "boosts",
+      "cost": 4,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-dano",
+      "name": "Dano",
+      "section": "boosts",
+      "cost": 2,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-dano-ii",
+      "name": "Dano II",
+      "section": "boosts",
+      "cost": 4,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-precisao",
+      "name": "Precisão",
+      "section": "boosts",
+      "cost": 2,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-precisao-ii",
+      "name": "Precisão II",
+      "section": "boosts",
+      "cost": 4,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-recarga",
+      "name": "Recarga",
+      "section": "boosts",
+      "cost": 3,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-recarga-ii",
+      "name": "Recarga II",
+      "section": "boosts",
+      "cost": 5,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-sprint",
+      "name": "Sprint",
+      "section": "boosts",
+      "cost": 2,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-escudo",
+      "name": "Escudo",
+      "section": "boosts",
+      "cost": 3,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-escudo-ii",
+      "name": "Escudo II",
+      "section": "boosts",
+      "cost": 6,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-regeneracao",
+      "name": "Regeneração",
+      "section": "boosts",
+      "cost": 3,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-regeneracao-ii",
+      "name": "Regeneração II",
+      "section": "boosts",
+      "cost": 6,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-dano-critico",
+      "name": "Dano Crítico",
+      "section": "boosts",
+      "cost": 4,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-dano-critico-ii",
+      "name": "Dano Crítico II",
+      "section": "boosts",
+      "cost": 7,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-coletor",
+      "name": "Coletor",
+      "section": "boosts",
+      "cost": 2,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-fortuna",
+      "name": "Fortuna",
+      "section": "boosts",
+      "cost": 4,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-fortuna-ii",
+      "name": "Fortuna II",
+      "section": "boosts",
+      "cost": 7,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-cura",
+      "name": "Cura",
+      "section": "boosts",
+      "cost": 2,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-cura-ii",
+      "name": "Cura II",
+      "section": "boosts",
+      "cost": 4,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-furia",
+      "name": "Fúria",
+      "section": "boosts",
+      "cost": 5,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-resistencia",
+      "name": "Resistência",
+      "section": "boosts",
+      "cost": 3,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-reflexo",
+      "name": "Reflexo",
+      "section": "boosts",
+      "cost": 3,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-invisibilidade",
+      "name": "Invisibilidade",
+      "section": "boosts",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-invulnerabilidade",
+      "name": "Invulnerabilidade",
+      "section": "boosts",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-super-velocidade",
+      "name": "Super Velocidade",
+      "section": "boosts",
+      "cost": 6,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-super-dano",
+      "name": "Super Dano",
+      "section": "boosts",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-super-vida",
+      "name": "Super Vida",
+      "section": "boosts",
+      "cost": 5,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-super-recarga",
+      "name": "Super Recarga",
+      "section": "boosts",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-mira-perfeita",
+      "name": "Mira Perfeita",
+      "section": "boosts",
+      "cost": 7,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-mega-coletor",
+      "name": "Mega Coletor",
+      "section": "boosts",
+      "cost": 5,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-mega-fortuna",
+      "name": "Mega Fortuna",
+      "section": "boosts",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-cura-total",
+      "name": "Cura Total",
+      "section": "boosts",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-barreira",
+      "name": "Barreira",
+      "section": "boosts",
+      "cost": 9,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-berserker",
+      "name": "Berserker",
+      "section": "boosts",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-flash",
+      "name": "Flash",
+      "section": "boosts",
+      "cost": 12,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-overcharge",
+      "name": "Overcharge",
+      "section": "boosts",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-regen-suprema",
+      "name": "Regen Suprema",
+      "section": "boosts",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-headshot",
+      "name": "Headshot",
+      "section": "boosts",
+      "cost": 9,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-fortaleza",
+      "name": "Fortaleza",
+      "section": "boosts",
+      "cost": 12,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-fase",
+      "name": "Fase",
+      "section": "boosts",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-explosivo",
+      "name": "Explosivo",
+      "section": "boosts",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-congelante",
+      "name": "Congelante",
+      "section": "boosts",
+      "cost": 7,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-eletrificado",
+      "name": "Eletrificado",
+      "section": "boosts",
+      "cost": 9,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-void-boost",
+      "name": "Void Boost",
+      "section": "boosts",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "boost-boost-supremo",
+      "name": "Boost Supremo",
+      "section": "boosts",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "ammo-pistola",
+      "name": "Munição Pistola",
+      "section": "ammo",
+      "cost": 100,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-uzi",
+      "name": "Munição SMG",
+      "section": "ammo",
+      "cost": 250,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-m4a1",
+      "name": "Munição Rifle",
+      "section": "ammo",
+      "cost": 350,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-ak47",
+      "name": "Munição AK",
+      "section": "ammo",
+      "cost": 400,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-m16",
+      "name": "Munição M4",
+      "section": "ammo",
+      "cost": 375,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-m870",
+      "name": "Munição Escopeta",
+      "section": "ammo",
+      "cost": 300,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-sniper",
+      "name": "Munição Sniper",
+      "section": "ammo",
+      "cost": 288,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-awp",
+      "name": "Munição AWP",
+      "section": "ammo",
+      "cost": 500,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-rocket-launcher",
+      "name": "Munição Foguete",
+      "section": "ammo",
+      "cost": 350,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-bazuca",
+      "name": "Munição Bazuca",
+      "section": "ammo",
+      "cost": 575,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-laser-rifle",
+      "name": "Munição Laser",
+      "section": "ammo",
+      "cost": 1000,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-flamethrower",
+      "name": "Munição Flame",
+      "section": "ammo",
+      "cost": 900,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-ice-gun",
+      "name": "Munição Ice",
+      "section": "ammo",
+      "cost": 1200,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-void-gun",
+      "name": "Munição Void",
+      "section": "ammo",
+      "cost": 3500,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-railgun",
+      "name": "Munição Diamante",
+      "section": "ammo",
+      "cost": 2500,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-golden-gun",
+      "name": "Munição Ouro",
+      "section": "ammo",
+      "cost": 1500,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-heavy-rifle",
+      "name": "Munição Ferro",
+      "section": "ammo",
+      "cost": 1000,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-combat-rifle",
+      "name": "Munição Couro",
+      "section": "ammo",
+      "cost": 750,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-grenade-launcher",
+      "name": "Munição Explosiva",
+      "section": "ammo",
+      "cost": 1500,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-thunder-gun",
+      "name": "Munição Shock",
+      "section": "ammo",
+      "cost": 1800,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-crossbow",
+      "name": "Munição Teleport",
+      "section": "ammo",
+      "cost": 2000,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-kar98k",
+      "name": "Munição Precisa",
+      "section": "ammo",
+      "cost": 1500,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-hyper-gun",
+      "name": "Munição Nuclear",
+      "section": "ammo",
+      "cost": 10000,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-void-blaster",
+      "name": "Munição Estelar",
+      "section": "ammo",
+      "cost": 7500,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-energy-cannon",
+      "name": "Munição Gravitacional",
+      "section": "ammo",
+      "cost": 5000,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-heavy-crossbow",
+      "name": "Munição Armadilha",
+      "section": "ammo",
+      "cost": 1250,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-barrett",
+      "name": "Munição Crítica",
+      "section": "ammo",
+      "cost": 3000,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-phantom-x",
+      "name": "Munição Fantasma",
+      "section": "ammo",
+      "cost": 4000,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-vampire-x",
+      "name": "Munição Vampírica",
+      "section": "ammo",
+      "cost": 5000,
+      "currency": "money"
+    },
+    {
+      "id": "ammo-plasma-shotgun",
+      "name": "Munição Prisma",
+      "section": "ammo",
+      "cost": 6000,
+      "currency": "money"
+    },
+    {
+      "id": "skill-dash",
+      "name": "Dash",
+      "section": "skills",
+      "cost": 3,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-dash-ii",
+      "name": "Dash II",
+      "section": "skills",
+      "cost": 5,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-escudo",
+      "name": "Escudo",
+      "section": "skills",
+      "cost": 5,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-escudo-ii",
+      "name": "Escudo II",
+      "section": "skills",
+      "cost": 9,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-cura",
+      "name": "Cura",
+      "section": "skills",
+      "cost": 4,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-cura-ii",
+      "name": "Cura II",
+      "section": "skills",
+      "cost": 7,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-explosao",
+      "name": "Explosão",
+      "section": "skills",
+      "cost": 5,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-mega-explosao",
+      "name": "Mega Explosão",
+      "section": "skills",
+      "cost": 12,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-choque",
+      "name": "Choque",
+      "section": "skills",
+      "cost": 5,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-mega-choque",
+      "name": "Mega Choque",
+      "section": "skills",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-congelar",
+      "name": "Congelar",
+      "section": "skills",
+      "cost": 7,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-mega-congelar",
+      "name": "Mega Congelar",
+      "section": "skills",
+      "cost": 12,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-incendiar",
+      "name": "Incendiar",
+      "section": "skills",
+      "cost": 6,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-inferno",
+      "name": "Inferno",
+      "section": "skills",
+      "cost": 13,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-teleporte-ii",
+      "name": "Teleporte II",
+      "section": "skills",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-teleporte-global",
+      "name": "Teleporte Global",
+      "section": "skills",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-invisibilidade",
+      "name": "Invisibilidade",
+      "section": "skills",
+      "cost": 10,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-invisibilidade-ii",
+      "name": "Invisibilidade II",
+      "section": "skills",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-rush",
+      "name": "Rush",
+      "section": "skills",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-mega-rush",
+      "name": "Mega Rush",
+      "section": "skills",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-mira-automatica",
+      "name": "Mira Automática",
+      "section": "skills",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-mira-suprema",
+      "name": "Mira Suprema",
+      "section": "skills",
+      "cost": 14,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-tiro-explosivo",
+      "name": "Tiro Explosivo",
+      "section": "skills",
+      "cost": 7,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-tiro-eletrico",
+      "name": "Tiro Elétrico",
+      "section": "skills",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-tiro-congelante",
+      "name": "Tiro Congelante",
+      "section": "skills",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-tiro-flamejante",
+      "name": "Tiro Flamejante",
+      "section": "skills",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-tiro-void",
+      "name": "Tiro Void",
+      "section": "skills",
+      "cost": 12,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-ima",
+      "name": "Ímã",
+      "section": "skills",
+      "cost": 6,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-fortuna",
+      "name": "Fortuna",
+      "section": "skills",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-segunda-chance",
+      "name": "Segunda Chance",
+      "section": "skills",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-invencivel",
+      "name": "Invencível",
+      "section": "skills",
+      "cost": 12,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-invencivel-ii",
+      "name": "Invencível II",
+      "section": "skills",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-reaper",
+      "name": "Reaper",
+      "section": "skills",
+      "cost": 14,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-rei-do-campo",
+      "name": "Rei do Campo",
+      "section": "skills",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-gravidade",
+      "name": "Gravidade",
+      "section": "skills",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-vortice",
+      "name": "Vórtice",
+      "section": "skills",
+      "cost": 13,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-meteoro",
+      "name": "Meteoro",
+      "section": "skills",
+      "cost": 18,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-tempestade",
+      "name": "Tempestade",
+      "section": "skills",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-vulcao",
+      "name": "Vulcão",
+      "section": "skills",
+      "cost": 22,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-onda",
+      "name": "Onda",
+      "section": "skills",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-tornado",
+      "name": "Tornado",
+      "section": "skills",
+      "cost": 16,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-dark-pulse",
+      "name": "Dark Pulse",
+      "section": "skills",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-star-burst",
+      "name": "Star Burst",
+      "section": "skills",
+      "cost": 22,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-infinity",
+      "name": "Infinity",
+      "section": "skills",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-tridente",
+      "name": "Tridente",
+      "section": "skills",
+      "cost": 18,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-dragon-breath",
+      "name": "Dragon Breath",
+      "section": "skills",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-royal-blast",
+      "name": "Royal Blast",
+      "section": "skills",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-void-blast",
+      "name": "Void Blast",
+      "section": "skills",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-cosmic-ray",
+      "name": "Cosmic Ray",
+      "section": "skills",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "skill-ultimate",
+      "name": "Ultimate",
+      "section": "skills",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-fogo-ii",
+      "name": "Fogo II",
+      "section": "enchants",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-inferno",
+      "name": "Inferno",
+      "section": "enchants",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-gelado-ii",
+      "name": "Gelado II",
+      "section": "enchants",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-congelante",
+      "name": "Congelante",
+      "section": "enchants",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-raio-ii",
+      "name": "Raio II",
+      "section": "enchants",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-tempestade",
+      "name": "Tempestade",
+      "section": "enchants",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-vampirico",
+      "name": "Vampírico",
+      "section": "enchants",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-vampirico-ii",
+      "name": "Vampírico II",
+      "section": "enchants",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-void",
+      "name": "Void",
+      "section": "enchants",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-void-ii",
+      "name": "Void II",
+      "section": "enchants",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-brilhante",
+      "name": "Brilhante",
+      "section": "enchants",
+      "cost": 8,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-prisma",
+      "name": "Prisma",
+      "section": "enchants",
+      "cost": 18,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-sombrio",
+      "name": "Sombrio",
+      "section": "enchants",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-solar",
+      "name": "Solar",
+      "section": "enchants",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-lunar",
+      "name": "Lunar",
+      "section": "enchants",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-vento",
+      "name": "Vento",
+      "section": "enchants",
+      "cost": 12,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-tornado",
+      "name": "Tornado",
+      "section": "enchants",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-agua",
+      "name": "Água",
+      "section": "enchants",
+      "cost": 12,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-lava",
+      "name": "Lava",
+      "section": "enchants",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-meteoro",
+      "name": "Meteoro",
+      "section": "enchants",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-cristal",
+      "name": "Cristal",
+      "section": "enchants",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-mistico",
+      "name": "Místico",
+      "section": "enchants",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-fantasma",
+      "name": "Fantasma",
+      "section": "enchants",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-aranha",
+      "name": "Aranha",
+      "section": "enchants",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-explosivo",
+      "name": "Explosivo",
+      "section": "enchants",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-precisao",
+      "name": "Precisão",
+      "section": "enchants",
+      "cost": 15,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-guerreiro",
+      "name": "Guerreiro",
+      "section": "enchants",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-guardiao",
+      "name": "Guardião",
+      "section": "enchants",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-real",
+      "name": "Real",
+      "section": "enchants",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-dragao",
+      "name": "Dragão",
+      "section": "enchants",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-dragao-negro",
+      "name": "Dragão Negro",
+      "section": "enchants",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-anjo",
+      "name": "Anjo",
+      "section": "enchants",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-demonio",
+      "name": "Demônio",
+      "section": "enchants",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-cosmico",
+      "name": "Cósmico",
+      "section": "enchants",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-galaxia",
+      "name": "Galáxia",
+      "section": "enchants",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-infinito",
+      "name": "Infinito",
+      "section": "enchants",
+      "cost": 60,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-estelar",
+      "name": "Estelar",
+      "section": "enchants",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-plasma",
+      "name": "Plasma",
+      "section": "enchants",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-energia",
+      "name": "Energia",
+      "section": "enchants",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-gravidade",
+      "name": "Gravidade",
+      "section": "enchants",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-glacial",
+      "name": "Glacial",
+      "section": "enchants",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-infernal",
+      "name": "Infernal",
+      "section": "enchants",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-eclipse",
+      "name": "Eclipse",
+      "section": "enchants",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-supernova",
+      "name": "Supernova",
+      "section": "enchants",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-cometa",
+      "name": "Cometa",
+      "section": "enchants",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-diamante",
+      "name": "Diamante",
+      "section": "enchants",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-planetario",
+      "name": "Planetário",
+      "section": "enchants",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-universal",
+      "name": "Universal",
+      "section": "enchants",
+      "cost": 60,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-void-supremo",
+      "name": "Void Supremo",
+      "section": "enchants",
+      "cost": 75,
+      "currency": "tokens"
+    },
+    {
+      "id": "enchant2-divino",
+      "name": "Divino",
+      "section": "enchants",
+      "cost": 100,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-toxic",
+      "name": "Toxic",
+      "section": "skins",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-ocean",
+      "name": "Ocean",
+      "section": "skins",
+      "cost": 20,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-galaxy",
+      "name": "Galaxy",
+      "section": "skins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-gold",
+      "name": "Gold",
+      "section": "skins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-snow",
+      "name": "Snow",
+      "section": "skins",
+      "cost": 25,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-inferno-skin",
+      "name": "Inferno Skin",
+      "section": "skins",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-ice-skin",
+      "name": "Ice Skin",
+      "section": "skins",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-thunder-skin",
+      "name": "Thunder Skin",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-dark-skin",
+      "name": "Dark Skin",
+      "section": "skins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-star-skin",
+      "name": "Star Skin",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-rainbow",
+      "name": "Rainbow",
+      "section": "skins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-spider-skin",
+      "name": "Spider Skin",
+      "section": "skins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-ghost-skin",
+      "name": "Ghost Skin",
+      "section": "skins",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-reaper-skin",
+      "name": "Reaper Skin",
+      "section": "skins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-demon-skin",
+      "name": "Demon Skin",
+      "section": "skins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-angel-skin",
+      "name": "Angel Skin",
+      "section": "skins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-dragon-skin",
+      "name": "Dragon Skin",
+      "section": "skins",
+      "cost": 60,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-dragon-black",
+      "name": "Dragon Black",
+      "section": "skins",
+      "cost": 75,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-robot",
+      "name": "Robot",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-cyber-skin",
+      "name": "Cyber Skin",
+      "section": "skins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-mutant-skin",
+      "name": "Mutant Skin",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-knight",
+      "name": "Knight",
+      "section": "skins",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-warrior-skin",
+      "name": "Warrior Skin",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-king",
+      "name": "King",
+      "section": "skins",
+      "cost": 60,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-queen",
+      "name": "Queen",
+      "section": "skins",
+      "cost": 60,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-champion-skin",
+      "name": "Champion Skin",
+      "section": "skins",
+      "cost": 65,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-diamond-skin",
+      "name": "Diamond Skin",
+      "section": "skins",
+      "cost": 70,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-void-master-skin",
+      "name": "Void Master Skin",
+      "section": "skins",
+      "cost": 80,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-cosmic-skin",
+      "name": "Cosmic Skin",
+      "section": "skins",
+      "cost": 75,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-meteor-skin",
+      "name": "Meteor Skin",
+      "section": "skins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-lunar-skin",
+      "name": "Lunar Skin",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-solar-skin",
+      "name": "Solar Skin",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-aqua",
+      "name": "Aqua",
+      "section": "skins",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-wind",
+      "name": "Wind",
+      "section": "skins",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-lava-skin",
+      "name": "Lava Skin",
+      "section": "skins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-glacier",
+      "name": "Glacier",
+      "section": "skins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-mystic-skin",
+      "name": "Mystic Skin",
+      "section": "skins",
+      "cost": 65,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-starfall",
+      "name": "Starfall",
+      "section": "skins",
+      "cost": 70,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-planet",
+      "name": "Planet",
+      "section": "skins",
+      "cost": 70,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-comet",
+      "name": "Comet",
+      "section": "skins",
+      "cost": 65,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-infinity-skin",
+      "name": "Infinity Skin",
+      "section": "skins",
+      "cost": 100,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-divine-skin",
+      "name": "Divine Skin",
+      "section": "skins",
+      "cost": 100,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-void-god-skin",
+      "name": "Void God Skin",
+      "section": "skins",
+      "cost": 150,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-alien",
+      "name": "Alien",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-vampire",
+      "name": "Vampire",
+      "section": "skins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-zombie",
+      "name": "Zombie",
+      "section": "skins",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-ninja",
+      "name": "Ninja",
+      "section": "skins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-cowboy",
+      "name": "Cowboy",
+      "section": "skins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-pirate",
+      "name": "Pirate",
+      "section": "skins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "skin2-legend",
+      "name": "Legend",
+      "section": "skins",
+      "cost": 200,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-ouro-skin",
+      "name": "Ouro Skin",
+      "section": "wskins",
+      "cost": 30,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-diamante-skin",
+      "name": "Diamante Skin",
+      "section": "wskins",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-void-skin",
+      "name": "Void Skin",
+      "section": "wskins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-flame-skin",
+      "name": "Flame Skin",
+      "section": "wskins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-ice-weapon",
+      "name": "Ice Weapon",
+      "section": "wskins",
+      "cost": 40,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-thunder-weapon",
+      "name": "Thunder Weapon",
+      "section": "wskins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-rainbow-weapon",
+      "name": "Rainbow Weapon",
+      "section": "wskins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-dark-weapon",
+      "name": "Dark Weapon",
+      "section": "wskins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-ghost-weapon",
+      "name": "Ghost Weapon",
+      "section": "wskins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-reaper-weapon",
+      "name": "Reaper Weapon",
+      "section": "wskins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-star-weapon",
+      "name": "Star Weapon",
+      "section": "wskins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-galaxy-weapon",
+      "name": "Galaxy Weapon",
+      "section": "wskins",
+      "cost": 65,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-solar-weapon",
+      "name": "Solar Weapon",
+      "section": "wskins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-lunar-weapon",
+      "name": "Lunar Weapon",
+      "section": "wskins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-dragon-weapon",
+      "name": "Dragon Weapon",
+      "section": "wskins",
+      "cost": 70,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-dragon-black-weapon",
+      "name": "Dragon Black Weapon",
+      "section": "wskins",
+      "cost": 90,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-glacier-weapon",
+      "name": "Glacier Weapon",
+      "section": "wskins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-lava-weapon",
+      "name": "Lava Weapon",
+      "section": "wskins",
+      "cost": 60,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-gravity-weapon",
+      "name": "Gravity Weapon",
+      "section": "wskins",
+      "cost": 75,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-mystic-weapon",
+      "name": "Mystic Weapon",
+      "section": "wskins",
+      "cost": 65,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-toxic-weapon",
+      "name": "Toxic Weapon",
+      "section": "wskins",
+      "cost": 45,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-spider-weapon",
+      "name": "Spider Weapon",
+      "section": "wskins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-plasma-weapon",
+      "name": "Plasma Weapon",
+      "section": "wskins",
+      "cost": 70,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-cyber-weapon",
+      "name": "Cyber Weapon",
+      "section": "wskins",
+      "cost": 60,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-champion-weapon",
+      "name": "Champion Weapon",
+      "section": "wskins",
+      "cost": 75,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-royal-weapon",
+      "name": "Royal Weapon",
+      "section": "wskins",
+      "cost": 80,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-divine-weapon",
+      "name": "Divine Weapon",
+      "section": "wskins",
+      "cost": 100,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-infinity-weapon",
+      "name": "Infinity Weapon",
+      "section": "wskins",
+      "cost": 120,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-meteor-weapon",
+      "name": "Meteor Weapon",
+      "section": "wskins",
+      "cost": 70,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-comet-weapon",
+      "name": "Comet Weapon",
+      "section": "wskins",
+      "cost": 65,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-crystal-weapon",
+      "name": "Crystal Weapon",
+      "section": "wskins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-aqua-weapon",
+      "name": "Aqua Weapon",
+      "section": "wskins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-wind-weapon",
+      "name": "Wind Weapon",
+      "section": "wskins",
+      "cost": 35,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-stellar-weapon",
+      "name": "Stellar Weapon",
+      "section": "wskins",
+      "cost": 75,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-void-energy",
+      "name": "Void Energy",
+      "section": "wskins",
+      "cost": 90,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-inferno-weapon",
+      "name": "Inferno Weapon",
+      "section": "wskins",
+      "cost": 80,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-frost-weapon",
+      "name": "Frost Weapon",
+      "section": "wskins",
+      "cost": 70,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-lightning-weapon",
+      "name": "Lightning Weapon",
+      "section": "wskins",
+      "cost": 80,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-explosive-weapon",
+      "name": "Explosive Weapon",
+      "section": "wskins",
+      "cost": 65,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-magnetic-weapon",
+      "name": "Magnetic Weapon",
+      "section": "wskins",
+      "cost": 60,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-vortex-weapon",
+      "name": "Vortex Weapon",
+      "section": "wskins",
+      "cost": 75,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-cosmic-weapon",
+      "name": "Cosmic Weapon",
+      "section": "wskins",
+      "cost": 90,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-eclipse-weapon",
+      "name": "Eclipse Weapon",
+      "section": "wskins",
+      "cost": 85,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-prism-weapon",
+      "name": "Prism Weapon",
+      "section": "wskins",
+      "cost": 80,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-crimson",
+      "name": "Crimson",
+      "section": "wskins",
+      "cost": 50,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-emerald",
+      "name": "Emerald",
+      "section": "wskins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-sapphire",
+      "name": "Sapphire",
+      "section": "wskins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-amethyst",
+      "name": "Amethyst",
+      "section": "wskins",
+      "cost": 55,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-obsidian",
+      "name": "Obsidian",
+      "section": "wskins",
+      "cost": 70,
+      "currency": "tokens"
+    },
+    {
+      "id": "wskin2-ultimate-weapon",
+      "name": "Ultimate Weapon",
+      "section": "wskins",
+      "cost": 150,
+      "currency": "tokens"
+    },
+    {
+      "id": "revive2-revive-basico",
+      "name": "Revive Básico",
+      "section": "revives",
+      "cost": 5750,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-rapido",
+      "name": "Revive Rápido",
+      "section": "revives",
+      "cost": 7500,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-seguro",
+      "name": "Revive Seguro",
+      "section": "revives",
+      "cost": 8000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-forte",
+      "name": "Revive Forte",
+      "section": "revives",
+      "cost": 10000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-blindado",
+      "name": "Revive Blindado",
+      "section": "revives",
+      "cost": 12500,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-void",
+      "name": "Revive Void",
+      "section": "revives",
+      "cost": 20000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-duplo",
+      "name": "Revive Duplo",
+      "section": "revives",
+      "cost": 15000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-triplo",
+      "name": "Revive Triplo",
+      "section": "revives",
+      "cost": 22500,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-elite",
+      "name": "Revive Elite",
+      "section": "revives",
+      "cost": 15000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-supremo",
+      "name": "Revive Supremo",
+      "section": "revives",
+      "cost": 25000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-instantaneo",
+      "name": "Revive Instantâneo",
+      "section": "revives",
+      "cost": 18000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-protegido",
+      "name": "Revive Protegido",
+      "section": "revives",
+      "cost": 20000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-ouro",
+      "name": "Revive Ouro",
+      "section": "revives",
+      "cost": 17500,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-diamante",
+      "name": "Revive Diamante",
+      "section": "revives",
+      "cost": 30000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-void-x",
+      "name": "Revive Void X",
+      "section": "revives",
+      "cost": 35000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-angel",
+      "name": "Revive Angel",
+      "section": "revives",
+      "cost": 40000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-reaper",
+      "name": "Revive Reaper",
+      "section": "revives",
+      "cost": 40000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-dragon",
+      "name": "Revive Dragon",
+      "section": "revives",
+      "cost": 45000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-cosmic",
+      "name": "Revive Cosmic",
+      "section": "revives",
+      "cost": 50000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-infinity-x",
+      "name": "Revive Infinity X",
+      "section": "revives",
+      "cost": 75000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-economico",
+      "name": "Revive Econômico",
+      "section": "revives",
+      "cost": 4500,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-premium",
+      "name": "Revive Premium",
+      "section": "revives",
+      "cost": 12000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-tatico",
+      "name": "Revive Tático",
+      "section": "revives",
+      "cost": 14000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-emergencia",
+      "name": "Revive Emergência",
+      "section": "revives",
+      "cost": 16000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-guardiao",
+      "name": "Revive Guardião",
+      "section": "revives",
+      "cost": 20000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-flame",
+      "name": "Revive Flame",
+      "section": "revives",
+      "cost": 25000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-ice",
+      "name": "Revive Ice",
+      "section": "revives",
+      "cost": 25000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-thunder",
+      "name": "Revive Thunder",
+      "section": "revives",
+      "cost": 28000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-ghost",
+      "name": "Revive Ghost",
+      "section": "revives",
+      "cost": 30000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-dark",
+      "name": "Revive Dark",
+      "section": "revives",
+      "cost": 30000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-solar",
+      "name": "Revive Solar",
+      "section": "revives",
+      "cost": 35000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-lunar",
+      "name": "Revive Lunar",
+      "section": "revives",
+      "cost": 35000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-galaxy",
+      "name": "Revive Galaxy",
+      "section": "revives",
+      "cost": 45000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-star",
+      "name": "Revive Star",
+      "section": "revives",
+      "cost": 40000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-meteor",
+      "name": "Revive Meteor",
+      "section": "revives",
+      "cost": 42500,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-prism",
+      "name": "Revive Prism",
+      "section": "revives",
+      "cost": 45000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-mystic",
+      "name": "Revive Mystic",
+      "section": "revives",
+      "cost": 50000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-titan",
+      "name": "Revive Titan",
+      "section": "revives",
+      "cost": 55000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-king",
+      "name": "Revive King",
+      "section": "revives",
+      "cost": 60000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-champion",
+      "name": "Revive Champion",
+      "section": "revives",
+      "cost": 65000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-legendary",
+      "name": "Revive Legendary",
+      "section": "revives",
+      "cost": 75000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-ancient",
+      "name": "Revive Ancient",
+      "section": "revives",
+      "cost": 80000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-divine",
+      "name": "Revive Divine",
+      "section": "revives",
+      "cost": 100000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-eternal",
+      "name": "Revive Eternal",
+      "section": "revives",
+      "cost": 125000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-ultimate",
+      "name": "Revive Ultimate",
+      "section": "revives",
+      "cost": 150000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-5x",
+      "name": "Revive 5x",
+      "section": "revives",
+      "cost": 50000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-10x",
+      "name": "Revive 10x",
+      "section": "revives",
+      "cost": 90000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-pack",
+      "name": "Revive Pack",
+      "section": "revives",
+      "cost": 200000,
+      "currency": "money"
+    },
+    {
+      "id": "revive2-revive-master",
+      "name": "Revive Master",
+      "section": "revives",
+      "cost": 250000,
+      "currency": "money"
+    }
+  ]
+}

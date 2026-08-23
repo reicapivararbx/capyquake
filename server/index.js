@@ -4,6 +4,12 @@ import { extname, join, normalize, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
 import { networkInterfaces } from 'os';
+import { handleApi, ensureAdminSeed } from './api.js';
+
+ensureAdminSeed();
+
+const ADMIN_DIR = resolve(fileURLToPath(new URL('.', import.meta.url)), 'admin');
+const ADMIN_FILES = new Set(['login.html', 'app.js', 'admin.css']);
 
 const HOST = '0.0.0.0';
 const PORT = Number.parseInt(process.env.PORT || '8080', 10);
@@ -237,10 +243,47 @@ async function serveStatic(req, res) {
   }
 }
 
+async function serveAdmin(req, res, pathname) {
+  const isLogin = pathname === '/admin/login';
+  let file = isLogin ? 'login.html' : 'index.html';
+  const m = pathname.match(/^\/admin\/(app\.js|admin\.css)$/);
+  if (m) file = m[1];
+  try {
+    const body = await readFile(join(ADMIN_DIR, file));
+    res.writeHead(200, {
+      'Content-Type': file.endsWith('.js') ? 'text/javascript; charset=utf-8'
+        : file.endsWith('.css') ? 'text/css; charset=utf-8'
+        : 'text/html; charset=utf-8',
+      'Cache-Control': 'no-cache',
+      'X-Frame-Options': 'DENY',
+      'X-Content-Type-Options': 'nosniff'
+    });
+    res.end(body);
+  } catch {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not found');
+  }
+}
+
 const server = createServer((req, res) => {
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
+  if (req.method !== 'GET' && req.method !== 'HEAD' && !req.url.startsWith('/api/')) {
     res.writeHead(405, { 'Content-Type': 'text/plain; charset=utf-8' });
     res.end('Method not allowed');
+    return;
+  }
+
+  let pathname = '/';
+  try {
+    pathname = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`).pathname;
+  } catch {}
+
+  if (pathname.startsWith('/api/')) {
+    handleApi(req, res, pathname, new URL(req.url, 'http://x').searchParams);
+    return;
+  }
+
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    serveAdmin(req, res, pathname);
     return;
   }
 
