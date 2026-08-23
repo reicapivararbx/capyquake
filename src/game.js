@@ -2041,6 +2041,7 @@ export class Game {
   }
 
   addXp(amount) {
+    this.stats.xpEarned = (this.stats.xpEarned || 0) + amount;
     this.xp += Math.round(amount * this.getXpMultiplier());
     let leveled = false;
     while (this.level < 100 && this.xp >= this.level * 100) {
@@ -2297,6 +2298,11 @@ endGame() {
   this.stats.survivalTime = Math.floor((Date.now() - this.gameStartTime) / 1000);
   this.saveStats();
   this.accumulateLifetimeStats();
+  if (this.mode !== 'test') {
+    window.dispatchEvent(new CustomEvent('capyquake:match-end', {
+      detail: { ...this.stats, _playerDead: !!this.playerDead }
+    }));
+  }
 
   if (this.playerDead) {
     Audio.loseMusic();

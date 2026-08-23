@@ -2191,6 +2191,34 @@
       <button id="btn-rebirth-menu">🔄<span>Rebirth</span></button>
       <button id="btn-stats-menu">📊<span>Stats</span></button>
     </div>
+    <div id="account-bar"></div>
+
+    <dialog id="auth-dialog">
+      <form id="form-login" method="dialog">
+        <h3>ENTRAR</h3>
+        <label for="login-username">Username</label>
+        <input id="login-username" maxlength="24" autocomplete="username">
+        <label for="login-password">Senha</label>
+        <input id="login-password" type="password" autocomplete="current-password">
+        <p class="auth-error" id="login-error" hidden></p>
+        <button type="submit" class="auth-btn">ENTRAR</button>
+      </form>
+      <div class="auth-divider">ou</div>
+      <form id="form-register" method="dialog">
+        <h3>CRIAR CONTA</h3>
+        <label for="reg-username">Username (3-24: letras, números, - _)</label>
+        <input id="reg-username" maxlength="24" autocomplete="off">
+        <label for="reg-display">Nome no jogo (opcional)</label>
+        <input id="reg-display" maxlength="12" autocomplete="off">
+        <label for="reg-password">Senha (mín. 8)</label>
+        <input id="reg-password" type="password" autocomplete="new-password">
+        <label for="reg-confirm">Confirmar senha</label>
+        <input id="reg-confirm" type="password" autocomplete="new-password">
+        <p class="auth-error" id="register-error" hidden></p>
+        <button type="submit" class="auth-btn">CRIAR CONTA</button>
+      </form>
+      <button id="btn-close-auth" class="ghost" onclick="document.getElementById('auth-dialog').close()">FECHAR</button>
+    </dialog>
     <button id="btn-test-mode">🧪 MODO TESTE</button>
   </div>
 

@@ -161,8 +161,13 @@ function adjustCurrency(userId, currency, delta, type, reason, actor) {
 
 export function giveCoins(actor, targetId, amount, reason) {
   const value = intInRange(amount, -COIN_CAP, COIN_CAP, 'INVALID_AMOUNT', 'Quantidade inválida');
-  if (value >= 0) return adjustCurrency(targetId, 'coins', Math.min(COIN_CAP, getProfileRaw(targetId).coins + value), 'ADMIN_GIVE', reason, actor.username);
-  return adjustCurrency(targetId, 'coins', Math.max(0, getProfileRaw(targetId).coins + value), 'ADMIN_REMOVE', reason, actor.username);
+  return tx(() => {
+    const cur = getProfileRaw(targetId).coins;
+    const next = Math.max(0, Math.min(COIN_CAP, cur + value));
+    if (next === cur && value !== 0) return { before: cur, after: cur };
+    return applyCurrencyChange(targetId, 'coins', next,
+      value >= 0 ? 'ADMIN_GIVE' : 'ADMIN_REMOVE', reason, actor.username);
+  });
 }
 
 export function setCoins(actor, targetId, amount, reason) {
@@ -172,8 +177,12 @@ export function setCoins(actor, targetId, amount, reason) {
 
 export function giveTokens(actor, targetId, amount, reason) {
   const value = intInRange(amount, -COIN_CAP, COIN_CAP, 'INVALID_AMOUNT', 'Quantidade inválida');
-  if (value >= 0) return adjustCurrency(targetId, 'tokens', Math.min(COIN_CAP, getProfileRaw(targetId).tokens + value), 'ADMIN_GIVE', reason, actor.username);
-  return adjustCurrency(targetId, 'tokens', Math.max(0, getProfileRaw(targetId).tokens + value), 'ADMIN_REMOVE', reason, actor.username);
+  return tx(() => {
+    const cur = getProfileRaw(targetId).tokens;
+    const next = Math.max(0, Math.min(COIN_CAP, cur + value));
+    return applyCurrencyChange(targetId, 'tokens', next,
+      value >= 0 ? 'ADMIN_GIVE' : 'ADMIN_REMOVE', reason, actor.username);
+  });
 }
 
 export function setTokens(actor, targetId, amount, reason) {
@@ -435,7 +444,8 @@ export function setStatus(actor, targetId, status, durationMs, reason) {
     db.prepare('UPDATE users SET status=?, suspended_until=?, updated_at=? WHERE id=?')
       .run(status, until, now(), targetId);
     revokeAllSessions(targetId);
-    logAdminAction(actor.id, targetId, status.toUpperCase(), { reason, until }, true);
+    const actionName = { banned: 'BAN', suspended: 'SUSPEND', active: 'UNBAN' }[status] || status.toUpperCase();
+    logAdminAction(actor.id, targetId, actionName, { reason, until }, true);
     return getUserById(targetId);
   });
 }

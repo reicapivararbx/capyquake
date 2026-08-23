@@ -10,6 +10,9 @@ import { MAPS } from './maps.js';
 import { GAME_MODES } from './game-modes.js';
 import { WEAPONS } from './weapon.js';
 import { ACHIEVEMENTS } from './achievements-data.js';
+import { initAccount } from './account.js';
+
+initAccount();
 
 const currentDevice = setupDevice();
 const menu = new Menu();
