@@ -19,6 +19,19 @@ window.__ACHIEVEMENTS_DATA = ACHIEVEMENTS;
 
 const MATCH_DURATION = 600;
 
+// Stats que acumulam entre partidas (lifetime). Dinheiro/tokens ficam por partida
+// ("em uma partida" nas descricoes); ondas/level/rebirths sao snapshots.
+const LIFETIME_ADDITIVE_STATS = [
+  'kills', 'deaths', 'damageDealt', 'headshots', 'revivesUsed',
+  'meleeKills', 'dropsCollected', 'bosses', 'minibosses',
+  'matchesPlayed', 'matchesWon', 'matchesLost',
+  'moneySpent', 'emptyShots', 'speedBoostsUsed',
+  'earlyDeaths', 'poorWaves', 'brokeEnds', 'zeroDmgMatches',
+  'perfectWaves', 'bossSoloKills'
+];
+const LIFETIME_STORAGE_KEY = 'capiquake_lifetime_stats';
+
+
 // Cada rebirth eleva o multiplicador ao quadrado: x1 -> x2 -> x4 -> x16 -> x256...
 export function rebirthMultiplier(level) {
   if (!Number.isFinite(level) || level < 1) return 1;
@@ -210,6 +223,8 @@ export class Game {
       idleTime: 0,
       speedBoostsUsed: 0
     };
+
+    this.lifetimeStats = this.loadLifetimeStats();
 
     if (this.shopPurchases.minigun) {
       this.weapon.addWeapon('minigun', 0);
@@ -1246,6 +1261,40 @@ export class Game {
     localStorage.setItem('capiquake_stats', JSON.stringify(this.stats || {}));
   }
 
+  loadLifetimeStats() {
+    try {
+      let raw = localStorage.getItem(LIFETIME_STORAGE_KEY);
+      if (raw === null) {
+        // Migração: semeia o lifetime com o último snapshot salvo do formato antigo.
+        raw = localStorage.getItem('capiquake_stats');
+        if (raw) {
+          const seeded = {};
+          try {
+            const legacy = JSON.parse(raw);
+            for (const key of LIFETIME_ADDITIVE_STATS) {
+              seeded[key] = Number(legacy[key]) || 0;
+            }
+          } catch { /* ignora */ }
+          raw = JSON.stringify(seeded);
+          localStorage.setItem(LIFETIME_STORAGE_KEY, raw);
+        } else {
+          raw = '{}';
+        }
+      }
+      return JSON.parse(raw) || {};
+    } catch (e) {
+      return {};
+    }
+  }
+
+  accumulateLifetimeStats() {
+    if (this.mode === 'test' || !this.lifetimeStats) return;
+    for (const key of LIFETIME_ADDITIVE_STATS) {
+      this.lifetimeStats[key] = (this.lifetimeStats[key] || 0) + ((this.stats && this.stats[key]) || 0);
+    }
+    localStorage.setItem(LIFETIME_STORAGE_KEY, JSON.stringify(this.lifetimeStats));
+  }
+
   resolveKill(hit, killerName) {
     const creditedName = this.getTopDamageDealer(hit) || killerName;
     const points = hit.points || 1;
@@ -1317,6 +1366,7 @@ export class Game {
     this.hud.hideBossBar();
     if (hit.isMiniBoss) {
       this.stats.minibosses = (this.stats.minibosses || 0) + 1;
+      this.stats.kills = (this.stats.kills || 0) + 1;
       this.tokens += 5;
       this.money += 200;
       this.saveBalance();
@@ -1336,6 +1386,7 @@ export class Game {
     }
     if (hit.isWaveBoss) {
       this.stats.bosses = (this.stats.bosses || 0) + 1;
+      this.stats.kills = (this.stats.kills || 0) + 1;
       this.tokens += 10;
       this.money += 500;
       this.saveBalance();
@@ -1361,6 +1412,7 @@ export class Game {
     this.saveBalance();
     this.hud.updateResources(this.tokens, this.money, this.armor);
     this.stats.bosses = (this.stats.bosses || 0) + 1;
+    this.stats.kills = (this.stats.kills || 0) + 1;
     this.checkAchievements();
     return true;
   }
@@ -2037,7 +2089,11 @@ export class Game {
   getStatValue(stat) {
     if (stat === 'level') return this.level || 0;
     if (stat === 'weaponsOwned') return this.weapon ? this.weapon.inventory.length : 0;
-    return (this.stats && this.stats[stat]) || 0;
+    const matchVal = (this.stats && this.stats[stat]) || 0;
+    const lifeVal = this.lifetimeStats && LIFETIME_ADDITIVE_STATS.includes(stat)
+      ? (Number(this.lifetimeStats[stat]) || 0)
+      : 0;
+    return matchVal + lifeVal;
   }
 
   formatAchievementReward(reward) {
@@ -2226,6 +2282,7 @@ endGame() {
   }
   this.stats.survivalTime = Math.floor((Date.now() - this.gameStartTime) / 1000);
   this.saveStats();
+  this.accumulateLifetimeStats();
 
   if (this.playerDead) {
     Audio.loseMusic();
