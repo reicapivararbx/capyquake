@@ -562,6 +562,21 @@ export const SHOP_SECTIONS = [
   { item: 'revive2-revive-master', name: 'Revive Master', desc: 'pacote especial', cost: 250000, currency: 'money', icon: '💖', grant: { type: 'revive', count: 3 } },
   { item: 'revive-infinity', name: 'Revive Infinity', desc: 'usos ilimitados · Desponivel apenas em conquistas', cost: 0, currency: 'money', icon: '♾️', purchasable: false },
     ]
+  },
+  {
+    id: 'rebirth', icon: '🔁', title: 'REBIRTH · EXCLUSIVOS', currency: 'rt',
+    items: [
+      { item: 'rt-revive-triplo', name: 'Revive Triplo', desc: '3 usos', cost: 1, currency: 'rt', icon: '💖', grant: { type: 'revive', count: 3 } },
+      { item: 'rt-ammo-nuclear', name: 'Munição Nuclear', desc: '100 tiros de Hyper Gun', cost: 1, currency: 'rt', icon: '☢️', grant: { type: 'ammo', weapon: 'hyper-gun', amount: 100 } },
+      { item: 'rt-golden-gun', name: 'Golden Gun', desc: 'pistola dourada', cost: 2, currency: 'rt', icon: '🟡', grant: { type: 'weapon', id: 'golden-gun' } },
+      { item: 'rt-skin-divine', name: 'Divine Skin', desc: 'estilo divino', cost: 2, currency: 'rt', icon: '✨', grant: { type: 'flag', key: 'skin2_divine_skin' } },
+      { item: 'rt-wskin-ultimate', name: 'Ultimate Weapon', desc: 'visual lendário da arma', cost: 2, currency: 'rt', icon: '🎨', grant: { type: 'flag', key: 'wskin2_ultimate_weapon' } },
+      { item: 'rt-skill-infinity', name: 'Skill Infinity', desc: 'todos os efeitos · CD 90s', cost: 3, currency: 'rt', icon: '♾️', grant: { type: 'flag', key: 'skill_infinity' } },
+      { item: 'rt-hyper-gun', name: 'Hyper Gun', desc: 'arma experimental', cost: 4, currency: 'rt', icon: '💥', grant: { type: 'weapon', id: 'hyper-gun' } },
+      { item: 'rt-armor-eternal', name: 'Armadura Eternal', desc: '+2500 HP · permanente', cost: 4, currency: 'rt', icon: '♾️', grant: { type: 'armorHp', hp: 2500 } },
+      { item: 'rt-armor-ultimate', name: 'Armadura Ultimate', desc: '+3000 HP · permanente', cost: 5, currency: 'rt', icon: '🌟', grant: { type: 'armorHp', hp: 3000 } },
+      { item: 'rt-skill-ultimate', name: 'Ultimate', desc: 'habilidade suprema · CD 180s', cost: 6, currency: 'rt', icon: '👑', grant: { type: 'flag', key: 'skill_ultimate' } }
+    ]
   }
 ];
 

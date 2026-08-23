@@ -165,7 +165,9 @@ export class Menu {
       const sec = document.createElement('div');
       sec.className = 'shop-section';
       const h3 = document.createElement('h3');
-      h3.innerHTML = `<span class="sec-icon">${section.icon}</span>${section.title}<span class="sec-cur ${section.currency === 'money' ? 'money-cur' : 'token-cur'}">${section.currency === 'money' ? 'R$' : '🪙'}</span>`;
+      const curLabel = section.currency === 'money' ? 'R$' : section.currency === 'rt' ? '🔁 RT' : '🪙';
+      const curClass = section.currency === 'money' ? 'money-cur' : section.currency === 'rt' ? 'rt-cur' : 'token-cur';
+      h3.innerHTML = `<span class="sec-icon">${section.icon}</span>${section.title}<span class="sec-cur ${curClass}">${curLabel}</span>`;
       sec.appendChild(h3);
       const grid = document.createElement('div');
       grid.className = 'shop-items';
@@ -183,7 +185,7 @@ export class Menu {
         }
         btn.innerHTML = `<span class="si-icon">${it.icon}</span>` +
           `<span class="si-info"><span class="si-name">${it.name}</span><span class="si-desc">${it.desc}</span></span>` +
-          `<span class="si-price ${it.currency === 'money' ? 'money-cur' : 'token-cur'}">${it.currency === 'money' ? 'R$ ' + it.cost.toLocaleString('pt-BR') : it.cost + ' 🪙'}</span>`;
+          `<span class="si-price ${curClass}">${it.currency === 'money' ? 'R$ ' + it.cost.toLocaleString('pt-BR') : it.cost + ' ' + (section.currency === 'rt' ? '🔁' : '🪙')}</span>`;
         grid.appendChild(btn);
       }
       sec.appendChild(grid);
@@ -227,9 +229,15 @@ export class Menu {
       document.getElementById('shop-cart').textContent = 'Tokens insuficientes!';
       return;
     }
+    if (currency === 'rt' && this.rt < cost) {
+      document.getElementById('shop-cart').textContent = 'RT insuficiente! Faca um rebirth para conseguir mais.';
+      return;
+    }
     if (currency === 'money') {
       this.money -= cost;
       localStorage.setItem('capiquake_money', this.money);
+    } else if (currency === 'rt') {
+      localStorage.setItem('capiquake_rt', String(this.rt - cost));
     } else {
       this.tokens -= cost;
       localStorage.setItem('capiquake_tokens', this.tokens);
@@ -402,6 +410,7 @@ export class Menu {
   readBalances() {
     this.tokens = this.readBalance('capiquake_tokens');
     this.money = this.readBalance('capiquake_money');
+    this.rt = this.readBalance('capiquake_rt');
   }
 
   readBalance(key) {
@@ -426,6 +435,8 @@ export class Menu {
   updateShopBalance() {
     document.getElementById('shop-tokens').textContent = 'TOKENS: ' + this.tokens;
     document.getElementById('shop-money').textContent = 'R$: ' + this.money;
+    const rtEl = document.getElementById('shop-rt');
+    if (rtEl) rtEl.textContent = 'RT: ' + this.rt;
   }
 
   showLobby() {
