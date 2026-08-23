@@ -11,7 +11,7 @@ Sobreviva. Evolua. Domine.
 [![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
 [![WebSocket](https://img.shields.io/badge/WebSocket-010101?style=for-the-badge)](https://developer.mozilla.org/pt-BR/docs/Web/API/WebSocket)
 
-**🎮 Jogue agora: [reicapivararbx.github.io/capyquake](https://reicapivararbx.github.io/capyquake/)**
+**🎮 Jogue agora: [(https://m.zanona.com.br/)]**
 
 **📚 Wiki do jogo: [wiki/Home.md](wiki/Home.md)** — armas, loja, conquistas, modos, bestiário e multiplayer
 
