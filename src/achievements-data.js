@@ -220,7 +220,7 @@ export const ACHIEVEMENTS = [
       const hasMinigun = !!(g.weapon && Array.isArray(g.weapon.inventory) && g.weapon.inventory.includes('minigun'));
       return g.getStatValue('damageDealt') >= 1000000000 &&
         g.getStatValue('kills') >= 50000 &&
-        g.getStatValue('revivesUsed') >= 20 &&
+        g.getStatValue('rebirths') >= 20 &&
         hasMinigun;
     },
     progress: g => {
@@ -228,7 +228,7 @@ export const ACHIEVEMENTS = [
       if (g.getStatValue('damageDealt') >= 1000000000) done++;
       if (g.getStatValue('kills') >= 50000) done++;
       const hasMinigun = !!(g.weapon && Array.isArray(g.weapon.inventory) && g.weapon.inventory.includes('minigun'));
-      if (g.getStatValue('revivesUsed') >= 20 && hasMinigun) done++;
+      if (g.getStatValue('rebirths') >= 20 && hasMinigun) done++;
       return done;
     },
   },

@@ -224,7 +224,7 @@ export class Game {
       speedBoostsUsed: 0
     };
 
-    this.lifetimeStats = this.loadLifetimeStats();
+    this.lifetimeStats = this.mergeLeaderboardKills(this.loadLifetimeStats());
 
     if (this.shopPurchases.minigun) {
       this.weapon.addWeapon('minigun', 0);
@@ -1285,6 +1285,20 @@ export class Game {
     } catch (e) {
       return {};
     }
+  }
+
+  mergeLeaderboardKills(stats) {
+    // Recuperacao unica: soma os abates registrados no leaderboard ao lifetime,
+    // pois o formato antigo nao acumulava entre partidas.
+    if (localStorage.getItem('capiquake_lb_kills_merged')) return stats;
+    try {
+      const board = JSON.parse(localStorage.getItem('capiquake_leaderboard') || '[]');
+      const lbKills = board.reduce((sum, e) => sum + (Number(e.kills) || 0), 0);
+      if (lbKills > 0) stats.kills = (Number(stats.kills) || 0) + lbKills;
+    } catch { /* ignora */ }
+    localStorage.setItem('capiquake_lb_kills_merged', '1');
+    localStorage.setItem(LIFETIME_STORAGE_KEY, JSON.stringify(stats));
+    return stats;
   }
 
   accumulateLifetimeStats() {
