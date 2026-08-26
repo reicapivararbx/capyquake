@@ -1962,16 +1962,27 @@ export class Game {
     const entry = document.createElement('div');
     entry.className = 'chat-entry';
     const nameSpan = document.createElement('span');
+    nameSpan.className = 'player';
     nameSpan.style.color = color || '#ffffff';
     nameSpan.textContent = name + ': ';
     entry.appendChild(nameSpan);
-    entry.append(message);
+    const msgSpan = document.createElement('span');
+    msgSpan.className = 'message-text';
+    msgSpan.textContent = message;
+    entry.appendChild(msgSpan);
     container.appendChild(entry);
     while (container.children.length > 30) {
       container.removeChild(container.firstChild);
     }
+    container.scrollTop = container.scrollHeight;
     const chatEl = document.getElementById('chat');
-    if (chatEl && this.mode === 'multiplayer') chatEl.style.display = 'block';
+    if (chatEl && this.mode === 'multiplayer') {
+      chatEl.style.display = 'block';
+      clearTimeout(this._chatHideTimer);
+      this._chatHideTimer = setTimeout(() => {
+        chatEl.style.display = 'none';
+      }, 8000);
+    }
   }
 
   togglePause() {
