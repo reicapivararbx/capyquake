@@ -52,7 +52,9 @@ const PARAM_LABELS = {
   user: 'User ID ou @username',
   amount: 'Quantidade',
   days: 'Duração (dias)',
-  level: 'Nível (1-100)'
+  level: 'Nível (1-100)',
+  item: 'ID do item (ex: ak47)',
+  role: 'Cargo (citizen, admin, king...)'
 };
 
 export function attachCommandAutocomplete(inputEl) {

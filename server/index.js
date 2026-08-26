@@ -7,7 +7,9 @@ import { networkInterfaces } from 'os';
 import { handleApi, ensureAdminSeed, attachSession, hasPermission } from './api.js';
 import {
   getUserById, findByUsername, banUser, suspendUser, unbanUser,
-  giveCoins, giveXp, setLevel, heal, logAdminAction, revokeTargetSessions
+  giveCoins, giveXp, setLevel, heal, logAdminAction, revokeTargetSessions,
+  setCoins, giveTokens, setTokens, setXp, maxStats, addItemToInventory,
+  removeItemFromInventory, resetPlayer, changeRole
 } from './services.js';
 
 ensureAdminSeed();
@@ -103,9 +105,20 @@ const CHAT_COMMANDS = [
   { name: 'unban', params: ['user'], perm: 'users.suspend', destructive: false, desc: 'Reativa a conta' },
   { name: 'givecoins', params: ['user', 'amount'], perm: 'economy.give', destructive: false, desc: 'Dá moedas' },
   { name: 'removecoins', params: ['user', 'amount'], perm: 'economy.remove', destructive: true, desc: 'Remove moedas' },
+  { name: 'setcoins', params: ['user', 'amount'], perm: 'economy.set', destructive: false, desc: 'Define o saldo de moedas' },
+  { name: 'givetokens', params: ['user', 'amount'], perm: 'economy.give', destructive: false, desc: 'Dá tokens' },
+  { name: 'removetokens', params: ['user', 'amount'], perm: 'economy.remove', destructive: true, desc: 'Remove tokens' },
+  { name: 'settokens', params: ['user', 'amount'], perm: 'economy.set', destructive: false, desc: 'Define o saldo de tokens' },
   { name: 'givexp', params: ['user', 'amount'], perm: 'game.giveXp', destructive: false, desc: 'Dá XP' },
+  { name: 'setxp', params: ['user', 'amount'], perm: 'game.giveXp', destructive: false, desc: 'Define o XP total' },
   { name: 'setlevel', params: ['user', 'level'], perm: 'game.setLevel', destructive: false, desc: 'Define o nível' },
-  { name: 'heal', params: ['user'], perm: 'game.heal', destructive: false, desc: 'Cura a capivara' }
+  { name: 'levelup', params: ['user'], perm: 'game.levelUp', destructive: false, desc: 'Sobe 1 nível' },
+  { name: 'heal', params: ['user'], perm: 'game.heal', destructive: false, desc: 'Cura a capivara' },
+  { name: 'maxstats', params: ['user'], perm: 'game.maxStats', destructive: false, desc: 'Stats máximos da capivara' },
+  { name: 'giveitem', params: ['user', 'item'], perm: 'inventory.give', destructive: false, desc: 'Dá item (ex: ak47 x5)' },
+  { name: 'removeitem', params: ['user', 'item'], perm: 'inventory.remove', destructive: true, desc: 'Remove item' },
+  { name: 'role', params: ['user', 'role'], perm: 'roles.manage', destructive: true, desc: 'Altera cargo do jogador' },
+  { name: 'reset', params: ['user'], perm: 'game.reset', destructive: true, desc: 'Reseta todo progresso do jogador' }
 ];
 
 function commandsForUser(user) {
@@ -183,11 +196,41 @@ async function handleChatCommand(ws, msg) {
         giveCoins(actor, target.id, -amount, reasonBase);
         return reply(true, `-${amount} moedas de ${target.username}.`);
       }
+      case 'setcoins': {
+        const amount = numArg(1, 0, 1e12);
+        if (amount === null) return reply(false, 'Quantidade inválida.');
+        setCoins(actor, target.id, amount, reasonBase);
+        return reply(true, `${target.username} agora tem R$ ${amount.toLocaleString('pt-BR')}.`);
+      }
+      case 'givetokens': {
+        const amount = numArg(1, 1, 1e9);
+        if (!amount) return reply(false, 'Quantidade inválida.');
+        giveTokens(actor, target.id, amount, reasonBase);
+        return reply(true, `+${amount} tokens para ${target.username}.`);
+      }
+      case 'removetokens': {
+        const amount = numArg(1, 1, 1e9);
+        if (!amount) return reply(false, 'Quantidade inválida.');
+        giveTokens(actor, target.id, -amount, reasonBase);
+        return reply(true, `-${amount} tokens de ${target.username}.`);
+      }
+      case 'settokens': {
+        const amount = numArg(1, 0, 1e9);
+        if (amount === null) return reply(false, 'Quantidade inválida.');
+        setTokens(actor, target.id, amount, reasonBase);
+        return reply(true, `${target.username} agora tem ${amount} tokens.`);
+      }
       case 'givexp': {
         const amount = numArg(1, 1, 1e10);
         if (!amount) return reply(false, 'Quantidade inválida.');
         giveXp(actor, target.id, amount, reasonBase);
         return reply(true, `+${amount} XP para ${target.username}.`);
+      }
+      case 'setxp': {
+        const amount = numArg(1, 0, 1e10);
+        if (amount === null) return reply(false, 'Quantidade inválida.');
+        setXp(actor, target.id, amount, reasonBase);
+        return reply(true, `${target.username} agora tem ${amount} XP.`);
       }
       case 'setlevel': {
         const level = numArg(1, 1, 100);
@@ -195,9 +238,40 @@ async function handleChatCommand(ws, msg) {
         setLevel(actor, target.id, level, reasonBase);
         return reply(true, `${target.username} agora é nível ${level}.`);
       }
+      case 'levelup': {
+        giveXp(actor, target.id, 1, reasonBase);
+        return reply(true, `${target.username} subiu de nível.`);
+      }
       case 'heal':
         heal(actor, target.id, reasonBase);
         return reply(true, `${target.username} curado.`);
+      case 'maxstats':
+        maxStats(actor, target.id, reasonBase);
+        return reply(true, `Stats de ${target.username} maxados.`);
+      case 'giveitem': {
+        const itemId = String(args[1] || '').trim();
+        if (!itemId) return reply(false, 'Informe o ID do item.');
+        const quantity = numArg(2, 1, 999) || 1;
+        addItemToInventory(actor, target.id, itemId, quantity, reasonBase);
+        return reply(true, `+${quantity}x ${itemId} para ${target.username}.`);
+      }
+      case 'removeitem': {
+        const itemId = String(args[1] || '').trim();
+        if (!itemId) return reply(false, 'Informe o ID do item.');
+        const quantity = numArg(2, 1, 999) || 1;
+        removeItemFromInventory(actor, target.id, itemId, quantity, reasonBase);
+        return reply(true, `-${quantity}x ${itemId} de ${target.username}.`);
+      }
+      case 'role': {
+        const newRole = String(args[1] || '').trim().toLowerCase();
+        if (!newRole) return reply(false, 'Informe o cargo (ex: citizen, admin, king).');
+        changeRole(actor, target.id, newRole, reasonBase);
+        return reply(true, `${target.username} agora é ${newRole}.`);
+      }
+      case 'reset': {
+        resetPlayer(actor, target.id, ['coins', 'tokens', 'xp', 'level', 'kills', 'damage', 'matches', 'inventory', 'capybara'], null, reasonBase);
+        return reply(true, `Progresso de ${target.username} resetado.`);
+      }
       default:
         return reply(false, 'Comando não implementado.');
     }
