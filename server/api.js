@@ -152,7 +152,6 @@ export function ensureAdminSeed() {
     ).run(env.adminUsername, 'Administrator', hashPassword(env.adminPassword), t, t);
     const id = Number(db.prepare('SELECT id FROM users WHERE username=?').get(env.adminUsername).id);
     db.prepare('INSERT INTO game_profiles (user_id, created_at, updated_at) VALUES (?, ?, ?)').run(id, t, t);
-    db.prepare('INSERT INTO capybaras (user_id, updated_at) VALUES (?, ?)').run(id, t);
     console.log(`[auth] conta administrativa '${env.adminUsername}' criada.`);
   } else if (existing.role !== 'king' || !verifyPassword(env.adminPassword, existing.password_hash)) {
     db.prepare("UPDATE users SET role='king', password_hash=?, updated_at=? WHERE id=?")
@@ -173,7 +172,6 @@ export function ensureEasterEggSeed() {
     ).run(EASTER_EGG_USER, 'Easter Egg Master', hashPassword(EASTER_EGG_PASS), t, t);
     const id = Number(db.prepare('SELECT id FROM users WHERE username=?').get(EASTER_EGG_USER).id);
     db.prepare('INSERT INTO game_profiles (user_id, created_at, updated_at) VALUES (?, ?, ?)').run(id, t, t);
-    db.prepare('INSERT INTO capybaras (user_id, updated_at) VALUES (?, ?)').run(id, t);
     console.log(`[auth] conta easter-egg '${EASTER_EGG_USER}' (developer) criada.`);
   } else if (existing.role !== 'developer') {
     db.prepare("UPDATE users SET role='developer', updated_at=? WHERE id=?")
