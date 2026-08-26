@@ -20,19 +20,22 @@ function tx(fn) {
 
 // ---------- users ----------
 
-export function createUser({ username, password, displayName, role }) {
+export function createUser({ username, password, displayName, role, customPermissions }) {
   const uname = validateUsername(username);
   const pass = validatePassword(password);
   const finalRole = role !== undefined ? requireRole(role) : 'citizen';
+  const permsJson = finalRole === 'custom' && Array.isArray(customPermissions)
+    ? JSON.stringify(customPermissions.filter(p => typeof p === 'string'))
+    : null;
   return tx(() => {
     const exists = db.prepare('SELECT id FROM users WHERE username = ?').get(uname);
     if (exists) throw new ApiError('USERNAME_TAKEN', 'Username já está em uso.', 409);
     const t = now();
     const name = String(displayName ?? uname).trim().slice(0, 32) || uname;
     const info = db.prepare(
-      `INSERT INTO users (username, display_name, password_hash, role, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, 'active', ?, ?)`
-    ).run(uname, name, hashPassword(pass), finalRole, t, t);
+      `INSERT INTO users (username, display_name, password_hash, role, custom_permissions, status, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, 'active', ?, ?)`
+    ).run(uname, name, hashPassword(pass), finalRole, permsJson, t, t);
     const id = Number(info.lastInsertRowid);
     db.prepare(
       `INSERT INTO game_profiles (user_id, created_at, updated_at) VALUES (?, ?, ?)`
@@ -51,6 +54,7 @@ export function findByUsername(username) {
 export function getUserById(id) {
   return db.prepare(
     `SELECT id, username, display_name AS displayName, role, status, suspended_until AS suspendedUntil,
+            custom_permissions AS customPermissions,
             created_at AS createdAt, updated_at AS updatedAt, last_login_at AS lastLoginAt
      FROM users WHERE id = ?`
   ).get(Number(id)) || null;
@@ -511,8 +515,11 @@ export function revokeTargetSessions(userId) {
 
 // ---------- roles ----------
 
-export function changeRole(actor, targetId, newRole, reason) {
+export function changeRole(actor, targetId, newRole, reason, customPermissions) {
   const role = requireRole(newRole);
+  const permsJson = role === 'custom' && Array.isArray(customPermissions)
+    ? JSON.stringify(customPermissions.filter(p => typeof p === 'string'))
+    : null;
   return tx(() => {
     const target = getUserById(targetId);
     if (!target) throw new ApiError('PLAYER_NOT_FOUND', 'Jogador não encontrado.', 404);
@@ -527,7 +534,7 @@ export function changeRole(actor, targetId, newRole, reason) {
     if (role === 'king' && actor.role !== 'king') {
       throw new ApiError('FORBIDDEN', 'Apenas o Capybara_King define outro King.', 403);
     }
-    db.prepare('UPDATE users SET role=?, updated_at=? WHERE id=?').run(role, now(), targetId);
+    db.prepare('UPDATE users SET role=?, custom_permissions=?, updated_at=? WHERE id=?').run(role, permsJson, now(), targetId);
     revokeAllSessions(targetId);
     logAdminAction(actor.id, targetId, 'ROLE_CHANGE',
       { previousRole: target.role, newRole: role, roleLabel: ROLE_LABELS[role], reason }, true);

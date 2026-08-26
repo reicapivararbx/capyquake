@@ -89,9 +89,8 @@ const MIGRATIONS = [
   CREATE INDEX IF NOT EXISTS idx_logs_target ON admin_logs(target_user_id);
   CREATE INDEX IF NOT EXISTS idx_logs_action ON admin_logs(action);
   CREATE INDEX IF NOT EXISTS idx_logs_created ON admin_logs(created_at);`,
-  // Migração dos cargos Capyquake: remove o CHECK antigo (player/moderator/admin/owner)
-  // reconstruindo a tabela e convertendo os roles legados. Preserva todas as contas.
-  'REBUILD_USERS_ROLES'
+  'REBUILD_USERS_ROLES',
+  `ALTER TABLE users ADD COLUMN custom_permissions TEXT;`
 ];
 
 function rebuildUsersRolesTable() {

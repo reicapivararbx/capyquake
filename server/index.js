@@ -382,8 +382,11 @@ async function handleChatCommand(ws, msg) {
       case 'role': {
         const newRole = String(args[1] || '').trim().toLowerCase();
         if (!newRole) return reply(false, 'Informe o cargo (ex: citizen, admin, king).');
-        changeRole(actor, target.id, newRole, reasonBase);
-        return reply(true, `${target.username} agora é ${newRole}.`);
+        const customPerms = newRole === 'custom' && args.length > 2
+          ? args.slice(2).map(s => s.trim()).filter(Boolean) : undefined;
+        changeRole(actor, target.id, newRole, reasonBase, customPerms);
+        const extra = customPerms ? ` (${customPerms.join(', ')})` : '';
+        return reply(true, `${target.username} agora é ${newRole}${extra}.`);
       }
       case 'reset': {
         resetPlayer(actor, target.id, ['coins', 'tokens', 'xp', 'level', 'kills', 'damage', 'matches', 'inventory', 'capybara'], null, reasonBase);

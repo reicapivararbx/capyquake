@@ -94,14 +94,19 @@ function userActionsPanel(u) {
   const selectable = META.roles.filter(r => r !== 'king')
     .filter(r => r !== u.username && !(r === 'king' && ME.role !== 'king'))
     .filter(r => (META.roles.indexOf(r) <= myRank) ? ME.role === 'king' : true);
+  const currentPerms = u.customPermissions ? (typeof u.customPermissions === 'string' ? JSON.parse(u.customPermissions) : u.customPermissions) : [];
   return `<div class="panel" id="user-actions"><h2>AÇÕES · #${u.id} ${esc(u.username)}</h2>
     <div class="row">
       <div><label>Novo cargo</label>
         <select id="ua-role">
-          ${selectable.map(r => `<option value="${r}">${esc(roleLabel(r))}</option>`).join('')}
+          ${selectable.map(r => `<option value="${r}" ${r === u.role ? 'selected' : ''}>${esc(roleLabel(r))}</option>`).join('')}
         </select>
       </div>
       <button id="ua-btn-role" data-label="CHANGE ROLE">CHANGE ROLE</button>
+    </div>
+    <div id="ua-custom-perms" style="display:${u.role === 'custom' ? 'block' : 'none'};margin-top:10px">
+      <label style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:1px">Permissões personalizadas</label>
+      <div id="ua-perm-checks" class="checks" style="margin-top:6px"></div>
     </div>
     <div class="row">
       <div><label>Nova senha</label><input id="ua-pass" type="password" placeholder="mín. 8 caracteres"></div>
@@ -122,17 +127,60 @@ function userActionsPanel(u) {
 
 function roleRankOf(role) { return META.roles.indexOf(role); }
 
+let ALL_PERMISSIONS = [];
+
+async function loadPermissions() {
+  try { ALL_PERMISSIONS = (await api('/api/admin/permissions')).permissions || []; } catch { ALL_PERMISSIONS = []; }
+}
+
+function renderPermCheckboxes(container, checked) {
+  const groups = {};
+  for (const p of ALL_PERMISSIONS) {
+    const group = p.split('.')[0];
+    if (!groups[group]) groups[group] = [];
+    groups[group].push(p);
+  }
+  let html = '';
+  for (const [group, perms] of Object.entries(groups)) {
+    html += `<div style="margin-bottom:6px"><span style="color:var(--dim);font-size:10px;text-transform:uppercase">${esc(group)}</span><div class="checks" style="margin-top:2px">`;
+    for (const p of perms) {
+      const id = 'perm-' + p.replace(/\./g, '-');
+      html += `<label><input type="checkbox" class="perm-cb" value="${esc(p)}" ${checked.includes(p) ? 'checked' : ''}> ${esc(p)}</label>`;
+    }
+    html += `</div></div>`;
+  }
+  container.innerHTML = html;
+}
+
+function getCheckedPerms() {
+  return [...content.querySelectorAll('.perm-cb:checked, #ua-perm-checks .perm-cb:checked')].map(c => c.value);
+}
+
 function wireUserActions(u, reload) {
   const panel = document.getElementById('user-actions');
   if (!panel) return;
   const reason = () => $('#ua-reason')?.value || undefined;
+
+  if ($('#ua-perm-checks')) {
+    const currentPerms = u.customPermissions ? (typeof u.customPermissions === 'string' ? JSON.parse(u.customPermissions) : u.customPermissions) : [];
+    renderPermCheckboxes($('#ua-perm-checks'), currentPerms);
+  }
+
+  $('#ua-role')?.addEventListener('change', () => {
+    const isCustom = $('#ua-role').value === 'custom';
+    const customBox = $('#ua-custom-perms');
+    if (customBox) customBox.style.display = isCustom ? 'block' : 'none';
+  });
+
   $('#ua-btn-role')?.addEventListener('click', (e) => {
     const role = $('#ua-role').value;
+    const body = { role, reason: reason() };
+    if (role === 'custom') body.customPermissions = getCheckedPerms();
     confirmModal({
       title: `CHANGE ROLE → ${roleLabel(role)}?`,
       bodyHtml: `Alvo: <b>#${u.id} ${esc(u.username)}</b><br>A sessão atual do alvo será encerrada.`,
       onConfirm: () => runAction(e.target, async () => {
-        await api(`/api/admin/users/${u.id}/role`, { method: 'POST', idemKey: crypto.randomUUID(), body: { role, reason: reason() } });
+        await api(`/api/admin/users/${u.id}/role`, { method: 'POST', idemKey: crypto.randomUUID(), body });
         toast(`✓ ${esc(u.username)} agora é ${esc(roleLabel(role))}`);
         reload();
       })
@@ -197,18 +245,30 @@ function createUserModal(reload) {
     r === 'king' ? ME.role === 'king'
       : (ME.role === 'king' ? true : META.roles.indexOf(r) < roleRankOf(ME.role)));
   const root = document.getElementById('modal-root');
-  root.innerHTML = `<div class="modal-bg"><div class="modal" role="dialog" aria-modal="true">
+  root.innerHTML = `<div class="modal-bg"><div class="modal" role="dialog" aria-modal="true" style="max-height:85vh;overflow-y:auto">
     <h3>+ CREATE USER</h3>
     <label>Username</label><input id="cu-username" maxlength="24" autocomplete="off" placeholder="3-24: letras, números, - _">
     <label>Senha</label><input id="cu-pass" type="password" autocomplete="new-password" placeholder="mín. 8">
     <label>Confirmar senha</label><input id="cu-confirm" type="password" autocomplete="new-password">
     <label>Cargo</label>
     <select id="cu-role">${creatable.map(r => `<option value="${r}">${esc(roleLabel(r))}</option>`).join('')}</select>
+    <div id="cu-custom-perms" style="display:none;margin-top:8px">
+      <label style="color:var(--dim);font-size:11px;text-transform:uppercase;letter-spacing:1px">Permissões personalizadas</label>
+      <div id="cu-perm-checks" class="checks" style="margin-top:6px"></div>
+    </div>
     <p class="err" id="cu-err" hidden></p>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button id="cu-go">CRIAR</button>
       <button class="ghost" id="cu-cancel">CANCELAR</button>
     </div></div></div>`;
+  $('#cu-role')?.addEventListener('change', () => {
+    const isCustom = $('#cu-role').value === 'custom';
+    const customBox = $('#cu-custom-perms');
+    if (customBox) {
+      customBox.style.display = isCustom ? 'block' : 'none';
+      if (isCustom && !$('#cu-perm-checks').children.length) renderPermCheckboxes($('#cu-perm-checks'), []);
+    }
+  });
   $('#cu-cancel').onclick = () => { root.innerHTML = ''; };
   $('#cu-go').onclick = async () => {
     const errEl = $('#cu-err');
@@ -216,6 +276,7 @@ function createUserModal(reload) {
     const username = $('#cu-username').value.trim();
     const password = $('#cu-pass').value;
     const confirmPassword = $('#cu-confirm').value;
+    const role = $('#cu-role').value;
     let problem = null;
     if (!username) problem = 'Informe um username.';
     else if (username.length < 3 || username.length > 24) problem = 'Username deve ter entre 3 e 24 caracteres.';
@@ -223,10 +284,11 @@ function createUserModal(reload) {
     else if (!password || password.length < 8) problem = 'Senha deve ter no mínimo 8 caracteres.';
     else if (password !== confirmPassword) problem = 'As senhas não conferem.';
     if (problem) { errEl.textContent = problem; errEl.hidden = false; return; }
+    const body = { username, password, confirmPassword, role };
+    if (role === 'custom') body.customPermissions = getCheckedPerms();
     try {
       const r = await api('/api/admin/users', {
-        method: 'POST', idemKey: crypto.randomUUID(),
-        body: { username, password, confirmPassword, role: $('#cu-role').value }
+        method: 'POST', idemKey: crypto.randomUUID(), body
       });
       root.innerHTML = '';
       toast(`✓ Usuário criado: #${r.user.id} ${esc(r.user.username)} · ${esc(roleLabel(r.user.role))}`);
@@ -569,18 +631,55 @@ async function pageLogs(offset = 0) {
 }
 
 function pageSettings() {
+  const perms = PERMS.includes('*') ? ['* (todas)'] : [...PERMS];
+  if (ME.role === 'custom' && ME.customPermissions) {
+    const cp = typeof ME.customPermissions === 'string' ? JSON.parse(ME.customPermissions) : ME.customPermissions;
+    perms.length = 0;
+    perms.push(...cp);
+  }
+  const groups = {};
+  for (const p of perms) {
+    if (p === '*') { groups['Todas'] = ['*']; continue; }
+    const group = p.split('.')[0];
+    if (!groups[group]) groups[group] = [];
+    groups[group].push(p);
+  }
+  let permsHtml = '';
+  for (const [group, ps] of Object.entries(groups)) {
+    permsHtml += `<div style="margin-bottom:8px"><span style="color:var(--accent);font-weight:700;text-transform:uppercase;font-size:11px;letter-spacing:1px">${esc(group)}</span><div class="checks" style="margin-top:4px">${ps.map(p => `<span class="pill active" style="font-size:11px">${esc(p)}</span>`).join(' ')}</div></div>`;
+  }
   content.innerHTML = `<h1>Settings</h1>
     <div class="panel"><h2>SESSÃO ATUAL</h2>
       Usuário: <b>${esc(ME.username)}</b> (#${ME.id}) · ${esc(roleLabel(ME.role))}<br>
-      Permissões: <span class="dim">${PERMS.includes('*') ? 'todas (*)' : PERMS.join(', ')}</span>
+      Permissões: <span class="dim">${perms.includes('* (todas)') ? 'todas (*)' : perms.length + ' permissões'}</span>
     </div>
-    <div class="panel"><h2>SEGURANÇA</h2>
-      <ul>
-        <li>Credenciais administrativas vêm de variáveis de ambiente no servidor (.env) — nunca do código.</li>
-        <li>Sessões são cookies HttpOnly assinados pelo banco; logout revoga no servidor.</li>
-        <li>Toda ação administrativa gera audit log com actor/alvo/metadata.</li>
-      </ul>
+    <div class="panel"><h2>PERMISSÕES</h2>${permsHtml}</div>
+    <div class="panel"><h2>TROCAR SENHA</h2>
+      <div class="row">
+        <div><label>Senha atual</label><input id="s-cur-pass" type="password" placeholder="senha atual"></div>
+        <div><label>Nova senha</label><input id="s-new-pass" type="password" placeholder="mín. 8 caracteres"></div>
+        <div><label>Confirmar nova senha</label><input id="s-confirm-pass" type="password"></div>
+      </div>
+      <button id="s-btn-pass" data-label="SALVAR SENHA" style="margin-top:8px">SALVAR SENHA</button>
+    </div>
+    <div class="panel"><h2>COMANDOS DE CHAT</h2>
+      <p class="dim" style="margin:0 0 8px">No jogo, abra o chat com <kbd>/</kbd> e digite um comando. Use <kbd>/help</kbd> para ver todos.</p>
+      <p class="dim" style="margin:0">Sua role permite executar comandos compatíveis com as permissões acima.</p>
     </div>`;
+  $('#s-btn-pass')?.addEventListener('click', (e) => {
+    const cur = $('#s-cur-pass').value;
+    const np = $('#s-new-pass').value;
+    const cp = $('#s-confirm-pass').value;
+    if (!cur || !np) { toast('Preencha todos os campos.', true); return; }
+    if (np.length < 8) { toast('Nova senha deve ter no mínimo 8 caracteres.', true); return; }
+    if (np !== cp) { toast('As senhas não conferem.', true); return; }
+    runAction(e.target, async () => {
+      await api('/api/admin/change-password', { method: 'POST', idemKey: crypto.randomUUID(), body: { currentPassword: cur, newPassword: np } });
+      $('#s-cur-pass').value = '';
+      $('#s-new-pass').value = '';
+      $('#s-confirm-pass').value = '';
+    }, '✓ SENHA TROCADA');
+  });
 }
 
 // ---------- router ----------
@@ -613,6 +712,7 @@ window.addEventListener('hashchange', route);
     ME = me.user;
     PERMS = me.permissions;
     await loadMeta();
+    await loadPermissions();
     $('#me').textContent = `${ME.username} · ${roleLabel(ME.role)}`;
     if (ME.role === 'player') { location.href = '/admin/login'; return; }
     document.querySelectorAll('[data-nav]').forEach(a => a.classList.add(a.getAttribute('href') === location.hash || (!location.hash && a.getAttribute('href') === '#/dashboard') ? 'active' : ''));

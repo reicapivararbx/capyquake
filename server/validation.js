@@ -5,7 +5,7 @@ const RESERVED = new Set(['admin-console', 'root-console', 'support', 'moderatio
 // king é a autoridade máxima; best_capybara só visualiza o painel.
 export const ROLES = [
   'visitante', 'citizen', 'cool', 'hazbin', 'friend',
-  'best_capybara', 'developer', 'admin', 'head_admin', 'co_king', 'king'
+  'custom', 'best_capybara', 'developer', 'admin', 'head_admin', 'co_king', 'king'
 ];
 
 export const ROLE_RANK = {
@@ -14,12 +14,13 @@ export const ROLE_RANK = {
   cool: 2,
   hazbin: 3,
   friend: 4,
-  best_capybara: 5,
-  developer: 6,
-  admin: 7,
-  head_admin: 8,
-  co_king: 9,
-  king: 10
+  custom: 5,
+  best_capybara: 6,
+  developer: 7,
+  admin: 8,
+  head_admin: 9,
+  co_king: 10,
+  king: 11
 };
 
 export const ROLE_LABELS = {
@@ -29,6 +30,7 @@ export const ROLE_LABELS = {
   admin: '🛠️ Capybara Admin',
   developer: '💻 Capybara Developer',
   best_capybara: '✨ The Best Capybara',
+  custom: '⚙️ Custom',
   friend: '🦫 Capybara Friend',
   hazbin: '🔥 Hazbin Hotel',
   cool: '🦫🕶️ Capybara Cool',

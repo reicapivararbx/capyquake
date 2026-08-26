@@ -53,8 +53,23 @@ export const PERMISSIONS = {
 };
 
 export function hasPermission(user, perm) {
+  if (!user) return false;
+  if (user.role === 'custom') {
+    try {
+      const customPerms = JSON.parse(user.customPermissions || '[]');
+      return customPerms.includes('*') || customPerms.includes(perm);
+    } catch { return false; }
+  }
   const perms = PERMISSIONS[user?.role] || [];
   return perms.includes('*') || perms.includes(perm);
+}
+
+export function getAvailablePermissions() {
+  const seen = new Set();
+  for (const perms of Object.values(PERMISSIONS)) {
+    for (const p of perms) if (p !== '*') seen.add(p);
+  }
+  return [...seen].sort();
 }
 
 function requireAuth(req) {
@@ -288,11 +303,28 @@ export async function handleApi(req, res, pathname, query) {
       if (!hasPermission(admin, 'admin.view')) throw new ApiError('FORBIDDEN', 'Acesso restrito.', 403);
 
       if (pathname === '/api/admin/me' && method === 'GET') {
-        return json(res, 200, { success: true, user: admin, permissions: PERMISSIONS[admin.role], canAct: hasPermission(admin, 'users.view') && PERMISSIONS[admin.role].some(p => !VIEW_PERMS.includes(p) || p === 'roles.manage') });
+        return json(res, 200, { success: true, user: admin, permissions: PERMISSIONS[admin.role] || (admin.role === 'custom' ? JSON.parse(admin.customPermissions || '[]') : []), canAct: hasPermission(admin, 'users.view') && PERMISSIONS[admin.role]?.some(p => !VIEW_PERMS.includes(p) || p === 'roles.manage') });
       }
 
       const idemKey = req.headers['idempotency-key'];
       const mutate = (fn) => withIdempotency(req, idemKey, fn);
+
+      if (pathname === '/api/admin/permissions' && method === 'GET') {
+        requirePerm(req, 'admin.view');
+        return json(res, 200, { success: true, permissions: getAvailablePermissions() });
+      }
+
+      if (pathname === '/api/admin/change-password' && method === 'POST') {
+        const b = await readJsonBody(req);
+        if (!b.currentPassword || !b.newPassword) throw new ApiError('INVALID_INPUT', 'Senha atual e nova senha obrigatórias.', 400);
+        const row = db.prepare('SELECT password_hash FROM users WHERE id=?').get(admin.id);
+        if (!row || !verifyPassword(b.currentPassword, row.password_hash)) {
+          throw new ApiError('FORBIDDEN', 'Senha atual incorreta.', 403);
+        }
+        if (String(b.newPassword).length < 8) throw new ApiError('INVALID_PASSWORD', 'Nova senha deve ter no mínimo 8 caracteres.', 400);
+        db.prepare('UPDATE users SET password_hash=?, updated_at=? WHERE id=?').run(hashPassword(b.newPassword), Date.now(), admin.id);
+        return json(res, 200, { success: true });
+      }
 
       if (pathname === '/api/admin/dashboard' && method === 'GET') {
         requirePerm(req, 'game.view');
@@ -313,7 +345,7 @@ export async function handleApi(req, res, pathname, query) {
             throw new ApiError('FORBIDDEN', 'Não é possível criar conta com cargo igual ou superior ao seu.', 403);
           }
         }
-        const user = mutate(() => createUser({ username: b.username, password: b.password, displayName: b.displayName, role }));
+        const user = mutate(() => createUser({ username: b.username, password: b.password, displayName: b.displayName, role, customPermissions: b.customPermissions }));
         logAdminAction(admin.id, user.id, 'CREATE_USER',
           { username: user.username, role: user.role }, true);
         return json(res, 201, { success: true, user });
@@ -433,7 +465,7 @@ export async function handleApi(req, res, pathname, query) {
           case '/role': {
             requirePerm(req, 'roles.manage');
             const b = await readJsonBody(req);
-            const u = mutate(() => changeRole(actor, targetId, String(b.role), b.reason));
+            const u = mutate(() => changeRole(actor, targetId, String(b.role), b.reason, b.customPermissions));
             return json(res, 200, { success: true, user: u });
           }
           case '/password': {
