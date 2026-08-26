@@ -54,7 +54,17 @@ const PARAM_LABELS = {
   days: 'Duração (dias)',
   level: 'Nível (1-100)',
   item: 'ID do item (ex: ak47)',
-  role: 'Cargo (citizen, admin, king...)'
+  role: 'Cargo (citizen, admin, king...)',
+  mult: 'Multiplicador (1-100)',
+  percentage: 'Porcentagem (1-100)',
+  message: 'Mensagem',
+  query: 'Busca',
+  command: 'Nome do comando',
+  weaponId: 'ID da arma',
+  time: 'Tempo (minutos)',
+  type: 'Tipo',
+  newname: 'Novo nome',
+  id: 'ID'
 };
 
 export function attachCommandAutocomplete(inputEl) {

@@ -1986,21 +1986,48 @@ export class Game {
   }
 
   togglePause() {
+    if (this.mode !== 'singleplayer' && this.mode !== 'test') return;
     this.paused = !this.paused;
     let overlay = document.getElementById('pause-overlay');
     if (!overlay) {
       overlay = document.createElement('div');
       overlay.id = 'pause-overlay';
-      overlay.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:900;color:#fff;font-size:48px;font-family:sans-serif;pointer-events:none;';
-      overlay.textContent = 'PAUSADO';
+      overlay.style.cssText = 'position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.75);z-index:900;font-family:"Segoe UI",system-ui,sans-serif;';
       document.body.appendChild(overlay);
     }
-    overlay.style.display = this.paused ? 'flex' : 'none';
     if (this.paused) {
       this.player.unlock();
+      overlay.innerHTML = `
+        <div style="background:linear-gradient(180deg,#16121f,#0e0c13);border:1px solid #3f3a52;border-radius:16px;padding:28px 36px;text-align:center;min-width:280px;">
+          <h2 style="margin:0 0 24px;color:#c4b5fd;font-size:22px;letter-spacing:3px;">PAUSADO</h2>
+          <button id="pause-resume" style="width:100%;padding:14px;margin-bottom:12px;background:linear-gradient(160deg,#8b5cf6,#6d28d9);border:none;border-radius:10px;color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;">🎮  IR PARA O JOGO</button>
+          <button id="pause-quit" style="width:100%;padding:14px;background:linear-gradient(160deg,#ef4444,#991b1b);border:none;border-radius:10px;color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;">❌  FECHAR JOGO</button>
+        </div>`;
+      overlay.style.display = 'flex';
+      document.getElementById('pause-resume').onclick = () => this.togglePause();
+      document.getElementById('pause-quit').onclick = () => this._showQuitConfirm(overlay);
     } else {
+      overlay.style.display = 'none';
       this.player.lock();
     }
+  }
+
+  _showQuitConfirm(overlay) {
+    overlay.innerHTML = `
+      <div style="background:linear-gradient(180deg,#16121f,#0e0c13);border:1px solid #f8717155;border-radius:16px;padding:28px 36px;text-align:center;min-width:280px;">
+        <h2 style="margin:0 0 12px;color:#f87171;font-size:20px;letter-spacing:2px;">TEM CERTEZA?</h2>
+        <p style="margin:0 0 24px;color:#8b90a3;font-size:13px;">Você realmente deseja fechar o jogo?</p>
+        <button id="quit-yes" style="width:100%;padding:14px;margin-bottom:12px;background:linear-gradient(160deg,#ef4444,#991b1b);border:none;border-radius:10px;color:#fff;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;">SIM</button>
+        <button id="quit-no" style="width:100%;padding:14px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#9aa0b4;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;">NÃO</button>
+      </div>`;
+    document.getElementById('quit-no').onclick = () => this.togglePause();
+    document.getElementById('quit-yes').onclick = () => {
+      overlay.innerHTML = `
+        <div style="text-align:center;">
+          <h1 style="color:#c4b5fd;font-size:32px;letter-spacing:4px;font-family:sans-serif;">VOLTE SEMPRE</h1>
+        </div>`;
+      setTimeout(() => this.returnToMenu(), 1200);
+    };
   }
 
   setupAdminPanel() {
