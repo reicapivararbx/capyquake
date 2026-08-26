@@ -91,7 +91,7 @@ function userActionsPanel(u) {
       <p class="dim">✨ ${esc(roleLabel(ME.role))} possui acesso somente de visualização — ações administrativas estão desativadas.</p></div>`;
   }
   const myRank = roleRankOf(ME.role);
-  const selectable = META.roles.filter(r => r !== 'king' ? true : ME.role === 'king')
+  const selectable = META.roles.filter(r => r !== 'king')
     .filter(r => r !== u.username && !(r === 'king' && ME.role !== 'king'))
     .filter(r => (META.roles.indexOf(r) <= myRank) ? ME.role === 'king' : true);
   return `<div class="panel" id="user-actions"><h2>AÇÕES · #${u.id} ${esc(u.username)}</h2>

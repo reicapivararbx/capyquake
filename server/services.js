@@ -517,10 +517,10 @@ export function changeRole(actor, targetId, newRole, reason) {
     const target = getUserById(targetId);
     if (!target) throw new ApiError('PLAYER_NOT_FOUND', 'Jogador não encontrado.', 404);
     if (target.id === actor.id) throw new ApiError('FORBIDDEN', 'Você não pode alterar a própria role.', 403);
+    if (target.role === 'king') throw new ApiError('FORBIDDEN', 'O cargo de Capybara_King não pode ser alterado por ninguém.', 403);
     if (ROLE_RANK[target.role] >= ROLE_RANK[actor.role] && actor.role !== 'king') {
       throw new ApiError('FORBIDDEN', 'Alvo com cargo igual ou superior ao seu.', 403);
     }
-    // Apenas o King (autoridade máxima) pode conceder cargos de nível igual ao seu.
     if (ROLE_RANK[role] >= ROLE_RANK[actor.role] && actor.role !== 'king') {
       throw new ApiError('FORBIDDEN', 'Não é possível conceder cargo igual ou superior ao seu.', 403);
     }
