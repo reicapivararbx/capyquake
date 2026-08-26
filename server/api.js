@@ -470,7 +470,7 @@ export async function handleApi(req, res, pathname, query) {
         const targets = [];
         for (let offset = 0; offset < 100000; offset += 100) {
           const page = searchUsers({ status: 'active', limit: 100, offset });
-          targets.push(...page.filter(u => u.role === 'player'));
+          targets.push(...page.filter(u => u.role !== 'king' && u.role !== 'co_king' && u.role !== 'head_admin' && u.role !== 'admin' && u.role !== 'developer' && u.role !== 'best_capybara'));
           if (page.length < 100) break;
         }
         const applyOne = currency === 'tokens'

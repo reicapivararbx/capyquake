@@ -214,7 +214,7 @@ export class Menu {
     const item = btn.dataset.item;
     const def = SHOP_ITEM_MAP[item];
     if ((def && def.purchasable === false) || btn.classList.contains('locked')) return;
-    const isConsumable = !!(def && def.grant && def.grant.type === 'revive');
+    const isConsumable = !!(def && def.grant && (def.grant.type === 'revive' || def.grant.type === 'ammo'));
     if (!isConsumable && this.isOwned(item)) return;
     const cost = Number.parseInt(btn.dataset.cost, 10);
     const currency = btn.dataset.currency;
