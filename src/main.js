@@ -1517,7 +1517,7 @@ function renderAchievements(unlockedSet, statusFilter, rarityFilter) {
         const onProd = location.hostname === 'm.zanona.com.br';
         const btn = document.createElement('a');
         btn.id = 'admin-secret-btn';
-        btn.href = onProd ? 'https://admin.m.zanona.com.br/login' : '/admin/login';
+        btn.href = onProd ? 'https://m.zanona.com.br/admin/login' : '/admin/login';
         btn.target = '_blank';
         btn.rel = 'noopener';
         btn.textContent = '🔐 PAINEL ADMIN';
