@@ -624,7 +624,7 @@ window.addEventListener('hashchange', route);
   } catch { /* redirect tratado em api() */ }
 })();
 
-document.getElementById('btn-logout').addEventListener('click', async () => {
-  await fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
-  location.href = '/admin/login';
+document.getElementById('btn-back-game').addEventListener('click', (e) => {
+  e.preventDefault();
+  location.href = '/';
 });
