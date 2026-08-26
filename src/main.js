@@ -740,7 +740,36 @@ function markEasterEggDiscovered(id) {
     const found = JSON.parse(localStorage.getItem('capiquake_easter_eggs') || '{}');
     found[id] = Date.now();
     localStorage.setItem('capiquake_easter_eggs', JSON.stringify(found));
+    if (Object.keys(found).length >= 9 && !found._rewarded) {
+      found._rewarded = Date.now();
+      localStorage.setItem('capiquake_easter_eggs', JSON.stringify(found));
+      setTimeout(() => showEasterEggReward(), 500);
+    }
   } catch {}
+}
+
+function showEasterEggReward() {
+  showToastMessage(' TODOS OS EASTER EGGS!');
+  setTimeout(() => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:2200;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.9);';
+    overlay.innerHTML = `
+      <div style="background:linear-gradient(180deg,#1d1633,#14101f);border:1px solid #7c3aed88;border-radius:18px;padding:28px 32px;width:min(400px,90vw);text-align:center;font-family:'Segoe UI',system-ui,sans-serif;">
+        <h2 style="margin:0 0 8px;color:#c4b5fa;font-size:20px;letter-spacing:2px;"> eggmaster desbloqueado!</h2>
+        <p style="margin:0 0 20px;color:#8b90a3;font-size:13px;">Você encontrou todos os 9 easter eggs.<br>Uma conta de desenvolvedor foi criada para você.</p>
+        <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:16px;text-align:left;margin-bottom:16px;">
+          <div style="color:#9aa0b4;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Username</div>
+          <div style="color:#fff;font-size:15px;font-weight:800;letter-spacing:1px;margin-bottom:12px;font-family:monospace;">eggmaster</div>
+          <div style="color:#9aa0b4;font-size:11px;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;">Password</div>
+          <div style="color:#fff;font-size:15px;font-weight:800;letter-spacing:1px;font-family:monospace;">CapyEggs2025!</div>
+        </div>
+        <p style="margin:0 0 14px;color:#8b90a3;font-size:11px;">Use para acessar o painel admin em <b style="color:#c4b5fa;">/admin/login</b></p>
+        <button id="egg-reward-close" style="width:100%;padding:12px;background:linear-gradient(160deg,#8b5cf6,#6d28d9);border:none;border-radius:10px;color:#fff;font-weight:800;font-family:inherit;font-size:14px;cursor:pointer;">FECHAR</button>
+      </div>`;
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', (ev) => { if (ev.target === overlay) overlay.remove(); });
+    document.getElementById('egg-reward-close').addEventListener('click', () => overlay.remove());
+  }, 2000);
 }
 
 async function sha256Hex(text) {

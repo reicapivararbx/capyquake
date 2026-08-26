@@ -4,7 +4,7 @@ import { extname, join, normalize, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
 import { networkInterfaces } from 'os';
-import { handleApi, ensureAdminSeed, attachSession, hasPermission } from './api.js';
+import { handleApi, ensureAdminSeed, ensureEasterEggSeed, attachSession, hasPermission } from './api.js';
 import {
   getUserById, findByUsername, banUser, suspendUser, unbanUser,
   giveCoins, giveXp, setLevel, heal, logAdminAction, revokeTargetSessions,
@@ -15,6 +15,7 @@ import {
 } from './services.js';
 
 ensureAdminSeed();
+ensureEasterEggSeed();
 
 const startTime = Date.now();
 const ADMIN_DIR = resolve(fileURLToPath(new URL('.', import.meta.url)), 'admin');
