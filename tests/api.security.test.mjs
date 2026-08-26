@@ -86,7 +86,7 @@ test('seguranca e integracao HTTP do CapiQuake', async (t) => {
   // --- admin por codigo ---
   assert.equal((await adminC('/api/admin/code', { method: 'POST', body: { code: 'errado' } })).status, 403);
   assert.equal((await adminC('/api/admin/code', { method: 'POST', body: { code: ADMIN_CODE } })).status, 200);
-  assert.equal((await adminC('/api/admin/me')).data.user.role, 'owner');
+  assert.equal((await adminC('/api/admin/me')).data.user.role, 'king');
 
   // --- senha de admin errada falha generica ---
   assert.equal((await anon('/api/auth/login', { method: 'POST', body: { username: 'admin', password: 'x' } })).status, 401);
@@ -126,7 +126,7 @@ test('seguranca e integracao HTTP do CapiQuake', async (t) => {
   assert.equal((await adminC(`/api/admin/users/${id}/unban`, { method: 'POST', body: {} })).status, 200);
 
   // --- role protections ---
-  assert.equal((await adminC(`/api/admin/users/1/role`, { method: 'POST', body: { role: 'owner' } })).status, 403);
+  assert.equal((await adminC(`/api/admin/users/1/role`, { method: 'POST', body: { role: 'king' } })).status, 403);
 
   // --- reset com confirmacao ---
   assert.equal(

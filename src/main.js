@@ -11,8 +11,12 @@ import { GAME_MODES } from './game-modes.js';
 import { WEAPONS } from './weapon.js';
 import { ACHIEVEMENTS } from './achievements-data.js';
 import { initAccount } from './account.js';
+import { LobbyChat } from './lobby-chat.js';
+import { initCommands, handleCommandSocketMessage, attachCommandAutocomplete } from './commands.js';
 
 initAccount();
+const lobbyChat = new LobbyChat();
+lobbyChat.show();
 
 const currentDevice = setupDevice();
 const menu = new Menu();
@@ -84,6 +88,7 @@ function startGame(opts) {
   game = new Game(opts);
   window.__game = game;
   game.start();
+  lobbyChat.hide();
   if (document.body.dataset.device === 'mobile' && game.player) {
     mobileControls = new MobileControls(game.player);
   }
@@ -103,6 +108,7 @@ function showMenu() {
   document.getElementById('btn-ingame-shop').style.display = 'none';
   document.getElementById('btn-hud-camera').style.display = 'none';
   document.getElementById('btn-hud-inventory').style.display = 'none';
+  lobbyChat.show();
 }
 
 window.returnToMainMenu = function() {
@@ -228,6 +234,22 @@ function hueFromString(s) {
   return h;
 }
 
+const regionNames = (typeof Intl !== 'undefined' && Intl.DisplayNames)
+  ? new Intl.DisplayNames(['pt-BR'], { type: 'region' }) : null;
+
+function countryFlag(code) {
+  if (!code || !/^[A-Za-z]{2}$/.test(code)) return '';
+  return String.fromCodePoint(...[...code.toUpperCase()].map(c => 127397 + c.charCodeAt(0)));
+}
+
+function countryLabel(code) {
+  if (!code) return '';
+  const flag = countryFlag(code);
+  let name = code;
+  try { name = regionNames ? regionNames.of(code.toUpperCase()) : code; } catch {}
+  return `${flag} ${name}`.trim();
+}
+
 network.onLobby((state) => {
   document.getElementById('mp-setup').style.display = 'none';
   document.getElementById('lobby').style.display = 'flex';
@@ -260,12 +282,15 @@ network.onLobby((state) => {
       avatar.style.background = `hsl(${hue}, 45%, 38%)`;
       avatar.textContent = p.name.charAt(0).toUpperCase();
       nameSpan.textContent = p.name;
+      const cLabel = p.country ? countryLabel(p.country) : '';
+      sub.textContent = cLabel
+        ? `${cLabel} · ${isHost ? 'host · pronto pra cacar' : 'pronto · na sala'}`
+        : (isHost ? 'host · pronto pra cacar' : 'pronto · na sala');
+      if (p.country) sub.title = cLabel;
       if (isHost) {
-        sub.textContent = 'host · pronto pra cacar';
         tag.textContent = 'HOST';
         tag.classList.add('host');
       } else {
-        sub.textContent = 'pronto · na sala';
         tag.textContent = 'READY';
         tag.classList.add('ready');
       }
@@ -409,7 +434,11 @@ network.onChat((data) => {
   }
 });
 
+network.onRawMessage((msg) => handleCommandSocketMessage(msg));
+initCommands((obj) => network.send(obj.type, obj));
+
 const chatInput = document.getElementById('chat-input');
+attachCommandAutocomplete(chatInput);
 const closeChat = () => {
   chatInput.value = '';
   chatInput.style.display = 'none';
@@ -550,6 +579,43 @@ document.getElementById('btn-stats-close').addEventListener('click', () => {
   document.getElementById('stats-screen').style.display = 'none';
 });
 
+const REPORT_BUG_EMAIL = 'matteo@zanona.com';
+const REPORT_BUG_GITHUB_ISSUES = 'https://github.com/reicapivararbx/capyquake/issues/new';
+
+document.getElementById('btn-report-bug').addEventListener('click', () => {
+  const dlg = document.getElementById('report-bug-dialog');
+  document.getElementById('rb-choose').style.display = 'block';
+  document.getElementById('rb-email-form').style.display = 'none';
+  dlg.showModal();
+});
+
+document.getElementById('btn-report-email').addEventListener('click', () => {
+  document.getElementById('rb-choose').style.display = 'none';
+  document.getElementById('rb-email-form').style.display = 'block';
+});
+
+document.getElementById('btn-report-github').addEventListener('click', () => {
+  window.open(REPORT_BUG_GITHUB_ISSUES, '_blank', 'noopener');
+  document.getElementById('report-bug-dialog').close();
+});
+
+document.getElementById('btn-report-back').addEventListener('click', () => {
+  document.getElementById('rb-email-form').style.display = 'none';
+  document.getElementById('rb-choose').style.display = 'block';
+});
+
+document.getElementById('btn-report-send').addEventListener('click', () => {
+  const title = document.getElementById('rb-title').value.trim();
+  const body = document.getElementById('rb-body').value.trim();
+  if (!title) {
+    document.getElementById('rb-title').focus();
+    return;
+  }
+  const mailto = `mailto:${REPORT_BUG_EMAIL}?subject=${encodeURIComponent('[CapiQuake] ' + title)}&body=${encodeURIComponent(body)}`;
+  window.location.href = mailto;
+  document.getElementById('report-bug-dialog').close();
+});
+
 document.getElementById('btn-rebirth-menu').addEventListener('click', () => {
   refreshRebirthPanel();
   document.getElementById('rebirth-screen').style.display = 'flex';
@@ -650,6 +716,7 @@ document.addEventListener('keydown', (e) => {
       }
       g.saveBalance && g.saveBalance();
     }
+    markEasterEggDiscovered('reset');
     showToastMessage('RESETADO!');
   }
 });
@@ -668,6 +735,80 @@ function showToastMessage(text) {
   toast._t = setTimeout(() => { toast.style.opacity = '0'; }, 3000);
 }
 
+function markEasterEggDiscovered(id) {
+  try {
+    const found = JSON.parse(localStorage.getItem('capiquake_easter_eggs') || '{}');
+    found[id] = Date.now();
+    localStorage.setItem('capiquake_easter_eggs', JSON.stringify(found));
+  } catch {}
+}
+
+async function sha256Hex(text) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+const EASTER_EGGS = [
+  { id: 'reset', icon: '♻️', name: 'Renascimento Forçado', hint: 'Uma palavra para recomeçar do zero.' },
+  { id: 'infmuni', icon: '♾️', name: 'Munição Infinita', hint: 'Sete letras sobre balas sem fim.' },
+  { id: 'minigun', icon: '🔫', name: 'Minigun Secreta', hint: 'Digite o nome da arma pesada.' },
+  { id: 'levelup', icon: '⬆️', name: 'Subir de Nível', hint: 'O que acontece quando você ganha XP.' },
+  { id: 'killall', icon: '💀', name: 'Kill All', hint: 'Dois words em inglês para acabar com todos.' },
+  { id: '2112', icon: '💰', name: '2112', hint: 'Uma sequência numérica famosa.' },
+  { id: 'admin', icon: '🔐', name: 'Poderes de Admin', hint: 'Três números e uma palavra mágica...' },
+  { id: 'clone_gun', icon: '🧬', name: 'Clone Gun', hint: 'Uma arma que faz cópias de você. Senha necessária.' },
+  { id: 'diaura', icon: '🥚', name: 'A Lista Secreta', hint: 'Você acabou de encontrá-la.' }
+];
+
+function openEasterEggsList() {
+  markEasterEggDiscovered('diaura');
+  let overlay = document.getElementById('diaura-overlay');
+  if (overlay) overlay.remove();
+  overlay = document.createElement('div');
+  overlay.id = 'diaura-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:2150;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85);padding:16px;';
+  const found = (() => {
+    try { return JSON.parse(localStorage.getItem('capiquake_easter_eggs') || '{}'); } catch { return {}; }
+  })();
+  const cards = EASTER_EGGS.map(ee => {
+    const discovered = !!found[ee.id];
+    return '<div style="background:' + (discovered ? 'linear-gradient(160deg,#1d1633,#14101f)' : '#15131d') + ';border:1px solid ' + (discovered ? '#7c3aed88' : '#262637') + ';border-radius:14px;padding:14px;display:flex;gap:10px;align-items:center;">' +
+      '<span style="font-size:24px;">' + (discovered ? ee.icon : '❓') + '</span>' +
+      '<div style="min-width:0;">' +
+      '<div style="font-weight:800;color:' + (discovered ? '#c4b5fd' : '#5b5b6b') + ';font-size:13px;">' + (discovered ? ee.name : '???') + '</div>' +
+      '<div style="color:#8b90a3;font-size:11px;margin-top:2px;">' + (discovered ? ee.hint : 'Easter egg não descoberto ainda.') + '</div>' +
+      '</div>' +
+      '<span style="margin-left:auto;font-size:11px;color:' + (discovered ? '#4ade80' : '#f87171') + ';font-weight:800;white-space:nowrap;">' + (discovered ? '✓ DESCOBERTO' : '🔒 OCULTO') + '</span>' +
+      '</div>';
+  }).join('');
+  const totalFound = EASTER_EGGS.filter(ee => found[ee.id]).length;
+  overlay.innerHTML = '<div style="background:linear-gradient(180deg,#16121f,#0e0c13);border:1px solid #3f3a52;border-radius:18px;padding:22px;width:min(480px,94vw);max-height:86vh;overflow-y:auto;font-family:\'Segoe UI\',system-ui,sans-serif;">' +
+    '<h3 style="margin:0 0 4px;color:#c4b5fa;font-size:17px;letter-spacing:2px;text-align:center;">🥚 EASTER EGGS</h3>' +
+    '<p style="margin:0 0 14px;text-align:center;color:#8b90a3;font-size:12px;">' + totalFound + ' / ' + EASTER_EGGS.length + ' descobertos</p>' +
+    '<div style="display:flex;flex-direction:column;gap:8px;">' + cards + '</div>' +
+    '<button id="diaura-close" style="margin-top:14px;width:100%;padding:11px;background:linear-gradient(160deg,#8b5cf6,#6d28d9);border:none;border-radius:10px;color:#fff;font-weight:800;font-family:inherit;font-size:13px;cursor:pointer;">FECHAR</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  document.getElementById('diaura-close').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (ev) => { if (ev.target === overlay) overlay.remove(); });
+}
+
+const _seqDiaura = [];
+const DIAURA_WORD = 'diaura';
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+  const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+  if (!DIAURA_WORD.includes(k) || k === '') { _seqDiaura.length = 0; return; }
+  _seqDiaura.push(k);
+  if (_seqDiaura.length > DIAURA_WORD.length) _seqDiaura.shift();
+  if (_seqDiaura.join('') === DIAURA_WORD) {
+    _seqDiaura.length = 0;
+    openEasterEggsList();
+  }
+});
+
 const _seqInf = [];
 const INF_WORD = 'infmuni';
 document.addEventListener('keydown', (e) => {
@@ -685,6 +826,7 @@ document.addEventListener('keydown', (e) => {
       const infBtn = document.getElementById('btn-inf-ammo');
       if (infBtn) infBtn.textContent = 'INFINITA: TRUE';
     }
+    markEasterEggDiscovered('infmuni');
     showToastMessage('MUNICAO INFINITA!');
   }
 });
@@ -704,9 +846,80 @@ document.addEventListener('keydown', (e) => {
       if (!g.weapon.inventory.includes('minigun')) g.weapon.addWeapon('minigun', 9999);
       g.updateHotbar && g.updateHotbar();
     }
+    markEasterEggDiscovered('minigun');
     showToastMessage('MINIGUN!');
   }
 });
+
+const _seqClone = [];
+const CLONE_WORD = 'clone';
+const CLONE_PASS_SHA256 = '59077ac31d307b3084d8e0074268dda9eee7a535d7142f002c3c5d630da94d3e';
+document.addEventListener('keydown', (e) => {
+  if (e.repeat) return;
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return;
+  const k = typeof e.key === 'string' ? e.key.toLowerCase() : '';
+  if (!CLONE_WORD.includes(k) || k === '') { _seqClone.length = 0; return; }
+  _seqClone.push(k);
+  if (_seqClone.length > CLONE_WORD.length) _seqClone.shift();
+  if (_seqClone.join('') === CLONE_WORD) {
+    _seqClone.length = 0;
+    openCloneGunPrompt();
+  }
+});
+
+function openCloneGunPrompt() {
+  let overlay = document.getElementById('clone-code-overlay');
+  if (overlay) { overlay.style.display = 'flex'; const inp = document.getElementById('clone-code-input'); if (inp) inp.focus(); return; }
+  overlay = document.createElement('div');
+  overlay.id = 'clone-code-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:2100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85);';
+  overlay.innerHTML = '<div style="background:linear-gradient(180deg,#101d1a,#0a1210);border:1px solid #64ffda44;border-radius:16px;padding:28px 32px;width:min(380px,90vw);font-family:\'Segoe UI\',system-ui,sans-serif;text-align:center;">' +
+    '<h3 style="margin:0 0 6px;color:#64ffda;font-size:15px;letter-spacing:2px;">🧬 CLONE GUN</h3>' +
+    '<p style="margin:0 0 14px;color:#9aa0b4;font-size:12px;">Acesso restrito. Informe a senha.</p>' +
+    '<input id="clone-code-input" type="password" autocomplete="off" style="width:100%;box-sizing:border-box;padding:12px 18px;font-size:15px;text-align:center;background:rgba(255,255,255,.06);border:1px solid rgba(100,255,218,.25);border-radius:999px;color:#fff;outline:none;" />' +
+    '<div id="clone-code-error" style="color:#ff7b7b;font-size:12px;min-height:16px;margin-top:8px;"></div>' +
+    '<button id="clone-code-ok" style="margin-top:6px;width:100%;padding:12px;background:linear-gradient(160deg,#14b8a6,#0f766e);border:none;border-radius:10px;color:#fff;font-weight:800;font-family:inherit;font-size:14px;cursor:pointer;">DESBLOQUEAR</button>' +
+    '<button id="clone-code-cancel" style="margin-top:8px;width:100%;padding:9px;background:transparent;border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#9aa0b4;font-family:inherit;font-size:12px;cursor:pointer;">Cancelar</button>' +
+    '</div>';
+  document.body.appendChild(overlay);
+  const input = document.getElementById('clone-code-input');
+  const err = document.getElementById('clone-code-error');
+  const close = () => { overlay.style.display = 'none'; input.value = ''; err.textContent = ''; };
+  document.getElementById('clone-code-cancel').addEventListener('click', close);
+  overlay.addEventListener('click', (ev) => { if (ev.target === overlay) close(); });
+  const tryCode = async () => {
+    const digest = await sha256Hex(input.value.trim());
+    if (digest === CLONE_PASS_SHA256) {
+      close();
+      markEasterEggDiscovered('clone_gun');
+      grantCloneGun();
+    } else {
+      err.textContent = 'Senha incorreta.';
+      input.value = '';
+      input.focus();
+    }
+  };
+  document.getElementById('clone-code-ok').addEventListener('click', tryCode);
+  input.addEventListener('keydown', (ev) => {
+    ev.stopPropagation();
+    if (ev.key === 'Enter') tryCode();
+    if (ev.key === 'Escape') close();
+  });
+  setTimeout(() => input.focus(), 50);
+}
+
+function grantCloneGun() {
+  const g = window.__game;
+  showToastMessage('CLONE GUN DESBLOQUEADA!');
+  if (g && g.weapon) {
+    if (!g.weapon.inventory.includes('clone_gun')) g.weapon.addWeapon('clone_gun', 0);
+    g.updateHotbar && g.updateHotbar();
+  } else {
+    const owned = JSON.parse(localStorage.getItem('capiquake_clone_unlocked') || 'false');
+    localStorage.setItem('capiquake_clone_unlocked', 'true');
+  }
+}
 
 const _seqLv = [];
 const LV_WORD = 'levelup';
@@ -727,6 +940,7 @@ document.addEventListener('keydown', (e) => {
       const best = Number.parseInt(localStorage.getItem('capiquake_best_level'), 10) || 1;
       localStorage.setItem('capiquake_best_level', String(Math.min(100, best + 100)));
     }
+    markEasterEggDiscovered('levelup');
     showToastMessage('LEVEL UP!');
   }
 });
@@ -795,6 +1009,7 @@ function openKillAllConfirm() {
       }
     }
     g.checkAchievements && g.checkAchievements();
+    markEasterEggDiscovered('killall');
     showToastMessage('KILL ALL! ' + killed + ' ABATIDOS');
   };
   document.getElementById('killall-confirm').addEventListener('click', tryConfirm);
@@ -879,6 +1094,7 @@ function grantAdminPowers() {
     if (g.hud) g.hud.updateHealth(g.playerHealth, g.playerMaxHealth);
     g.checkAchievements && g.checkAchievements();
   } catch (err) { console.warn(err); }
+  markEasterEggDiscovered('admin');
   showToastMessage('MODO ADMIN ATIVADO');
 }
 
@@ -890,6 +1106,7 @@ document.addEventListener('keydown', (e) => {
   if (_seq.length > 4) _seq.shift();
   if (_seq.length === 4 && _seq.join('') === '2112') {
     _seq.length = 0;
+    markEasterEggDiscovered('2112');
     showToastMessage('EASTER EGG!');
     const g = window.__game;
     if (g) {
@@ -1129,6 +1346,7 @@ document.getElementById('btn-play-again').addEventListener('click', () => {
   game = null;
   document.getElementById('btn-ingame-shop').style.display = 'none';
   menu.show();
+  lobbyChat.show();
 });
 
 document.getElementById('btn-shop-menu').addEventListener('click', () => {
@@ -1296,9 +1514,10 @@ function renderAchievements(unlockedSet, statusFilter, rarityFilter) {
       if (buffer === TARGET) {
         buffer = '';
         if (document.getElementById('admin-secret-btn')) return;
+        const onProd = location.hostname === 'm.zanona.com.br';
         const btn = document.createElement('a');
         btn.id = 'admin-secret-btn';
-        btn.href = '/admin/login';
+        btn.href = onProd ? 'https://admin.m.zanona.com.br/login' : '/admin/login';
         btn.target = '_blank';
         btn.rel = 'noopener';
         btn.textContent = '🔐 PAINEL ADMIN';

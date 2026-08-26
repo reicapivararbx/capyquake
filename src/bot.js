@@ -1,4 +1,10 @@
 import * as THREE from 'three';
+import { WEAPONS } from './weapon.js';
+import { EntityLabel } from './entity-label.js';
+
+const BOT_WEAPON_POOL = ['pistola', 'ak47', 'sniper', 'arco', 'espada', 'machado', 'bazuca', 'cajado_fogo'];
+const BOT_SWAP_INTERVAL_S = 20;
+const BOT_SWAP_CHANCE = 0.4;
 
 export class Bot {
   constructor(scene, name, targets, arena) {
@@ -14,14 +20,50 @@ export class Bot {
     this.target = null;
     this.accuracy = 0.3 + Math.random() * 0.2;
     this.health = 200;
+    this.maxHealth = 200;
     this.alive = true;
     this.sellTimer = 0;
     this.sellInterval = 15;
     this.droppedItems = [];
 
+    this.weaponId = BOT_WEAPON_POOL[Math.floor(Math.random() * BOT_WEAPON_POOL.length)];
+    this.swapTimer = BOT_SWAP_INTERVAL_S + Math.random() * 10;
+    this.pendingShotDamage = 0;
+
+    this.label = new EntityLabel({
+      title: name,
+      color: '#ffd166',
+      accentBorder: '#ffd16644'
+    });
+
     this.mesh = this.createMesh();
     this.mesh.position.copy(this.position);
     scene.add(this.mesh);
+    this.updateLabelStatic();
+  }
+
+  updateLabelStatic() {
+    if (!this.label) return;
+    this.label.setName(this.name);
+    this.label.setWeapon('🔫 ' + (WEAPONS[this.weaponId]?.name || this.weaponId));
+    this.label.setHp(this.health, this.maxHealth);
+  }
+
+  maybeSwapWeapon(delta) {
+    this.swapTimer -= delta;
+    if (this.swapTimer > 0) return;
+    this.swapTimer = BOT_SWAP_INTERVAL_S + Math.random() * 10;
+    if (Math.random() > BOT_SWAP_CHANCE) return;
+    let next = this.weaponId;
+    while (next === this.weaponId) {
+      next = BOT_WEAPON_POOL[Math.floor(Math.random() * BOT_WEAPON_POOL.length)];
+    }
+    this.weaponId = next;
+    this.updateLabelStatic();
+  }
+
+  getShotDamage() {
+    return this.pendingShotDamage;
   }
 
   createMesh() {
@@ -105,6 +147,7 @@ export class Bot {
   update(delta, targets) {
     if (!this.alive) return null;
     this.shootCooldown -= delta;
+    this.maybeSwapWeapon(delta);
 
     if (this.name === 'Bot_Carioca') {
       this.sellTimer += delta;
@@ -152,6 +195,8 @@ export class Bot {
       if (nearestDist < 10 && this.shootCooldown <= 0) {
         this.shootCooldown = this.shootInterval;
         if (Math.random() < this.accuracy) {
+          const wDef = WEAPONS[this.weaponId];
+          this.pendingShotDamage = Math.max(8, Math.round((wDef?.damage || 12) * (2.2 + Math.random())));
           return nearest;
         }
       }
@@ -182,6 +227,7 @@ export class Bot {
 
   takeDamage(amount) {
     this.health -= amount;
+    this.updateLabelStatic();
     if (this.health <= 0) {
       this.die();
       return true;
@@ -191,10 +237,12 @@ export class Bot {
 
   die() {
     this.alive = false;
+    if (this.label) { this.label.destroy(); this.label = null; }
     this.scene.remove(this.mesh);
   }
 
   destroy() {
+    if (this.label) { this.label.destroy(); this.label = null; }
     this.scene.remove(this.mesh);
   }
 }

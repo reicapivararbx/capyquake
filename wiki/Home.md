@@ -4,7 +4,7 @@
 
 **A Grande Caçada** · Sobreviva. Evolua. Domine.
 
-[🎮 Jogar agora](https://reicapivararbx.github.io/capyquake/) · [📄 README](../README.md)
+[🎮 Jogar agora](https://m.zanona.com.br) · [📄 README](../README.md)
 
 </div>
 

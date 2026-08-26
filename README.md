@@ -11,9 +11,9 @@ Sobreviva. Evolua. Domine.
 [![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
 [![WebSocket](https://img.shields.io/badge/WebSocket-010101?style=for-the-badge)](https://developer.mozilla.org/pt-BR/docs/Web/API/WebSocket)
 
-**🎮 Jogue agora: [(https://m.zanona.com.br/)]**
+**🎮 Jogue agora: [m.zanona.com.br](https://m.zanona.com.br)**
 
-**📚 Wiki do jogo: [wiki/Home.md](wiki/Home.md)** — armas, loja, conquistas, modos, bestiário e multiplayer
+**📚 Wiki do jogo: [m.zanona.com.br/wiki](https://m.zanona.com.br/wiki/)** — armas, loja, conquistas, modos, bestiário e multiplayer
 
 </div>
 
@@ -134,10 +134,14 @@ cd capyquake
 npm install
 ```
 
-### Jogar offline / Multiplayer
+### Jogar online
+
+O jogo está no ar em **[m.zanona.com.br](https://m.zanona.com.br)** — multiplayer funcionando direto do navegador, sem instalar nada.
+
+### Rodar localmente (offline / servidor próprio)
 
 ```bash
-# Sobe o jogo + servidor WebSocket na porta 8080
+# Sobe o jogo + servidor WebSocket na porta 8080 (serve o build de dist/)
 node server/index.js
 ```
 
@@ -154,7 +158,7 @@ npx vite build  # build de produção em dist/
 
 ### Site público
 
-O build publicado fica em `gh-pages`. Para atualizá-lo após um `npx vite build`, copie o conteúdo de `dist/` para a branch `gh-pages`.
+O site oficial é **[m.zanona.com.br](https://m.zanona.com.br)** — o servidor Node entrega o build (`dist/`) e o WebSocket. O espelho em `gh-pages` roda só o front-end: para atualizá-lo após um `npx vite build`, copie o conteúdo de `dist/` para a branch `gh-pages`.
 
 ---
 

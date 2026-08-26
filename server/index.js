@@ -4,12 +4,23 @@ import { extname, join, normalize, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
 import { networkInterfaces } from 'os';
-import { handleApi, ensureAdminSeed } from './api.js';
+import { handleApi, ensureAdminSeed, attachSession, hasPermission } from './api.js';
+import {
+  getUserById, findByUsername, banUser, suspendUser, unbanUser,
+  giveCoins, giveXp, setLevel, heal, logAdminAction, revokeTargetSessions
+} from './services.js';
 
 ensureAdminSeed();
 
 const ADMIN_DIR = resolve(fileURLToPath(new URL('.', import.meta.url)), 'admin');
-const ADMIN_FILES = new Set(['login.html', 'app.js', 'admin.css']);
+const ADMIN_FILES = new Set(['login.html', 'index.html', 'app.js', 'admin.css']);
+
+// Sub-subdominio do painel administrativo (ex.: admin.m.zanona.com.br).
+// Em dev local usa-se admin.localhost:<porta>.
+function isAdminHost(req) {
+  const host = String(req.headers.host || '').toLowerCase().split(':')[0];
+  return host === 'admin.localhost' || host.endsWith('.m.zanona.com.br') && host.startsWith('admin.');
+}
 
 const HOST = '0.0.0.0';
 const PORT = Number.parseInt(process.env.PORT || '8080', 10);
@@ -43,6 +54,163 @@ const MIME_TYPES = {
 const rooms = new Map();
 let roomIdCounter = 0;
 
+// ---------- chat global (menus, fora do gameplay) ----------
+
+const GLOBAL_CHAT_HISTORY_LIMIT = 40;
+const globalChatHistory = [];
+const globalChatClients = new Map();
+
+function sanitizeChatText(value, maxLen) {
+  return String(value ?? '')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .trim()
+    .slice(0, maxLen);
+}
+
+function broadcastGlobalChat(payload) {
+  const data = JSON.stringify({ type: 'globalChat', data: payload });
+  for (const [ws] of globalChatClients) {
+    if (ws.readyState === 1) ws.send(data);
+  }
+}
+
+function handleGlobalChat(ws, msg) {
+  const client = globalChatClients.get(ws);
+  if (!client) return;
+  const now = Date.now();
+  client.times = (client.times || []).filter(t => now - t < 15000);
+  if (client.lastMsgAt && now - client.lastMsgAt < 1000) return;
+  if (client.times.length >= 6) return;
+  const message = sanitizeChatText(msg.message, 150);
+  if (!message) return;
+  client.lastMsgAt = now;
+  client.times.push(now);
+  const payload = {
+    name: client.name || 'Anon',
+    role: client.role || null,
+    message,
+    ts: now
+  };
+  globalChatHistory.push(payload);
+  if (globalChatHistory.length > GLOBAL_CHAT_HISTORY_LIMIT) globalChatHistory.shift();
+  broadcastGlobalChat(payload);
+}
+
+const CHAT_COMMANDS = [
+  { name: 'kick', params: ['user'], perm: 'users.suspend', destructive: true, desc: 'Desconecta o jogador agora' },
+  { name: 'ban', params: ['user'], perm: 'users.ban', destructive: true, desc: 'Bane permanentemente' },
+  { name: 'tempban', params: ['user', 'days'], perm: 'users.suspend', destructive: true, desc: 'Ban temporário em dias' },
+  { name: 'unban', params: ['user'], perm: 'users.suspend', destructive: false, desc: 'Reativa a conta' },
+  { name: 'givecoins', params: ['user', 'amount'], perm: 'economy.give', destructive: false, desc: 'Dá moedas' },
+  { name: 'removecoins', params: ['user', 'amount'], perm: 'economy.remove', destructive: true, desc: 'Remove moedas' },
+  { name: 'givexp', params: ['user', 'amount'], perm: 'game.giveXp', destructive: false, desc: 'Dá XP' },
+  { name: 'setlevel', params: ['user', 'level'], perm: 'game.setLevel', destructive: false, desc: 'Define o nível' },
+  { name: 'heal', params: ['user'], perm: 'game.heal', destructive: false, desc: 'Cura a capivara' }
+];
+
+function commandsForUser(user) {
+  if (!user) return [];
+  return CHAT_COMMANDS.filter(c => hasPermission(user, c.perm))
+    .map(({ name, params, desc, destructive }) => ({ name, params, desc, destructive }));
+}
+
+function resolveTargetUser(raw) {
+  const value = String(raw ?? '').trim();
+  if (!value) return null;
+  if (/^\d+$/.test(value)) return getUserById(Number(value));
+  const byName = findByUsername(value.replace(/^@/, ''));
+  return byName ? getUserById(byName.id) : null;
+}
+
+async function handleChatCommand(ws, msg) {
+  const user = ws.chatUser;
+  const reply = (ok, message) => {
+    try { ws.send(JSON.stringify({ type: 'commandResult', data: { ok, message } })); } catch {}
+  };
+  if (!user) return reply(false, 'Faça login para usar comandos.');
+  if (!hasPermission(user, 'admin.view')) return reply(false, 'Sem permissão.');
+
+  const name = String(msg.name || '').replace(/^\//, '').toLowerCase().trim();
+  const command = CHAT_COMMANDS.find(c => c.name === name);
+  if (!command) return reply(false, `Comando desconhecido: /${name}`);
+  if (!hasPermission(user, command.perm)) {
+    logAdminAction(user.id, null, 'COMMAND_DENIED', { command: name }, false);
+    return reply(false, `Você não tem permissão para /${name}.`);
+  }
+
+  const args = Array.isArray(msg.args) ? msg.args.map(String) : [];
+  const target = resolveTargetUser(args[0]);
+  if (!target) return reply(false, `Jogador não encontrado: ${args[0] || '(vazio)'}`);
+  if (target.id !== user.id && ROLE_RANK_CHECK(target.role, user.role)) {
+    return reply(false, 'Alvo com cargo igual ou superior ao seu.');
+  }
+
+  const actor = getUserById(user.id);
+  const reasonBase = args.slice(command.params.length).join(' ').slice(0, 120) || `/${name} por ${actor.username}`;
+  const numArg = (idx, min, max) => {
+    const n = Math.trunc(Number(args[idx]));
+    if (!Number.isSafeInteger(n) || n < min || n > max) return null;
+    return n;
+  };
+
+  try {
+    switch (command.name) {
+      case 'kick':
+        revokeTargetSessions(target.id);
+        logAdminAction(actor.id, target.id, 'KICK', { reason: reasonBase, via: 'chat-command' }, true);
+        return reply(true, `${target.username} foi kickado.`);
+      case 'ban':
+        banUser(actor, target.id, reasonBase);
+        return reply(true, `${target.username} foi banido.`);
+      case 'tempban': {
+        const days = numArg(1, 1, 365);
+        if (!days) return reply(false, 'Dias inválido (1-365).');
+        suspendUser(actor, target.id, reasonBase, days * 86400000);
+        return reply(true, `${target.username} suspenso por ${days} dias.`);
+      }
+      case 'unban':
+        unbanUser(actor, target.id, reasonBase);
+        return reply(true, `${target.username} reativado.`);
+      case 'givecoins': {
+        const amount = numArg(1, 1, 1e12);
+        if (!amount) return reply(false, 'Quantidade inválida.');
+        giveCoins(actor, target.id, amount, reasonBase);
+        return reply(true, `+${amount} moedas para ${target.username}.`);
+      }
+      case 'removecoins': {
+        const amount = numArg(1, 1, 1e12);
+        if (!amount) return reply(false, 'Quantidade inválida.');
+        giveCoins(actor, target.id, -amount, reasonBase);
+        return reply(true, `-${amount} moedas de ${target.username}.`);
+      }
+      case 'givexp': {
+        const amount = numArg(1, 1, 1e10);
+        if (!amount) return reply(false, 'Quantidade inválida.');
+        giveXp(actor, target.id, amount, reasonBase);
+        return reply(true, `+${amount} XP para ${target.username}.`);
+      }
+      case 'setlevel': {
+        const level = numArg(1, 1, 100);
+        if (!level) return reply(false, 'Nível inválido (1-100).');
+        setLevel(actor, target.id, level, reasonBase);
+        return reply(true, `${target.username} agora é nível ${level}.`);
+      }
+      case 'heal':
+        heal(actor, target.id, reasonBase);
+        return reply(true, `${target.username} curado.`);
+      default:
+        return reply(false, 'Comando não implementado.');
+    }
+  } catch (err) {
+    return reply(false, err.message || 'Falha ao executar comando.');
+  }
+}
+
+import { ROLE_RANK as ROLE_RANK_MAP } from './validation.js';
+function ROLE_RANK_CHECK(targetRole, actorRole) {
+  return (ROLE_RANK_MAP[targetRole] ?? 0) >= (ROLE_RANK_MAP[actorRole] ?? 0);
+}
+
 const CODE_CHARS = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 function generateRoomCode() {
   let code;
@@ -66,7 +234,13 @@ class GameRoom {
 
   addPlayer(ws, name) {
     const isFirst = this.players.size === 0;
-    this.players.set(ws, { name, position: { x: 0, y: 1.7, z: 0 }, rotation: 0, kills: 0 });
+    this.players.set(ws, {
+      name,
+      position: { x: 0, y: 1.7, z: 0 },
+      rotation: 0,
+      kills: 0,
+      country: ws.country || null
+    });
     this.kills[name] = 0;
     if (isFirst || !this.host || !this.players.has(this.host)) {
       this.host = ws;
@@ -95,7 +269,11 @@ class GameRoom {
   }
 
   broadcastLobby() {
-    const playerList = Array.from(this.players.values()).map(p => ({ name: p.name, kills: p.kills || 0 }));
+    const playerList = Array.from(this.players.values()).map(p => ({
+      name: p.name,
+      kills: p.kills || 0,
+      country: p.country || null
+    }));
     const hostName = this.host && this.players.get(this.host) ? this.players.get(this.host).name : '';
     for (const [socket] of this.players) {
       if (socket.readyState !== 1) continue;
@@ -202,15 +380,7 @@ function getStaticFilePath(pathname) {
   return filePath;
 }
 
-async function serveStatic(req, res) {
-  let pathname;
-  try {
-    pathname = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`).pathname;
-  } catch {
-    sendNotFound(res);
-    return;
-  }
-
+async function serveStatic(res, pathname) {
   const filePath = getStaticFilePath(pathname);
   if (!filePath) {
     sendNotFound(res);
@@ -244,10 +414,12 @@ async function serveStatic(req, res) {
 }
 
 async function serveAdmin(req, res, pathname) {
-  const isLogin = pathname === '/admin/login';
-  let file = isLogin ? 'login.html' : 'index.html';
-  const m = pathname.match(/^\/admin\/(app\.js|admin\.css)$/);
-  if (m) file = m[1];
+  let file;
+  if (pathname === '/login' || pathname === '/admin/login') file = 'login.html';
+  else if (pathname === '/app.js' || pathname === '/admin/app.js') file = 'app.js';
+  else if (pathname === '/admin.css' || pathname === '/admin/admin.css') file = 'admin.css';
+  else if (pathname === '/' || pathname === '/index.html' || pathname === '/admin' || pathname === '/admin/') file = 'index.html';
+  else { sendNotFound(res); return; }
   try {
     const body = await readFile(join(ADMIN_DIR, file));
     res.writeHead(200, {
@@ -282,12 +454,18 @@ const server = createServer((req, res) => {
     return;
   }
 
+  // Painel administrativo no sub-subdominio dedicado (ex.: admin.m.zanona.com.br).
+  if (isAdminHost(req)) {
+    serveAdmin(req, res, pathname);
+    return;
+  }
+
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
     serveAdmin(req, res, pathname);
     return;
   }
 
-  serveStatic(req, res);
+  serveStatic(res, pathname);
 });
 
 const wss = new WebSocketServer({ noServer: true });
@@ -306,13 +484,33 @@ server.on('upgrade', (req, socket, head) => {
     return;
   }
 
+  const fakeReq = { headers: req.headers };
+  attachSession(fakeReq);
+
   wss.handleUpgrade(req, socket, head, (ws) => {
+    ws.chatUser = fakeReq.user || null;
+    // País via Cloudflare em produção; nunca expõe o IP bruto.
+    const cf = req.headers['cf-ipcountry'];
+    if (typeof cf === 'string' && /^[A-Za-z]{2}$/.test(cf)) {
+      ws.country = cf.toUpperCase();
+    } else {
+      const lang = String(req.headers['accept-language'] || '').match(/[a-z]{2}-([A-Z]{2})/);
+      ws.country = lang ? lang[1] : null;
+    }
     wss.emit('connection', ws, req);
   });
 });
 
 wss.on('connection', (ws) => {
   let currentRoom = null;
+
+  const chatName = sanitizeChatText(ws.chatUser?.displayName || ws.chatUser?.username || '', 24);
+  globalChatClients.set(ws, {
+    name: chatName || null,
+    role: ws.chatUser?.role || null,
+    userId: ws.chatUser?.id ?? null
+  });
+  ws.send(JSON.stringify({ type: 'globalChatHistory', data: [...globalChatHistory] }));
 
   ws.on('message', (raw) => {
     let msg;
@@ -367,6 +565,22 @@ wss.on('connection', (ws) => {
       case 'chat':
         if (currentRoom) currentRoom.handleChat(ws, msg);
         break;
+      case 'globalChat':
+        handleGlobalChat(ws, msg);
+        break;
+      case 'listCommands':
+        ws.send(JSON.stringify({ type: 'commandList', data: commandsForUser(ws.chatUser) }));
+        break;
+      case 'command':
+        handleChatCommand(ws, msg);
+        break;
+      case 'setChatName': {
+        const client = globalChatClients.get(ws);
+        if (client && !client.userId) {
+          client.name = sanitizeChatText(msg.name, 12) || 'Anon';
+        }
+        break;
+      }
       case 'ping':
         ws.send(JSON.stringify({ type: 'pong', t: msg.t }));
         break;
@@ -377,6 +591,7 @@ wss.on('connection', (ws) => {
   });
 
   ws.on('close', () => {
+    globalChatClients.delete(ws);
     if (currentRoom) currentRoom.removePlayer(ws);
   });
 });

@@ -2,7 +2,8 @@ import * as THREE from 'three';
 import { WEAPONS, rollAmmo } from './weapon.js';
 import { Audio } from './audio.js';
 
-const LOOTABLE_WEAPONS = Object.keys(WEAPONS).filter(id => id !== 'bastao' && id !== 'pistola' && id !== 'ak47' && id !== 'minigun');
+const NON_LOOTABLE = new Set(['bastao', 'pistola', 'ak47', 'minigun', 'brick', 'clone_gun']);
+const LOOTABLE_WEAPONS = Object.keys(WEAPONS).filter(id => !NON_LOOTABLE.has(id));
 
 export class Chest {
   constructor(scene, x, z) {

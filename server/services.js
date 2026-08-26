@@ -1,7 +1,7 @@
 import { db } from './db.js';
 import { hashPassword, verifyPassword, newSessionToken } from './passwords.js';
 import { env } from './env.js';
-import { ApiError, ROLES, ROLE_RANK, validateUsername, validatePassword, intInRange } from './validation.js';
+import { ApiError, ROLES, ROLE_RANK, ROLE_LABELS, validateUsername, validatePassword, intInRange, requireRole } from './validation.js';
 import { applyXp, MAX_LEVEL, xpNeededForLevel } from './xplevel.js';
 
 const now = () => Date.now();
@@ -20,9 +20,10 @@ function tx(fn) {
 
 // ---------- users ----------
 
-export function createUser({ username, password, displayName }) {
+export function createUser({ username, password, displayName, role }) {
   const uname = validateUsername(username);
   const pass = validatePassword(password);
+  const finalRole = role !== undefined ? requireRole(role) : 'citizen';
   return tx(() => {
     const exists = db.prepare('SELECT id FROM users WHERE username = ?').get(uname);
     if (exists) throw new ApiError('USERNAME_TAKEN', 'Username já está em uso.', 409);
@@ -30,8 +31,8 @@ export function createUser({ username, password, displayName }) {
     const name = String(displayName ?? uname).trim().slice(0, 32) || uname;
     const info = db.prepare(
       `INSERT INTO users (username, display_name, password_hash, role, status, created_at, updated_at)
-       VALUES (?, ?, ?, 'player', 'active', ?, ?)`
-    ).run(uname, name, hashPassword(pass), t, t);
+       VALUES (?, ?, ?, ?, 'active', ?, ?)`
+    ).run(uname, name, hashPassword(pass), finalRole, t, t);
     const id = Number(info.lastInsertRowid);
     db.prepare(
       `INSERT INTO game_profiles (user_id, created_at, updated_at) VALUES (?, ?, ?)`
@@ -94,6 +95,52 @@ export function checkStatus(user) {
   }
 }
 
+// ---------- senhas ----------
+
+// O próprio usuário troca a senha informando a atual.
+export function changeOwnPassword(userId, currentPassword, newPassword) {
+  const pass = validatePassword(newPassword);
+  return tx(() => {
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(Number(userId));
+    if (!user) throw new ApiError('PLAYER_NOT_FOUND', 'Jogador não encontrado.', 404);
+    if (!verifyPassword(currentPassword, user.password_hash)) {
+      logAdminAction(userId, userId, 'PASSWORD_CHANGE', { result: 'wrong_current_password' }, false);
+      throw new ApiError('UNAUTHORIZED', 'Senha atual incorreta.', 401);
+    }
+    db.prepare('UPDATE users SET password_hash=?, updated_at=? WHERE id=?')
+      .run(hashPassword(pass), now(), userId);
+    // Revoga todas as outras sessões por segurança; a sessão atual continua válida.
+    revokeOtherSessions(userId, null);
+    logAdminAction(userId, userId, 'PASSWORD_CHANGE', { self: true }, true);
+    return getUserById(userId);
+  });
+}
+
+// Admin autorizado define uma nova senha para um usuário de rank inferior.
+export function adminSetPassword(actor, targetId, newPassword) {
+  const pass = validatePassword(newPassword);
+  return tx(() => {
+    const target = getUserById(targetId);
+    if (!target) throw new ApiError('PLAYER_NOT_FOUND', 'Jogador não encontrado.', 404);
+    if (target.id !== actor.id && ROLE_RANK[target.role] >= ROLE_RANK[actor.role] && actor.role !== 'king') {
+      throw new ApiError('FORBIDDEN', 'Não é possível alterar senha de alguém com cargo igual ou superior.', 403);
+    }
+    if (ROLE_RANK[target.role] > ROLE_RANK[actor.role]) {
+      throw new ApiError('FORBIDDEN', 'Nem o King pode ser redefinido por aqui.', 403);
+    }
+    db.prepare('UPDATE users SET password_hash=?, updated_at=? WHERE id=?')
+      .run(hashPassword(pass), now(), targetId);
+    revokeAllSessions(targetId);
+    logAdminAction(actor.id, targetId, 'PASSWORD_CHANGE', { byAdmin: true }, true);
+    return getUserById(targetId);
+  });
+}
+
+function revokeOtherSessions(userId, keepToken) {
+  db.prepare('UPDATE sessions SET revoked_at = ? WHERE user_id = ? AND revoked_at IS NULL AND id != ?')
+    .run(now(), Number(userId), keepToken ?? '');
+}
+
 // ---------- sessions ----------
 
 export function createSession(userId) {
@@ -107,7 +154,7 @@ export function createSession(userId) {
 }
 
 export function createAdminCodeSession() {
-  const admin = db.prepare(`SELECT * FROM users WHERE username = ? AND role IN ('admin','owner')`)
+  const admin = db.prepare(`SELECT * FROM users WHERE username = ? AND role = 'king'`)
     .get(env.adminUsername);
   if (!admin) throw new ApiError('OPERATION_FAILED', 'Conta administrativa não configurada.', 500);
   return createSession(admin.id);
@@ -458,26 +505,32 @@ function revokeAllSessions(userId) {
   db.prepare('UPDATE sessions SET revoked_at = ? WHERE user_id = ? AND revoked_at IS NULL').run(now(), userId);
 }
 
+export function revokeTargetSessions(userId) {
+  revokeAllSessions(userId);
+}
+
 // ---------- roles ----------
 
 export function changeRole(actor, targetId, newRole, reason) {
-  if (!ROLES.includes(newRole)) throw new ApiError('INVALID_INPUT', 'Role inválida.', 400);
+  const role = requireRole(newRole);
   return tx(() => {
     const target = getUserById(targetId);
     if (!target) throw new ApiError('PLAYER_NOT_FOUND', 'Jogador não encontrado.', 404);
     if (target.id === actor.id) throw new ApiError('FORBIDDEN', 'Você não pode alterar a própria role.', 403);
-    if (ROLE_RANK[target.role] >= ROLE_RANK[actor.role]) {
-      throw new ApiError('FORBIDDEN', 'Alvo com role igual ou superior à sua.', 403);
+    if (ROLE_RANK[target.role] >= ROLE_RANK[actor.role] && actor.role !== 'king') {
+      throw new ApiError('FORBIDDEN', 'Alvo com cargo igual ou superior ao seu.', 403);
     }
-    if (ROLE_RANK[newRole] >= ROLE_RANK[actor.role] && actor.role !== 'owner') {
-      throw new ApiError('FORBIDDEN', 'Não é possível conceder role igual ou superior à sua.', 403);
+    // Apenas o King (autoridade máxima) pode conceder cargos de nível igual ao seu.
+    if (ROLE_RANK[role] >= ROLE_RANK[actor.role] && actor.role !== 'king') {
+      throw new ApiError('FORBIDDEN', 'Não é possível conceder cargo igual ou superior ao seu.', 403);
     }
-    if (newRole === 'owner' && actor.role !== 'owner') {
-      throw new ApiError('FORBIDDEN', 'Apenas OWNER pode definir OWNER.', 403);
+    if (role === 'king' && actor.role !== 'king') {
+      throw new ApiError('FORBIDDEN', 'Apenas o Capybara_King define outro King.', 403);
     }
-    db.prepare('UPDATE users SET role=?, updated_at=? WHERE id=?').run(newRole, now(), targetId);
+    db.prepare('UPDATE users SET role=?, updated_at=? WHERE id=?').run(role, now(), targetId);
     revokeAllSessions(targetId);
-    logAdminAction(actor.id, targetId, 'ROLE_CHANGE', { previousRole: target.role, newRole, reason }, true);
+    logAdminAction(actor.id, targetId, 'ROLE_CHANGE',
+      { previousRole: target.role, newRole: role, roleLabel: ROLE_LABELS[role], reason }, true);
     return getUserById(targetId);
   });
 }
@@ -552,35 +605,34 @@ export function listTransactions(userId, limit = 20, offset = 0) {
 
 // ---------- search / dashboard ----------
 
-export function searchUsers({ q, limit = 20, offset = 0, status }) {
+export function searchUsers({ q, limit = 20, offset = 0, status, role }) {
   const lim = intInRange(limit, 1, 100, 'INVALID_INPUT', 'limit');
   const off = intInRange(offset, 0, 1e9, 'INVALID_INPUT', 'offset');
+  const roleFilter = role && ROLES.includes(role) ? role : null;
+  const SELECT_COLS = `SELECT u.id, u.username, u.display_name AS displayName, u.role, u.status,
+              u.created_at AS createdAt, u.last_login_at AS lastLoginAt,
+              g.coins, g.level, g.xp
+       FROM users u LEFT JOIN game_profiles g ON g.user_id = u.id`;
   let rows;
   if (q) {
     const like = `%${String(q).replace(/[%_]/g, ch => '\\' + ch)}%`;
     rows = db.prepare(
-      `SELECT u.id, u.username, u.display_name AS displayName, u.role, u.status,
-              u.created_at AS createdAt, u.last_login_at AS lastLoginAt,
-              g.coins, g.level, g.xp
-       FROM users u LEFT JOIN game_profiles g ON g.user_id = u.id
-       WHERE u.username LIKE ? ESCAPE '\\' OR u.display_name LIKE ? ESCAPE '\\' OR CAST(u.id AS TEXT) = ?
+      `${SELECT_COLS}
+       WHERE (u.username LIKE ? ESCAPE '\\' OR u.display_name LIKE ? ESCAPE '\\' OR CAST(u.id AS TEXT) = ?)
+         ${roleFilter ? 'AND u.role = ?' : ''}
          ORDER BY u.id LIMIT ? OFFSET ?`
-    ).all(like, like, String(q).replace(/[^0-9]/g, ''), lim, off);
-  } else if (status) {
+    ).all(like, like, String(q).replace(/[^0-9]/g, ''), ...(roleFilter ? [roleFilter] : []), lim, off);
+  } else if (roleFilter || status) {
+    const where = [];
+    const params = [];
+    if (status) { where.push('u.status = ?'); params.push(String(status)); }
+    if (roleFilter) { where.push('u.role = ?'); params.push(roleFilter); }
     rows = db.prepare(
-      `SELECT u.id, u.username, u.display_name AS displayName, u.role, u.status,
-              u.created_at AS createdAt, u.last_login_at AS lastLoginAt,
-              g.coins, g.level, g.xp
-       FROM users u LEFT JOIN game_profiles g ON g.user_id = u.id
-       WHERE u.status = ? ORDER BY u.id LIMIT ? OFFSET ?`
-    ).all(String(status), lim, off);
+      `${SELECT_COLS} WHERE ${where.join(' AND ')} ORDER BY u.id LIMIT ? OFFSET ?`
+    ).all(...params, lim, off);
   } else {
     rows = db.prepare(
-      `SELECT u.id, u.username, u.display_name AS displayName, u.role, u.status,
-              u.created_at AS createdAt, u.last_login_at AS lastLoginAt,
-              g.coins, g.level, g.xp
-       FROM users u LEFT JOIN game_profiles g ON g.user_id = u.id
-       ORDER BY u.id LIMIT ? OFFSET ?`
+      `${SELECT_COLS} ORDER BY u.id LIMIT ? OFFSET ?`
     ).all(lim, off);
   }
   return rows;

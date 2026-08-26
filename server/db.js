@@ -14,7 +14,7 @@ const MIGRATIONS = [
     username TEXT NOT NULL UNIQUE COLLATE NOCASE,
     display_name TEXT NOT NULL,
     password_hash TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'player' CHECK (role IN ('player','moderator','admin','owner')),
+    role TEXT NOT NULL DEFAULT 'citizen',
     status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','suspended','banned')),
     suspended_until INTEGER,
     created_at INTEGER NOT NULL,
@@ -88,26 +88,91 @@ const MIGRATIONS = [
   CREATE INDEX IF NOT EXISTS idx_logs_actor ON admin_logs(actor_user_id);
   CREATE INDEX IF NOT EXISTS idx_logs_target ON admin_logs(target_user_id);
   CREATE INDEX IF NOT EXISTS idx_logs_action ON admin_logs(action);
-  CREATE INDEX IF NOT EXISTS idx_logs_created ON admin_logs(created_at);`
+  CREATE INDEX IF NOT EXISTS idx_logs_created ON admin_logs(created_at);`,
+  // Migração dos cargos Capyquake: remove o CHECK antigo (player/moderator/admin/owner)
+  // reconstruindo a tabela e convertendo os roles legados. Preserva todas as contas.
+  'REBUILD_USERS_ROLES'
 ];
 
-db.exec('BEGIN IMMEDIATE');
-try {
+function rebuildUsersRolesTable() {
+  const legacyMap = `
+    CASE role
+      WHEN 'owner' THEN 'king'
+      WHEN 'admin' THEN 'head_admin'
+      WHEN 'moderator' THEN 'developer'
+      WHEN 'player' THEN 'citizen'
+      ELSE role
+    END`;
+  // fora de transacao: PRAGMA foreign_keys nao muda dentro de uma
+  db.exec('PRAGMA foreign_keys = OFF');
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    db.exec(`CREATE TABLE users_new (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      username TEXT NOT NULL UNIQUE COLLATE NOCASE,
+      display_name TEXT NOT NULL,
+      password_hash TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'citizen',
+      status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active','suspended','banned')),
+      suspended_until INTEGER,
+      created_at INTEGER NOT NULL,
+      updated_at INTEGER NOT NULL,
+      last_login_at INTEGER
+    )`);
+    db.exec(`INSERT INTO users_new
+      SELECT id, username, display_name, password_hash, ${legacyMap}, status, suspended_until, created_at, updated_at, last_login_at
+      FROM users`);
+    db.exec('DROP TABLE users');
+    db.exec('ALTER TABLE users_new RENAME TO users');
+    db.exec('CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)');
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
+  db.exec('PRAGMA foreign_keys = ON');
+}
+
+// Migracao de rebuild precisa rodar FORA da transacao principal (PRAGMA foreign_keys).
+function runMigrations() {
   const row = db.prepare(
     "SELECT name FROM sqlite_master WHERE type='table' AND name='_migrations'"
   ).get();
   if (!row) db.exec('CREATE TABLE _migrations (id INTEGER PRIMARY KEY, applied_at INTEGER)');
   const applied = new Set(db.prepare('SELECT id FROM _migrations').all().map(r => r.id));
-  MIGRATIONS.forEach((sql, i) => {
-    if (applied.has(i)) return;
-    db.exec(sql);
-    db.prepare('INSERT INTO _migrations (id, applied_at) VALUES (?, ?)').run(i, Date.now());
-  });
-  db.exec('COMMIT');
-} catch (e) {
-  db.exec('ROLLBACK');
-  throw e;
+
+  const pending = MIGRATIONS.map((sql, i) => ({ sql, i })).filter(m => !applied.has(m.i));
+
+  // Rebuild só se users existe com CHECK legado; em banco novo a migration 0 já cria o schema atual.
+  for (const m of pending) {
+    if (m.sql === 'REBUILD_USERS_ROLES') {
+      const usersExists = db.prepare(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='users'"
+      ).get();
+      if (!usersExists) continue;
+      const hasLegacyCheck = db.prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'")
+        .get().sql.includes("role IN ('player','moderator','admin','owner')");
+      if (!hasLegacyCheck) continue;
+      rebuildUsersRolesTable();
+      db.prepare('INSERT INTO _migrations (id, applied_at) VALUES (?, ?)').run(m.i, Date.now());
+    }
+  }
+
+  db.exec('BEGIN IMMEDIATE');
+  try {
+    for (const m of pending) {
+      if (m.sql === 'REBUILD_USERS_ROLES') continue;
+      db.exec(m.sql);
+      db.prepare('INSERT INTO _migrations (id, applied_at) VALUES (?, ?)').run(m.i, Date.now());
+    }
+    db.exec('COMMIT');
+  } catch (e) {
+    db.exec('ROLLBACK');
+    throw e;
+  }
 }
+
+runMigrations();
 
 setInterval(() => {
   db.prepare('DELETE FROM sessions WHERE expires_at < ? OR revoked_at IS NOT NULL AND revoked_at < ?')

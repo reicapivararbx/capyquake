@@ -1,10 +1,18 @@
 let ME = null;
 let PERMS = [];
+let META = { roles: [], labels: {}, adminViewRoles: [] };
+let SELECTED_USER = null;
 const content = document.getElementById('content');
 const $ = (sel) => document.querySelector(sel);
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const fmt = (n) => Number(n ?? 0).toLocaleString('pt-BR');
 const dt = (ts) => ts ? new Date(ts).toLocaleString('pt-BR') : '—';
+const uuid = () => (globalThis.crypto && typeof crypto.randomUUID === 'function')
+  ? crypto.randomUUID()
+  : 'id-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 10);
+
+function roleLabel(role) { return META.labels[role] || role; }
+function canAct() { return can('users.create'); } // cargos com ação vs. somente-visualização
 
 function can(perm) { return PERMS.includes('*') || PERMS.includes(perm); }
 
@@ -66,6 +74,218 @@ function confirmModal({ title, bodyHtml, requireUsername, onConfirm }) {
     root.innerHTML = '';
     onConfirm();
   };
+}
+
+// ---------- aba USERS ----------
+
+async function loadMeta() {
+  try {
+    const m = await api('/api/meta/roles');
+    META = { roles: m.roles || [], labels: m.labels || {}, adminViewRoles: m.adminViewRoles || [] };
+  } catch { META = { roles: [], labels: {}, adminViewRoles: [] }; }
+}
+
+function userActionsPanel(u) {
+  if (!canAct()) {
+    return `<div class="panel" id="user-actions"><h2>AÇÕES</h2>
+      <p class="dim">✨ ${esc(roleLabel(ME.role))} possui acesso somente de visualização — ações administrativas estão desativadas.</p></div>`;
+  }
+  const myRank = roleRankOf(ME.role);
+  const selectable = META.roles.filter(r => r !== 'king' ? true : ME.role === 'king')
+    .filter(r => r !== u.username && !(r === 'king' && ME.role !== 'king'))
+    .filter(r => (META.roles.indexOf(r) <= myRank) ? ME.role === 'king' : true);
+  return `<div class="panel" id="user-actions"><h2>AÇÕES · #${u.id} ${esc(u.username)}</h2>
+    <div class="row">
+      <div><label>Novo cargo</label>
+        <select id="ua-role">
+          ${selectable.map(r => `<option value="${r}">${esc(roleLabel(r))}</option>`).join('')}
+        </select>
+      </div>
+      <button id="ua-btn-role" data-label="CHANGE ROLE">CHANGE ROLE</button>
+    </div>
+    <div class="row">
+      <div><label>Nova senha</label><input id="ua-pass" type="password" placeholder="mín. 8 caracteres"></div>
+      <button id="ua-btn-pass" data-label="SET PASSWORD">SET PASSWORD</button>
+    </div>
+    <div class="row">
+      <div><label>Motivo</label><input id="ua-reason" placeholder="opcional"></div>
+      <div><label>Suspend (dias)</label><input id="ua-days" type="number" value="7" min="1" max="365"></div>
+    </div>
+    <div class="row">
+      <button id="ua-btn-ban" style="background:var(--bad);color:#fff" data-label="BAN">BAN</button>
+      <button id="ua-btn-kick" data-label="KICK">KICK</button>
+      <button id="ua-btn-suspend" data-label="SUSPEND">SUSPEND</button>
+      <button id="ua-btn-unban" data-label="UNBAN">UNBAN</button>
+    </div>
+  </div>`;
+}
+
+function roleRankOf(role) { return META.roles.indexOf(role); }
+
+function wireUserActions(u, reload) {
+  const panel = document.getElementById('user-actions');
+  if (!panel) return;
+  const reason = () => $('#ua-reason')?.value || undefined;
+  $('#ua-btn-role')?.addEventListener('click', (e) => {
+    const role = $('#ua-role').value;
+    confirmModal({
+      title: `CHANGE ROLE → ${roleLabel(role)}?`,
+      bodyHtml: `Alvo: <b>#${u.id} ${esc(u.username)}</b><br>A sessão atual do alvo será encerrada.`,
+      onConfirm: () => runAction(e.target, async () => {
+        await api(`/api/admin/users/${u.id}/role`, { method: 'POST', idemKey: crypto.randomUUID(), body: { role, reason: reason() } });
+        toast(`✓ ${esc(u.username)} agora é ${esc(roleLabel(role))}`);
+        reload();
+      })
+    });
+  });
+  $('#ua-btn-pass')?.addEventListener('click', (e) => {
+    const pass = $('#ua-pass').value;
+    confirmModal({
+      title: 'SET PASSWORD',
+      bodyHtml: `Definir uma nova senha para <b>#${u.id} ${esc(u.username)}</b>?<br><span class="dim">A senha atual não pode ser lida — ela será substituída.</span>`,
+      onConfirm: () => runAction(e.target, async () => {
+        await api(`/api/admin/users/${u.id}/password`, { method: 'POST', idemKey: crypto.randomUUID(), body: { newPassword: pass } });
+        toast('✓ Nova senha definida');
+        $('#ua-pass').value = '';
+      })
+    });
+  });
+  $('#ua-btn-ban')?.addEventListener('click', (e) => {
+    confirmModal({
+      title: 'BANIR usuário?',
+      bodyHtml: `<b>#${u.id} ${esc(u.username)}</b> perderá o acesso imediatamente.`,
+      onConfirm: () => runAction(e.target, async () => {
+        await api(`/api/admin/users/${u.id}/ban`, { method: 'POST', idemKey: crypto.randomUUID(), body: { reason: reason() } });
+        toast(`✓ ${esc(u.username)} banido`);
+        reload();
+      })
+    });
+  });
+  $('#ua-btn-kick')?.addEventListener('click', (e) => {
+    confirmModal({
+      title: 'KICK usuário?',
+      bodyHtml: `Todas as sessões de <b>#${u.id} ${esc(u.username)}</b> serão encerradas agora (ele poderá logar de novo).`,
+      onConfirm: () => runAction(e.target, async () => {
+        await api(`/api/admin/users/${u.id}/kick`, { method: 'POST', idemKey: crypto.randomUUID(), body: { reason: reason() } });
+        toast(`✓ ${esc(u.username)} kickado`);
+      })
+    });
+  });
+  $('#ua-btn-suspend')?.addEventListener('click', (e) => {
+    const days = Number($('#ua-days').value) || 7;
+    confirmModal({
+      title: `SUSPENDER por ${days} dias?`,
+      bodyHtml: `Alvo: <b>#${u.id} ${esc(u.username)}</b>`,
+      onConfirm: () => runAction(e.target, async () => {
+        await api(`/api/admin/users/${u.id}/suspend`, { method: 'POST', idemKey: crypto.randomUUID(), body: { days, reason: reason() } });
+        toast(`✓ ${esc(u.username)} suspenso por ${days}d`);
+        reload();
+      })
+    });
+  });
+  $('#ua-btn-unban')?.addEventListener('click', (e) => {
+    runAction(e.target, async () => {
+      await api(`/api/admin/users/${u.id}/unban`, { method: 'POST', idemKey: crypto.randomUUID(), body: { reason: reason() } });
+      toast(`✓ ${esc(u.username)} reativado`);
+      reload();
+    }, '✓ UNBANNED');
+  });
+}
+
+function createUserModal(reload) {
+  const creatable = META.roles.filter(r =>
+    r === 'king' ? ME.role === 'king'
+      : (ME.role === 'king' ? true : META.roles.indexOf(r) < roleRankOf(ME.role)));
+  const root = document.getElementById('modal-root');
+  root.innerHTML = `<div class="modal-bg"><div class="modal" role="dialog" aria-modal="true">
+    <h3>+ CREATE USER</h3>
+    <label>Username</label><input id="cu-username" maxlength="24" autocomplete="off" placeholder="3-24: letras, números, - _">
+    <label>Senha</label><input id="cu-pass" type="password" autocomplete="new-password" placeholder="mín. 8">
+    <label>Confirmar senha</label><input id="cu-confirm" type="password" autocomplete="new-password">
+    <label>Cargo</label>
+    <select id="cu-role">${creatable.map(r => `<option value="${r}">${esc(roleLabel(r))}</option>`).join('')}</select>
+    <p class="err" id="cu-err" hidden></p>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button id="cu-go">CRIAR</button>
+      <button class="ghost" id="cu-cancel">CANCELAR</button>
+    </div></div></div>`;
+  $('#cu-cancel').onclick = () => { root.innerHTML = ''; };
+  $('#cu-go').onclick = async () => {
+    const errEl = $('#cu-err');
+    errEl.hidden = true;
+    const username = $('#cu-username').value.trim();
+    const password = $('#cu-pass').value;
+    const confirmPassword = $('#cu-confirm').value;
+    let problem = null;
+    if (!username) problem = 'Informe um username.';
+    else if (username.length < 3 || username.length > 24) problem = 'Username deve ter entre 3 e 24 caracteres.';
+    else if (!/^[a-zA-Z0-9_-]+$/.test(username)) problem = 'Use apenas letras, números, - e _.';
+    else if (!password || password.length < 8) problem = 'Senha deve ter no mínimo 8 caracteres.';
+    else if (password !== confirmPassword) problem = 'As senhas não conferem.';
+    if (problem) { errEl.textContent = problem; errEl.hidden = false; return; }
+    try {
+      const r = await api('/api/admin/users', {
+        method: 'POST', idemKey: crypto.randomUUID(),
+        body: { username, password, confirmPassword, role: $('#cu-role').value }
+      });
+      root.innerHTML = '';
+      toast(`✓ Usuário criado: #${r.user.id} ${esc(r.user.username)} · ${esc(roleLabel(r.user.role))}`);
+      reload();
+    } catch (e) { errEl.textContent = e.message; errEl.hidden = false; }
+  };
+}
+
+async function pageUsers(offset = 0, q = '', role = '') {
+  const qs = new URLSearchParams({ limit: 20, offset });
+  if (q) qs.set('q', q);
+  if (role) qs.set('role', role);
+  const data = await api('/api/admin/users?' + qs);
+  const reload = () => pageUsers(offset, q, role);
+  content.innerHTML = `<h1>Users</h1>
+    <form id="users-search-form" class="row">
+      <div><label>Buscar username / ID / nome</label><input id="uq" value="${esc(q)}"></div>
+      <div><label>Filtrar por cargo</label>
+        <select id="urole"><option value="">— todos os cargos —</option>
+          ${META.roles.map(r => `<option value="${r}" ${r === role ? 'selected' : ''}>${esc(roleLabel(r))}</option>`).join('')}
+        </select></div>
+      ${canAct() ? '<button type="button" id="btn-create-user">+ CREATE USER</button>' : ''}
+      <button type="submit">BUSCAR / FILTRAR</button>
+    </form>
+    <table><thead><tr><th>ID</th><th>Username</th><th>Cargo</th><th>Status</th><th>Level</th><th>Coins</th><th>Último login</th></tr></thead><tbody>
+    ${data.users.length ? data.users.map(u => `<tr class="clickable ${SELECTED_USER === u.id ? 'selected-row' : ''}" data-id="${u.id}">
+      <td>${u.id}</td><td><b>${esc(u.username)}</b><br><span class="dim">${esc(u.displayName)}</span></td>
+      <td>${esc(roleLabel(u.role))}</td><td><span class="pill ${u.status}">${u.status}</span></td>
+      <td>${u.level ?? '—'}</td><td>${fmt(u.coins)}</td><td>${dt(u.lastLoginAt)}</td></tr>`).join('')
+      : '<tr><td colspan="7" class="dim" style="text-align:center">Nenhum usuário encontrado.</td></tr>'}
+    </tbody></table>
+    <div class="row" style="margin-top:10px">
+      <button class="ghost" id="uprev" ${offset <= 0 ? 'disabled' : ''}>← anterior</button>
+      <span class="dim">total: ${fmt(data.total)}</span>
+      <button class="ghost" id="unext" ${offset + 20 >= data.users.length ? 'disabled' : ''}>próxima →</button>
+    </div>
+    <div id="user-actions-slot"></div>`;
+
+  $('#users-search-form').onsubmit = (e) => {
+    e.preventDefault();
+    SELECTED_USER = null;
+    location.hash = `#/users?q=${encodeURIComponent($('#uq').value.trim())}&role=${encodeURIComponent($('#urole').value)}`;
+  };
+  $('#btn-create-user')?.addEventListener('click', () => createUserModal(reload));
+
+  content.querySelectorAll('tr.clickable').forEach(tr => tr.onclick = async () => {
+    SELECTED_USER = Number(tr.dataset.id);
+    content.querySelectorAll('tr.clickable').forEach(t => t.classList.remove('selected-row'));
+    tr.classList.add('selected-row');
+    try {
+      const acc = await api('/api/admin/users/' + SELECTED_USER);
+      document.getElementById('user-actions-slot').innerHTML = userActionsPanel(acc.user);
+      wireUserActions(acc.user, reload);
+      document.getElementById('user-actions-slot').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } catch (e) { toast(e.message, true); }
+  });
+
+  $('#uprev').onclick = () => location.hash = `#/users?offset=${Math.max(0, offset - 20)}${q ? '&q=' + encodeURIComponent(q) : ''}${role ? '&role=' + encodeURIComponent(role) : ''}`;
+  $('#unext').onclick = () => location.hash = `#/users?offset=${offset + 20}${q ? '&q=' + encodeURIComponent(q) : ''}${role ? '&role=' + encodeURIComponent(role) : ''}`;
 }
 
 // ---------- pages ----------
@@ -210,7 +430,9 @@ async function pageTools(params) {
         <button id="btn-ban" data-label="BAN" style="background:var(--bad);color:#fff">BAN</button>
         <button id="btn-suspend" data-label="SUSPEND">SUSPEND</button>
         <button id="btn-unban" data-label="UNBAN">UNBAN</button>
-        ${can('roles.manage') ? `<select id="role-sel"><option>player</option><option>moderator</option><option>admin</option><option>owner</option></select>
+        ${can('roles.manage') ? `<select id="role-sel">
+          ${META.roles.map(r => `<option value="${r}">${esc(roleLabel(r))}</option>`).join('')}
+        </select>
         <button id="btn-role" data-label="SET ROLE">SET ROLE</button>` : ''}
       </div>
     </div>
@@ -349,7 +571,7 @@ async function pageLogs(offset = 0) {
 function pageSettings() {
   content.innerHTML = `<h1>Settings</h1>
     <div class="panel"><h2>SESSÃO ATUAL</h2>
-      Usuário: <b>${esc(ME.username)}</b> (#${ME.id}) · role <span class="pill ${ME.role}">${ME.role}</span><br>
+      Usuário: <b>${esc(ME.username)}</b> (#${ME.id}) · ${esc(roleLabel(ME.role))}<br>
       Permissões: <span class="dim">${PERMS.includes('*') ? 'todas (*)' : PERMS.join(', ')}</span>
     </div>
     <div class="panel"><h2>SEGURANÇA</h2>
@@ -371,6 +593,7 @@ async function route() {
   content.querySelectorAll('button').forEach(b => b.disabled = false);
   try {
     if (parts[0] === 'dashboard' || !parts[0]) return await pageDashboard();
+    if (parts[0] === 'users') return await pageUsers(intParam0(params.get('offset')), params.get('q') || '', params.get('role') || '');
     if (parts[0] === 'players' && parts[1]) return await pagePlayerDetail(parts[1]);
     if (parts[0] === 'players') return await pagePlayers(intParam0(params.get('offset')), params.get('q') || '');
     if (parts[0] === 'game-tools') return await pageTools(params);
@@ -389,7 +612,8 @@ window.addEventListener('hashchange', route);
     const me = await api('/api/admin/me');
     ME = me.user;
     PERMS = me.permissions;
-    $('#me').textContent = `${ME.username} · ${ME.role}`;
+    await loadMeta();
+    $('#me').textContent = `${ME.username} · ${roleLabel(ME.role)}`;
     if (ME.role === 'player') { location.href = '/admin/login'; return; }
     document.querySelectorAll('[data-nav]').forEach(a => a.classList.add(a.getAttribute('href') === location.hash || (!location.hash && a.getAttribute('href') === '#/dashboard') ? 'active' : ''));
     window.addEventListener('hashchange', () => {

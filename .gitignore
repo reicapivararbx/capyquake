@@ -1,6 +1,10 @@
 node_modules/
 .omo/
 .playwright-mcp/
+.tmp-test/
+backup/
+data/
+users-tab.yml
 qa-*.png
 animals-check.png
 shop-current.png

@@ -34,9 +34,16 @@
       <p class="err" id="err-code" role="alert" hidden></p>
     </section>
 
-    <a class="back" href="/">← voltar ao jogo</a>
+    <a class="back" id="back-to-game" href="/">← voltar ao jogo</a>
   </main>
   <script>
+    (function () {
+      const host = location.hostname.toLowerCase();
+      if (host === 'admin.localhost' || host.startsWith('admin.')) {
+        document.getElementById('back-to-game').href =
+          location.protocol.replace('ws', 'http') + '//m.zanona.com.br';
+      }
+    })();
     function bind(formId, btnId, errId, url, build) {
       const form = document.getElementById(formId);
       const btn = document.getElementById(btnId);

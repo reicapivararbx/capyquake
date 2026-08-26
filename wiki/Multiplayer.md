@@ -2,7 +2,13 @@
 
 Jogue com até **6 jogadores** por partida via lobbies com código. O servidor é o mesmo arquivo que serve o jogo localmente.
 
-## ▶️ Como rodar
+## 🌐 Multiplayer online
+
+O servidor oficial já está no ar: jogue em **[m.zanona.com.br](https://m.zanona.com.br)** e crie/entre em lobbies direto do menu — não precisa subir nada.
+
+## ▶️ Servidor próprio (opcional)
+
+Para hospedar por conta própria:
 
 ```bash
 node server/index.js            # porta padrão 8080
@@ -53,4 +59,4 @@ Se a conexão cair, o cliente tenta reconectar sozinho após **3 segundos**.
 
 ---
 
-> ⚠️ O site público (`github.io`) roda só o front-end — para multiplayer, alguém precisa subir `node server/index.js` (na sua máquina ou num host próprio).
+> ✅ No site oficial ([m.zanona.com.br](https://m.zanona.com.br)) o multiplayer já vem funcionando. O espelho (`github.io`) roda só o front-end — lá, ou num servidor próprio, alguém precisa subir `node server/index.js`.

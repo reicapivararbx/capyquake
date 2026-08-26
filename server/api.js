@@ -8,24 +8,48 @@ import {
   giveCoins, setCoins, giveTokens, setTokens, giveXp, setXp, setLevel, levelUp,
   addItemToInventory, removeItemFromInventory, getInventory, maxStats, heal,
   banUser, suspendUser, unbanUser, changeRole, resetPlayer, logAdminAction,
-  listLogs, listTransactions, searchUsers, dashboardStats, countUsers, getItemsCatalog
+  listLogs, listTransactions, searchUsers, dashboardStats, countUsers, getItemsCatalog,
+  changeOwnPassword, adminSetPassword, revokeTargetSessions
 } from './services.js';
-import { ApiError, ROLE_RANK } from './validation.js';
+import { ApiError, ROLE_RANK, ROLES, ROLE_LABELS, ADMIN_VIEW_ROLES } from './validation.js';
 
-const BASE_PERMS = [
-  'users.view', 'game.view', 'inventory.view', 'economy.view',
-  'admin.logs', 'game.heal'
-];
+// Permissões por cargo. best_capybara visualiza tudo, mas não pode executar ações.
+const VIEW_PERMS = ['admin.view', 'users.view', 'game.view', 'inventory.view', 'economy.view'];
 export const PERMISSIONS = {
-  player: [],
-  moderator: BASE_PERMS,
-  admin: [...BASE_PERMS,
-    'users.suspend', 'users.ban',
+  visitante: [],
+  citizen: [],
+  cool: [],
+  hazbin: [],
+  friend: [],
+  // ✨ The Best Capybara: somente visualização.
+  best_capybara: [...VIEW_PERMS],
+  developer: [...VIEW_PERMS,
+    'admin.logs', 'game.heal',
+    'users.suspend', 'users.ban', 'users.create', 'users.password',
     'economy.give', 'economy.remove', 'economy.set',
     'inventory.give', 'inventory.remove',
-    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset',
-    'game.giveAll'],
-  owner: [...BASE_PERMS, 'roles.manage', '*']
+    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll'],
+  admin: [...VIEW_PERMS,
+    'admin.logs', 'game.heal',
+    'users.suspend', 'users.ban', 'users.create', 'users.password',
+    'economy.give', 'economy.remove', 'economy.set',
+    'inventory.give', 'inventory.remove',
+    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll'],
+  head_admin: [...VIEW_PERMS,
+    'admin.logs', 'game.heal',
+    'users.suspend', 'users.ban', 'users.create', 'users.password',
+    'economy.give', 'economy.remove', 'economy.set',
+    'inventory.give', 'inventory.remove',
+    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll',
+    'roles.manage'],
+  co_king: [...VIEW_PERMS,
+    'admin.logs', 'game.heal',
+    'users.suspend', 'users.ban', 'users.create', 'users.password',
+    'economy.give', 'economy.remove', 'economy.set',
+    'inventory.give', 'inventory.remove',
+    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll',
+    'roles.manage'],
+  king: ['*']
 };
 
 export function hasPermission(user, perm) {
@@ -77,11 +101,14 @@ export function attachSession(req) {
 }
 
 export function sessionCookieHeader(req, token, expiresAt) {
-  const https = (req.headers['x-forwarded-proto'] === 'https') ||
-    String(req.headers.host || '').startsWith('m.zanona.com.br');
+  const host = String(req.headers.host || '').toLowerCase().split(':')[0];
+  const isProdDomain = host === 'm.zanona.com.br' ||
+    (req.headers['x-forwarded-proto'] === 'https' && (host.endsWith('.m.zanona.com.br') || host.endsWith('.zanona.com.br')));
   const parts = [`cq_session=${token}`, 'Path=/', 'HttpOnly', 'SameSite=Lax',
     `Max-Age=${Math.floor((expiresAt - Date.now()) / 1000)}`];
-  if (https) parts.push('Secure');
+  // Cookie compartilhado entre m.zanona.com.br e admin.m.zanona.com.br.
+  if (host.endsWith('zanona.com.br')) parts.push('Domain=.m.zanona.com.br');
+  if (isProdDomain) parts.push('Secure');
   return parts.join('; ');
 }
 
@@ -121,14 +148,14 @@ export function ensureAdminSeed() {
     const t = Date.now();
     db.prepare(
       `INSERT INTO users (username, display_name, password_hash, role, status, created_at, updated_at)
-       VALUES (?, ?, ?, 'owner', 'active', ?, ?)`
+       VALUES (?, ?, ?, 'king', 'active', ?, ?)`
     ).run(env.adminUsername, 'Administrator', hashPassword(env.adminPassword), t, t);
     const id = Number(db.prepare('SELECT id FROM users WHERE username=?').get(env.adminUsername).id);
     db.prepare('INSERT INTO game_profiles (user_id, created_at, updated_at) VALUES (?, ?, ?)').run(id, t, t);
     db.prepare('INSERT INTO capybaras (user_id, updated_at) VALUES (?, ?)').run(id, t);
     console.log(`[auth] conta administrativa '${env.adminUsername}' criada.`);
-  } else if (existing.role !== 'owner' || !verifyPassword(env.adminPassword, existing.password_hash)) {
-    db.prepare("UPDATE users SET role='owner', password_hash=?, updated_at=? WHERE id=?")
+  } else if (existing.role !== 'king' || !verifyPassword(env.adminPassword, existing.password_hash)) {
+    db.prepare("UPDATE users SET role='king', password_hash=?, updated_at=? WHERE id=?")
       .run(hashPassword(env.adminPassword), Date.now(), existing.id);
     console.log('[auth] credenciais da conta administrativa sincronizadas com o ambiente.');
   }
@@ -181,6 +208,29 @@ export async function handleApi(req, res, pathname, query) {
       return json(res, 200, { success: true, ...getFullAccount(user.id), permissions: PERMISSIONS[user.role] });
     }
 
+    // ---- troca de senha do proprio usuario ----
+    if (pathname === '/api/auth/change-password' && method === 'POST') {
+      const user = requireAuth(req);
+      const wait = hit(`pwd:${user.id}`, 8, 600000);
+      if (wait) return rateLimited(res, wait);
+      const body = await readJsonBody(req);
+      if (String(body.confirmPassword ?? '') !== String(body.newPassword ?? '')) {
+        throw new ApiError('INVALID_PASSWORD', 'A confirmação não confere com a nova senha.');
+      }
+      const u = changeOwnPassword(user.id, body.currentPassword, body.newPassword);
+      return json(res, 200, { success: true, user: u });
+    }
+
+    // ---- metadata publica (cargos/labels para clientes) ----
+    if (pathname === '/api/meta/roles' && method === 'GET') {
+      return json(res, 200, {
+        success: true,
+        roles: ROLES,
+        labels: ROLE_LABELS,
+        adminViewRoles: ADMIN_VIEW_ROLES
+      });
+    }
+
     // ---- game sync ----
     if (pathname === '/api/game/report' && method === 'POST') {
       const user = requireAuth(req);
@@ -217,10 +267,10 @@ export async function handleApi(req, res, pathname, query) {
       }
 
       const admin = requireAuth(req);
-      if (admin.role === 'player') throw new ApiError('FORBIDDEN', 'Acesso restrito.', 403);
+      if (!hasPermission(admin, 'admin.view')) throw new ApiError('FORBIDDEN', 'Acesso restrito.', 403);
 
       if (pathname === '/api/admin/me' && method === 'GET') {
-        return json(res, 200, { success: true, user: admin, permissions: PERMISSIONS[admin.role] });
+        return json(res, 200, { success: true, user: admin, permissions: PERMISSIONS[admin.role], canAct: hasPermission(admin, 'users.view') && PERMISSIONS[admin.role].some(p => !VIEW_PERMS.includes(p) || p === 'roles.manage') });
       }
 
       const idemKey = req.headers['idempotency-key'];
@@ -231,6 +281,26 @@ export async function handleApi(req, res, pathname, query) {
         return json(res, 200, { success: true, stats: dashboardStats() });
       }
 
+      // ---- criar usuario pelo admin ----
+      if (pathname === '/api/admin/users' && method === 'POST') {
+        requirePerm(req, 'users.create');
+        const b = await readJsonBody(req);
+        if (String(b.confirmPassword ?? '') !== String(b.password ?? '')) {
+          throw new ApiError('INVALID_PASSWORD', 'Senhas não conferem.');
+        }
+        let role = b.role;
+        if (role !== undefined && role !== null && role !== '') {
+          if (!ROLES.includes(role)) throw new ApiError('INVALID_INPUT', 'Cargo inválido.', 400);
+          if (ROLE_RANK[role] >= ROLE_RANK[admin.role] && admin.role !== 'king') {
+            throw new ApiError('FORBIDDEN', 'Não é possível criar conta com cargo igual ou superior ao seu.', 403);
+          }
+        }
+        const user = mutate(() => createUser({ username: b.username, password: b.password, displayName: b.displayName, role }));
+        logAdminAction(admin.id, user.id, 'CREATE_USER',
+          { username: user.username, role: user.role }, true);
+        return json(res, 201, { success: true, user });
+      }
+
       if (pathname === '/api/admin/items' && method === 'GET') {
         requirePerm(req, 'inventory.view');
         return json(res, 200, { success: true, items: [...getItemsCatalog().values()] });
@@ -239,7 +309,7 @@ export async function handleApi(req, res, pathname, query) {
       if (pathname === '/api/admin/users' && method === 'GET') {
         requirePerm(req, 'users.view');
         const rows = searchUsers({
-          q: query.get('q'), status: query.get('status'),
+          q: query.get('q'), status: query.get('status'), role: query.get('role') || undefined,
           limit: intParam(query.get('limit'), 20), offset: intParam(query.get('offset'), 0)
         });
         return json(res, 200, { success: true, users: rows, total: countUsers() });
@@ -348,6 +418,25 @@ export async function handleApi(req, res, pathname, query) {
             const u = mutate(() => changeRole(actor, targetId, String(b.role), b.reason));
             return json(res, 200, { success: true, user: u });
           }
+          case '/password': {
+            requirePerm(req, 'users.password');
+            const b = await readJsonBody(req);
+            const u = mutate(() => adminSetPassword(actor, targetId, b.newPassword));
+            return json(res, 200, { success: true, user: u });
+          }
+          case '/kick': {
+            // Kick = revogar todas as sessões do alvo (desconecta na hora).
+            requirePerm(req, 'users.suspend');
+            const b = await readJsonBody(req);
+            const target = getUserById(targetId);
+            if (!target) throw new ApiError('PLAYER_NOT_FOUND', 'Jogador não encontrado.', 404);
+            if (target.id !== admin.id && ROLE_RANK[target.role] >= ROLE_RANK[admin.role] && admin.role !== 'king') {
+              throw new ApiError('FORBIDDEN', 'Não é possível kickar alguém com cargo igual ou superior.', 403);
+            }
+            mutate(() => revokeTargetSessions(targetId));
+            logAdminAction(admin.id, targetId, 'KICK', { reason: b.reason || `por ${admin.username}` }, true);
+            return json(res, 200, { success: true });
+          }
           default:
             throw new ApiError('INVALID_INPUT', 'Rota desconhecida.', 404);
         }
@@ -453,7 +542,7 @@ function rateLimited(res, ms = 0) {
 }
 
 export function isAdminRole(role) {
-  return role === 'admin' || role === 'moderator' || role === 'owner';
+  return ADMIN_VIEW_ROLES.includes(role);
 }
 
-export { ROLE_RANK };
+export { ROLE_RANK, ROLES as GAME_ROLES };

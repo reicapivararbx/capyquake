@@ -2170,6 +2170,158 @@
     .stat-box .sv { font-size: 17px; font-weight: 800; color: #60a5fa; font-family:'Courier New',monospace; }
     .stat-box .sl { font-size: 10.5px; color: #8b90a3; margin-top: 2px; }
 
+    /* chat externo (menus) */
+    #lobby-chat {
+      position: fixed;
+      left: 14px;
+      bottom: 14px;
+      width: min(300px, calc(100vw - 28px));
+      max-height: 320px;
+      display: none;
+      flex-direction: column;
+      background: rgba(12,10,22,.92);
+      border: 1px solid #3f3a52;
+      border-radius: 12px;
+      z-index: 95;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,.45);
+    }
+    #lobby-chat.minimized { max-height: none; }
+    #lc-header {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; background: rgba(124,58,237,.18);
+      border-bottom: 1px solid #3f3a52; cursor: default;
+    }
+    .lc-title { font-weight: 800; letter-spacing: 1px; font-size: 12px; color: #c4b5fd; }
+    #lc-status { margin-left: auto; display: flex; align-items: center; gap: 4px; }
+    #lc-status em { font-style: normal; font-size: 9.5px; color: #8b90a3; letter-spacing: 1px; }
+    .lc-dot { width: 8px; height: 8px; border-radius: 50%; background: #f87171; display: inline-block; }
+    .lc-dot.on { background: #4ade80; box-shadow: 0 0 6px #4ade80aa; }
+    .lc-dot.wait { background: #ffd000; animation: lcblink 1s infinite alternate; }
+    @keyframes lcblink { from { opacity: 1; } to { opacity: .35; } }
+    #lc-toggle {
+      background: transparent; border: none; color: #9aa0b4; cursor: pointer;
+      font-size: 14px; line-height: 1; padding: 2px 6px; border-radius: 6px;
+    }
+    #lc-toggle:hover { background: rgba(255,255,255,.08); color: #fff; }
+    #lc-messages {
+      flex: 1; min-height: 90px; max-height: 210px; overflow-y: auto;
+      padding: 8px 10px; display: flex; flex-direction: column; gap: 3px;
+      font-size: 12.5px; scrollbar-width: thin;
+    }
+    #lobby-chat.minimized #lc-messages { display: none; }
+    .lc-line { color: #d6d8e4; word-break: break-word; }
+    .lc-line b { color: #9aa0b4; font-weight: 700; }
+    .lc-line.lc-system { color: #8b90a3; font-style: italic; }
+    #lc-form { display: flex; gap: 6px; padding: 8px; border-top: 1px solid #3f3a52; }
+    #lobby-chat.minimized #lc-form { display: none; }
+    #lc-input {
+      flex: 1; min-width: 0; background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14); border-radius: 999px;
+      color: #fff; padding: 8px 12px; font-size: 13px; outline: none;
+    }
+    #lc-input:focus { border-color: #7c3aed; }
+    #lc-send {
+      width: 38px; height: 34px; border-radius: 999px; border: none;
+      background: linear-gradient(160deg,#8b5cf6,#6d28d9); color: #fff;
+      font-size: 15px; cursor: pointer; flex-shrink: 0;
+    }
+    #lc-send:active { transform: scale(.94); }
+    body[data-device="mobile"] #lobby-chat {
+      left: 8px; right: 8px; width: auto; bottom: 8px; max-height: 250px;
+    }
+    body[data-device="mobile"] #lc-messages { max-height: 150px; }
+
+    /* autocomplete de comandos */
+    .cmd-autocomplete {
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 8px;
+      right: 8px;
+      background: rgba(12,10,22,.97);
+      border: 1px solid #7c3aed66;
+      border-radius: 10px;
+      z-index: 1200;
+      max-height: 220px;
+      overflow-y: auto;
+      box-shadow: 0 8px 30px rgba(0,0,0,.5);
+    }
+    .cmd-suggestion {
+      display: flex; align-items: baseline; gap: 2px; width: 100%;
+      text-align: left; background: transparent; border: none; color: #d6d8e4;
+      padding: 9px 12px; cursor: pointer; font: 12.5px 'Segoe UI', system-ui, sans-serif;
+      border-bottom: 1px solid #ffffff0d;
+    }
+    .cmd-suggestion:last-child { border-bottom: none; }
+    .cmd-suggestion:hover { background: rgba(124,58,237,.25); }
+    .cmd-suggestion b { color: #c4b5fd; white-space: nowrap; }
+    .cmd-suggestion span { color: #8b90a3; font-size: 11.5px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* report bug */
+    .rb-dialog { border: none; background: transparent; padding: 0; }
+    .rb-dialog::backdrop { background: rgba(5,4,12,.82); backdrop-filter: blur(3px); }
+    .rb-panel {
+      width: min(560px, 94vw);
+      background: linear-gradient(175deg, #1c1233 0%, #120b22 60%, #0d0818 100%);
+      border: 1px solid #7c3aed55;
+      border-radius: 20px;
+      padding: 26px 28px 22px;
+      box-shadow: 0 24px 80px rgba(124,58,237,.35), 0 4px 18px rgba(0,0,0,.6);
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    .rb-header { display: flex; gap: 16px; align-items: center; margin-bottom: 20px; }
+    .rb-bug-icon {
+      font-size: 42px; line-height: 1;
+      background: linear-gradient(135deg,#ff9f43,#ff6b6b);
+      border-radius: 16px; padding: 12px 14px;
+      box-shadow: 0 8px 24px rgba(255,159,67,.35);
+    }
+    .rb-header h3 { margin: 0; color: #ffd166; letter-spacing: 2px; font-size: 20px; }
+    .rb-header p { margin: 4px 0 0; color: #9aa0b4; font-size: 13px; }
+    .rb-choices { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .rb-card {
+      display: flex; flex-direction: column; align-items: flex-start; gap: 4px;
+      padding: 18px 18px 15px; border-radius: 16px; border: 1px solid transparent;
+      cursor: pointer; transition: transform .15s, box-shadow .15s, filter .15s;
+      color: #fff; text-align: left; font-family: inherit;
+    }
+    .rb-card:hover { transform: translateY(-3px) scale(1.02); filter: brightness(1.1); }
+    .rb-card:active { transform: scale(.98); }
+    .rb-email {
+      background: linear-gradient(150deg, #f97316 0%, #dc2626 100%);
+      box-shadow: 0 10px 26px rgba(220,38,38,.35);
+    }
+    .rb-github {
+      background: linear-gradient(150deg, #7c3aed 0%, #2563eb 100%);
+      box-shadow: 0 10px 26px rgba(124,58,237,.4);
+    }
+    .rb-card-icon { font-size: 30px; margin-bottom: 4px; }
+    .rb-card-title { font-weight: 800; font-size: 17px; letter-spacing: .5px; }
+    .rb-card-desc { font-size: 11.5px; opacity: .85; line-height: 1.35; }
+    .rb-panel label {
+      display: block; color: #c4b5fd; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.5px; margin: 14px 0 5px;
+    }
+    .rb-panel input, .rb-panel textarea {
+      width: 100%; box-sizing: border-box;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(196,181,253,.22);
+      border-radius: 12px; color: #fff; padding: 12px 14px;
+      font: 13.5px 'Segoe UI', system-ui, sans-serif; outline: none; resize: vertical;
+    }
+    .rb-panel input:focus, .rb-panel textarea:focus { border-color: #a78bfa; box-shadow: 0 0 0 3px rgba(139,92,246,.2); }
+    .rb-actions { display: flex; gap: 10px; margin-top: 16px; }
+    .rb-send {
+      flex: 1; padding: 13px; border: none; border-radius: 12px; cursor: pointer;
+      background: linear-gradient(135deg, #22c55e, #15803d);
+      color: #fff; font-weight: 800; font-size: 15px; letter-spacing: 1px;
+      box-shadow: 0 8px 22px rgba(34,197,94,.3); font-family: inherit;
+    }
+    .rb-send:hover { filter: brightness(1.12); }
+    .rb-close { width: 100%; margin-top: 14px; padding: 10px; border-radius: 12px; cursor: pointer; font-family: inherit; }
+    body[data-device="mobile"] .rb-choices { grid-template-columns: 1fr; }
+    body[data-device="mobile"] .rb-panel { width: 96vw; padding: 18px 16px 16px; }
+
   </style>
    <link rel="stylesheet" href="shop.css">
 </head>
@@ -2190,11 +2342,50 @@
       <button id="btn-achievements-menu">🏆<span>Conquistas</span></button>
       <button id="btn-rebirth-menu">🔄<span>Rebirth</span></button>
       <button id="btn-stats-menu">📊<span>Stats</span></button>
+      <button id="btn-report-bug">🐛<span>Report Bug</span></button>
     </div>
+
+    <dialog id="report-bug-dialog" class="rb-dialog">
+      <div class="rb-panel">
+        <div class="rb-header">
+          <span class="rb-bug-icon">🐛</span>
+          <div>
+            <h3>REPORTAR BUG</h3>
+            <p>Encontrou algo estranho? Ajude a melhorar o CapiQuake!</p>
+          </div>
+        </div>
+
+        <div id="rb-choose" class="rb-choices">
+          <button type="button" id="btn-report-email" class="rb-card rb-email">
+            <span class="rb-card-icon">📧</span>
+            <span class="rb-card-title">Por Email</span>
+            <span class="rb-card-desc">Abre seu cliente de email com tudo pronto</span>
+          </button>
+          <button type="button" id="btn-report-github" class="rb-card rb-github">
+            <span class="rb-card-icon">🐙</span>
+            <span class="rb-card-title">Por GitHub</span>
+            <span class="rb-card-desc">Abre as issues do repositório oficial</span>
+          </button>
+        </div>
+
+        <div id="rb-email-form" style="display:none;">
+          <label for="rb-title">Título</label>
+          <input id="rb-title" maxlength="120" autocomplete="off" placeholder="Resumo do bug">
+          <label for="rb-body">Descrição</label>
+          <textarea id="rb-body" maxlength="2000" rows="5" placeholder="O que aconteceu? O que você esperava? Como reproduzir?"></textarea>
+          <div class="rb-actions">
+            <button type="button" id="btn-report-send" class="rb-send">✉ ENVIAR</button>
+            <button type="button" id="btn-report-back" class="ghost">VOLTAR</button>
+          </div>
+        </div>
+
+        <button id="btn-report-close" class="ghost rb-close" onclick="document.getElementById('report-bug-dialog').close()">FECHAR</button>
+      </div>
+    </dialog>
     <div id="account-bar"></div>
 
     <dialog id="auth-dialog">
-      <form id="form-login" method="dialog">
+      <form id="form-login" method="dialog" novalidate>
         <h3>ENTRAR</h3>
         <label for="login-username">Username</label>
         <input id="login-username" maxlength="24" autocomplete="username">
@@ -2204,20 +2395,35 @@
         <button type="submit" class="auth-btn">ENTRAR</button>
       </form>
       <div class="auth-divider">ou</div>
-      <form id="form-register" method="dialog">
+      <form id="form-register" method="dialog" novalidate>
         <h3>CRIAR CONTA</h3>
         <label for="reg-username">Username (3-24: letras, números, - _)</label>
         <input id="reg-username" maxlength="24" autocomplete="off">
         <label for="reg-display">Nome no jogo (opcional)</label>
         <input id="reg-display" maxlength="12" autocomplete="off">
         <label for="reg-password">Senha (mín. 8)</label>
-        <input id="reg-password" type="password" autocomplete="new-password">
+        <input id="reg-password" type="password" minlength="8" autocomplete="new-password">
         <label for="reg-confirm">Confirmar senha</label>
-        <input id="reg-confirm" type="password" autocomplete="new-password">
+        <input id="reg-confirm" type="password" minlength="8" autocomplete="new-password">
         <p class="auth-error" id="register-error" hidden></p>
         <button type="submit" class="auth-btn">CRIAR CONTA</button>
       </form>
       <button id="btn-close-auth" class="ghost" onclick="document.getElementById('auth-dialog').close()">FECHAR</button>
+    </dialog>
+
+    <dialog id="change-password-dialog">
+      <form id="form-change-password" method="dialog" novalidate>
+        <h3>TROCAR SENHA</h3>
+        <label for="cp-current">Senha atual</label>
+        <input id="cp-current" type="password" autocomplete="current-password">
+        <label for="cp-new">Nova senha (mín. 8)</label>
+        <input id="cp-new" type="password" minlength="8" autocomplete="new-password">
+        <label for="cp-confirm">Confirmar nova senha</label>
+        <input id="cp-confirm" type="password" minlength="8" autocomplete="new-password">
+        <p class="auth-error" id="change-password-error" hidden></p>
+        <button type="submit" class="auth-btn">SALVAR NOVA SENHA</button>
+      </form>
+      <button id="btn-close-change-password" class="ghost" onclick="document.getElementById('change-password-dialog').close()">FECHAR</button>
     </dialog>
     <button id="btn-test-mode">🧪 MODO TESTE</button>
   </div>
@@ -2450,7 +2656,7 @@
       <h3>REQUISITOS (por partida)</h3>
       <div class="rb-reqs">
         <div class="rb-req" id="rb-req-level"><span class="rb-req-label">Nível 100 na partida</span><span class="rb-req-value" id="rb-val-level">-</span></div>
-        <div class="rb-req" id="rb-req-tokens"><span class="rb-req-label">10.000 Tokens</span><span class="rb-req-value" id="rb-val-tokens">0</span></div>
+        <div class="rb-req" id="rb-req-tokens"><span class="rb-req-label">Ter 10.000 tokens (requisito — não é a troca)</span><span class="rb-req-value" id="rb-val-tokens">0</span></div>
         <div class="rb-req" id="rb-req-money"><span class="rb-req-label">R$ 1.000.000</span><span class="rb-req-value" id="rb-val-money">0</span></div>
       </div>
       <div id="rb-warning" style="display:none; color:#ff7b7b; font-size:12px; margin:10px 0;">⚠ Vai ZERAR seu dinheiro e tokens! Os bônus são permanentes.</div>

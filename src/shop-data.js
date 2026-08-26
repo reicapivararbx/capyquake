@@ -68,7 +68,7 @@ export const SHOP_SECTIONS = [
   {
     id: 'armas', icon: '🔫', title: 'ARMAS', currency: 'money',
     items: [
-{ item: 'minigun', name: 'Minigun', desc: 'Metralhadora pesada', cost: 5000, currency: 'money', icon: '🔫', grant: { type: 'weapon', id: 'minigun' } },
+  { item: 'brick', name: 'Brick (Tijolo)', desc: 'Arremessável · 80-90 de dano · CD 15s · 5 unidades', cost: 15, currency: 'money', icon: '🧱', grant: { type: 'ammo', weapon: 'brick', amount: 5 } },
   { item: 'ak47', name: 'AK-47', desc: 'Rifle de assalto', cost: 3000, currency: 'money', icon: '🔫', grant: { type: 'weapon', id: 'ak47' } },
   { item: 'weapon-glock', name: 'Glock', desc: 'Pistola', cost: 750, currency: 'money', icon: '🔫', grant: { type: 'weapon', id: 'glock' } },
   { item: 'weapon-desert-eagle', name: 'Desert Eagle', desc: 'Pistola pesada', cost: 1500, currency: 'money', icon: '🔫', grant: { type: 'weapon', id: 'desert-eagle' } },

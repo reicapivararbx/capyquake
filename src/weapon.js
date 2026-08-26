@@ -36,7 +36,7 @@ export const WEAPONS = {
     precoMoney: 100000000, precoTokens: 10000, precoRodadaMoney: 1000000, preco5RodadasTokens: 500
   },
   april_fools: {
-    name: 'APRIL FOOLS GUN', damage: 0.5, type: 'hitscan', range: 50, cooldown: 20,
+    name: 'APRIL FOOLS GUN', damage: 0.5, type: 'projectile', range: 50, cooldown: 20,
     descricao: 'OMG, IS THAT THE BEST GUN IN THE GAME?! LOL *-*',
     precoMoney: 500000, precoTokens: 500
   },
@@ -47,6 +47,16 @@ export const WEAPONS = {
   sniper: {
     name: 'SNIPER', damage: 120, type: 'hitscan', range: 150, cooldown: 2.0, ammoType: 'sniper',
     precoMoney: 50000, precoTokens: 50
+  },
+  brick: {
+    name: 'BRICK', damage: 85, type: 'projectile', range: 45, cooldown: 15,
+    descricao: 'Tijolo arremessável. Dano 80-90. Não lootável.',
+    precoMoney: 15, naoLootavel: true
+  },
+  clone_gun: {
+    name: 'CLONE GUN', damage: 0, type: 'clone', range: 0, cooldown: 20,
+    descricao: 'Cria um clone de você. Máx 5 simultâneos.',
+    naoLootavel: true
   },
 };
 
@@ -79,6 +89,8 @@ export class Weapon {
     this.currentWeapon = 'bastao';
 
     this.ammo = 30;
+    this.onCloneFire = null;
+    this.isInfinite = null;
 
     this.weaponGroup = new THREE.Group();
     this.camera.add(this.weaponGroup);
@@ -192,10 +204,11 @@ export class Weapon {
     const w = WEAPONS[this.currentWeapon];
     const display = document.getElementById('weapon-display');
     if (display) {
-      let text = w.name + ' (DMG:' + w.damage + ')';
-      if (w.type !== 'melee') {
+      let text = w.name + (w.damage > 0 ? ' (DMG:' + w.damage + ')' : '');
+      if (w.type !== 'melee' && w.type !== 'clone') {
         text += ' | ' + (this.currentWeapon === 'minigun' ? 'INF' : this.ammo);
       }
+      if (w.type === 'clone') text += ' | CLONES: ' + (window.__game ? window.__game.clones.length + '/5' : '0/5');
       display.textContent = text;
     }
     this.updateInventoryDisplay();
@@ -208,7 +221,7 @@ export class Weapon {
       const w = WEAPONS[id];
       const marker = i === this.currentIndex ? '> ' : '  ';
       let line = marker + w.name;
-      if (w.type !== 'melee') {
+      if (w.type !== 'melee' && w.type !== 'clone') {
         line += ' [' + (id === 'minigun' ? 'INF' : this.ammo) + ']';
       }
       return line;
@@ -548,6 +561,75 @@ export class Weapon {
         const pommel = new THREE.Mesh(new THREE.SphereGeometry(0.04, 6, 4), brassMat);
         pommel.position.set(0.32, -0.15, 0.16);
         group.add(pommel);
+        break;
+      }
+      case 'chicote': {
+        const whipLeather = new THREE.MeshLambertMaterial({ color: 0x5e3218 });
+        const whipDark = new THREE.MeshLambertMaterial({ color: 0x3a1f0d });
+        const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.024, 0.24, 7), whipDark);
+        handle.position.set(0.3, -0.22, -0.08);
+        handle.rotation.x = Math.PI / 2 + 0.12;
+        group.add(handle);
+        for (let i = 0; i < 4; i++) {
+          const wrap = new THREE.Mesh(new THREE.TorusGeometry(0.02, 0.006, 4, 8), whipLeather);
+          wrap.position.set(0.3, -0.215 + i * 0.004, -0.02 - i * 0.05);
+          wrap.rotation.x = Math.PI / 2 + 0.12;
+          group.add(wrap);
+        }
+        const whipPommel = new THREE.Mesh(new THREE.SphereGeometry(0.028, 6, 4), brassMat);
+        whipPommel.position.set(0.3, -0.235, 0.05);
+        group.add(whipPommel);
+        const lashPoints = [
+          [0, -0.01, -0.26, 0], [0.03, -0.03, -0.44, 0.25],
+          [-0.02, -0.07, -0.62, -0.2], [0.05, -0.13, -0.78, 0.35],
+          [-0.04, -0.2, -0.9, -0.3]
+        ];
+        for (const [dx, dy, z, tilt] of lashPoints) {
+          const seg = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.011, 0.2, 5), whipLeather);
+          seg.position.set(0.3 + dx, -0.22 + dy, z);
+          seg.rotation.x = Math.PI / 2 + tilt * 0.4;
+          seg.rotation.z = tilt;
+          group.add(seg);
+        }
+        const cracker = new THREE.Mesh(new THREE.CylinderGeometry(0.004, 0.002, 0.14, 4),
+          new THREE.MeshBasicMaterial({ color: 0xe8dcc0 }));
+        cracker.position.set(0.26, -0.42, -1.0);
+        cracker.rotation.z = 0.6;
+        group.add(cracker);
+        break;
+      }
+      case 'maca': {
+        const maceShaft = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.034, 0.85, 6), mat2);
+        maceShaft.position.set(0.32, -0.15, -0.36);
+        maceShaft.rotation.x = Math.PI / 2 + 0.1;
+        group.add(maceShaft);
+        const gripWrap = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.3, 6), leatherMat);
+        gripWrap.position.set(0.32, -0.16, 0.0);
+        gripWrap.rotation.x = Math.PI / 2 + 0.1;
+        group.add(gripWrap);
+        const collar = new THREE.Mesh(new THREE.TorusGeometry(0.038, 0.009, 4, 8), brassMat);
+        collar.position.set(0.32, -0.135, -0.68);
+        collar.rotation.x = Math.PI / 2 + 0.1;
+        group.add(collar);
+        const head = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 8), darkMat);
+        head.scale.set(1, 1.25, 1);
+        head.position.set(0.32, -0.09, -0.88);
+        group.add(head);
+        for (let i = 0; i < 3; i++) {
+          const spike = new THREE.Mesh(new THREE.ConeGeometry(0.02, 0.06, 5), brassMat);
+          const a = (i / 3) * Math.PI * 2;
+          spike.position.set(
+            0.32 + Math.cos(a) * 0.085,
+            -0.09 + Math.sin(a) * 0.105,
+            -0.88
+          );
+          spike.rotation.z = -Math.cos(a) * 1.2;
+          spike.rotation.x = Math.sin(a) * 1.2 + Math.PI / 2;
+          group.add(spike);
+        }
+        const capRing = new THREE.Mesh(new THREE.TorusGeometry(0.1, 0.012, 5, 10), mat1);
+        capRing.position.set(0.32, -0.09, -0.88);
+        group.add(capRing);
         break;
       }
       default: {
@@ -1137,6 +1219,51 @@ const receiver = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.52, 6)
         group.add(grip);
         break;
       }
+      case 'clone_gun': {
+        const shellMat = new THREE.MeshLambertMaterial({ color: 0x1f2a44 });
+        const glowMat = new THREE.MeshBasicMaterial({ color: 0x64ffda });
+        const chromeMat = new THREE.MeshLambertMaterial({ color: 0x9aa7c7 });
+
+        const body = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.13, 0.42), shellMat);
+        body.position.set(0.3, -0.2, -0.32);
+        group.add(body);
+
+        const barrel = new THREE.Mesh(new THREE.CylinderGeometry(0.032, 0.038, 0.3, 10), chromeMat);
+        barrel.rotation.x = Math.PI / 2;
+        barrel.position.set(0.3, -0.19, -0.62);
+        group.add(barrel);
+
+        const emitter = new THREE.Mesh(new THREE.TorusGeometry(0.05, 0.012, 6, 14), glowMat);
+        emitter.position.set(0.3, -0.19, -0.78);
+        group.add(emitter);
+
+        const coreOrb = new THREE.Mesh(new THREE.SphereGeometry(0.032, 10, 8),
+          new THREE.MeshStandardMaterial({ color: 0x64ffda, emissive: 0x18e0b8, emissiveIntensity: 2 }));
+        coreOrb.position.set(0.3, -0.19, -0.78);
+        group.add(coreOrb);
+
+        const dnaHelix = new THREE.Group();
+        for (let i = 0; i < 6; i++) {
+          const node = new THREE.Mesh(new THREE.SphereGeometry(0.009, 5, 4), glowMat);
+          const a = i * Math.PI / 3;
+          node.position.set(Math.cos(a) * 0.02, -0.07 + i * 0.028, -0.16);
+          dnaHelix.add(node);
+        }
+        group.add(dnaHelix);
+
+        const tank = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.14, 8), new THREE.MeshLambertMaterial({
+          color: 0x64ffda, transparent: true, opacity: 0.45
+        }));
+        tank.rotation.z = Math.PI / 2;
+        tank.position.set(0.3, -0.11, -0.28);
+        group.add(tank);
+
+        const grip = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.026, 0.14, 6), shellMat);
+        grip.position.set(0.3, -0.31, -0.17);
+        grip.rotation.x = 0.28;
+        group.add(grip);
+        break;
+      }
       case 'sniper': {
         const scopeMat = new THREE.MeshLambertMaterial({ color: 0x1a1a1a });
         const stock = new THREE.Mesh(new THREE.CylinderGeometry(0.045, 0.052, 0.55, 8), mat2);
@@ -1197,6 +1324,24 @@ const receiver = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.52, 6)
         group.add(bipod);
         break;
       }
+      case 'brick': {
+        const brickMat = new THREE.MeshLambertMaterial({ color: 0x9c4a2f });
+        const held = new THREE.Mesh(new THREE.BoxGeometry(0.26, 0.13, 0.12), brickMat);
+        held.position.set(0.3, -0.24, -0.5);
+        held.rotation.z = 0.15;
+        held.castShadow = true;
+        group.add(held);
+        const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.265, 0.032, 0.125),
+          new THREE.MeshLambertMaterial({ color: 0x7a3823 }));
+        stripe.position.set(0.3, -0.24, -0.5);
+        stripe.rotation.z = 0.15;
+        group.add(stripe);
+        const chip = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.03, 0.04),
+          new THREE.MeshLambertMaterial({ color: 0xb85c3a }));
+        chip.position.set(0.24, -0.19, -0.46);
+        group.add(chip);
+        break;
+      }
       default: {
         const body = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 0.5, 8), mat2);
         body.rotation.x = Math.PI / 2;
@@ -1216,9 +1361,20 @@ const receiver = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.52, 6)
     const w = WEAPONS[this.currentWeapon];
     this._lastTargets = targets || [];
 
+    if (w.type === 'clone') {
+      this.cooldown = w.cooldown;
+      this.recoil = 1;
+      Audio.crossbowShoot();
+      if (typeof this.onCloneFire === 'function') this.onCloneFire();
+      return null;
+    }
+
     if (w.type !== 'melee' && this.currentWeapon !== 'minigun') {
       if (this.ammo <= 0) return null;
       this.ammo--;
+      if (this.currentWeapon === 'brick' && this.ammo <= 0 && !(typeof this.isInfinite === 'function' && this.isInfinite())) {
+        this.consumeBrick();
+      }
     }
 
     this.cooldown = w.cooldown;
@@ -1249,6 +1405,20 @@ const receiver = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.52, 6)
     this.updateDisplay();
     return null;
   }
+
+  consumeBrick() {
+    const idx = this.inventory.indexOf('brick');
+    if (idx === -1) return;
+    this.inventory.splice(idx, 1);
+    if (this.currentIndex >= this.inventory.length) this.currentIndex = 0;
+    this.currentWeapon = this.inventory[this.currentIndex] || 'bastao';
+    this.buildCurrentModel();
+    this.updateHitbox();
+    this.updateDisplay();
+    this.updateInventoryDisplay();
+  }
+
+  setInfiniteAmmo(v) { this.infiniteAmmo = v; }
 
   getDamage() {
     return WEAPONS[this.currentWeapon].damage;
@@ -1498,7 +1668,45 @@ const receiver = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.045, 0.52, 6)
       if (hitTarget) {
         if (proj.weapon === 'bazuca') {
           explode();
-        } else {
+    } else if (this.currentWeapon === 'april_fools') {
+      const bladeMat = new THREE.MeshLambertMaterial({ color: 0xd8dde4 });
+      const handleMat = new THREE.MeshLambertMaterial({ color: 0x2b2b2b });
+      const guardMat = new THREE.MeshLambertMaterial({ color: 0xffd700 });
+
+      const blade = new THREE.Mesh(new THREE.ConeGeometry(0.03, 0.34, 4), bladeMat);
+      blade.scale.set(0.5, 1, 1);
+      blade.rotation.x = -Math.PI / 2;
+      blade.position.z = -0.26;
+      projGroup.add(blade);
+
+      const spine = new THREE.Mesh(new THREE.BoxGeometry(0.008, 0.05, 0.3), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+      spine.position.z = -0.24;
+      projGroup.add(spine);
+
+      const guard = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.02, 0.02), guardMat);
+      projGroup.add(guard);
+
+      const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.016, 0.12, 6), handleMat);
+      handle.rotation.x = Math.PI / 2;
+      handle.position.z = 0.08;
+      projGroup.add(handle);
+
+      const pommel = new THREE.Mesh(new THREE.SphereGeometry(0.017, 6, 4), guardMat);
+      pommel.position.z = 0.15;
+      projGroup.add(pommel);
+
+      speed = 62;
+    } else if (this.currentWeapon === 'brick') {
+      const brickMat = new THREE.MeshLambertMaterial({ color: 0x9c4a2f });
+      const brickBody = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.11, 0.1), brickMat);
+      brickBody.castShadow = true;
+      projGroup.add(brickBody);
+      const edgeMat = new THREE.MeshLambertMaterial({ color: 0x7a3823 });
+      const stripe = new THREE.Mesh(new THREE.BoxGeometry(0.225, 0.028, 0.105), edgeMat);
+      projGroup.add(stripe);
+      speed = 40;
+      damage = Math.floor(80 + Math.random() * 11);
+    } else {
           this.scene.remove(proj.mesh);
           this.projectiles.splice(i, 1);
           this.pendingHits.push({ target: hitTarget, damage: proj.damage });

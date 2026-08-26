@@ -6,6 +6,7 @@ import { Animal } from './animals.js';
 import { Weapon, WEAPONS, rollAmmo } from './weapon.js';
 import { HUD } from './hud.js';
 import { Bot } from './bot.js';
+import { PlayerClone, CLONE_MAX } from './clone.js';
 import { Celebration } from './celebration.js';
 import { Audio } from './audio.js';
 import { keyMatches } from './keybindings.js';
@@ -18,6 +19,8 @@ import { getGameMode } from './game-modes.js';
 window.__ACHIEVEMENTS_DATA = ACHIEVEMENTS;
 
 const MATCH_DURATION = 600;
+const WAVE_TIME_BONUS_S = 15;
+const NIGHT_STARTS_AT_S = 300;
 
 // Stats que acumulam entre partidas (lifetime). Dinheiro/tokens ficam por partida
 // ("em uma partida" nas descricoes); ondas/level/rebirths sao snapshots.
@@ -54,6 +57,7 @@ export class Game {
     this.running = false;
     this.targets = [];
     this.bots = [];
+    this.clones = [];
     this.chests = [];
     this.scores = {};
     this.playerName = options.playerName || 'Jogador';
@@ -184,6 +188,11 @@ export class Game {
     };
     this.weapon = new Weapon(this.scene, this.camera, this.arena);
     this.weapon.extraAmmo = () => this.getExtraAmmo();
+    this.weapon.isInfinite = () => this.infiniteAmmo;
+    this.weapon.onCloneFire = () => this.spawnPlayerClone();
+    if (localStorage.getItem('capiquake_clone_unlocked') === 'true') {
+      this.weapon.addWeapon('clone_gun', 0);
+    }
     this.hud = new HUD();
 
     this.gameStartTime = Date.now();
@@ -329,6 +338,10 @@ export class Game {
     }
     if (this.shopPurchases.ammoReserve) {
       for (const [slug, amount] of Object.entries(this.shopPurchases.ammoReserve)) {
+        if (slug === 'brick' && !this.weapon.inventory.includes('brick')) {
+          this.weapon.addWeapon('brick', amount);
+          continue;
+        }
         if (this.weapon.inventory.includes(slug)) {
           this.weapon.addAmmo(slug, amount);
         }
@@ -598,7 +611,7 @@ export class Game {
       [spots[i], spots[j]] = [spots[j], spots[i]];
     }
 
-    const count = Math.min(14, spots.length);
+    const count = Math.min(26, Math.max(14, Math.round(spots.length / 900)));
     for (let i = 0; i < count; i++) {
       const cell = spots[i];
       const x = cell.c * 4 + 2;
@@ -693,13 +706,14 @@ export class Game {
     }
 
     let idx = 0;
-    for (let i = 0; i < 3 && idx < corridors.length; i++, idx++) {
+    const areaScale = Math.max(1, Math.round((rows * cols) / (50 * 50) * 0.45));
+    for (let i = 0; i < 3 * areaScale && idx < corridors.length; i++, idx++) {
       const cell = corridors[idx];
       const x = cell.c * 4 + 2;
       const z = cell.r * 4 + 2;
       this.pickups.push(this.createMedkit(x, z));
     }
-    for (let i = 0; i < 5 && idx < corridors.length; i++, idx++) {
+    for (let i = 0; i < 5 * areaScale && idx < corridors.length; i++, idx++) {
       const cell = corridors[idx];
       const x = cell.c * 4 + 2;
       const z = cell.r * 4 + 2;
@@ -1199,13 +1213,51 @@ export class Game {
     }
   }
 
-  handleBotKill(bot, target) {
-    if (!this.isHostileTarget(target)) return;
-    target.die();
-    if (this.weapon.pendingHits.some(h => h.target === target)) {
-      this.weapon.pendingHits = this.weapon.pendingHits.filter(h => h.target !== target);
+  spawnPlayerClone() {
+    this.clones = this.clones.filter(c => c.alive);
+    if (this.clones.length >= CLONE_MAX) {
+      this.hud.showMessage(`CLONE GUN: MÁXIMO DE ${CLONE_MAX} CLONES ATIVOS`);
+      return false;
     }
-    this.resolveKill(target, bot.name);
+    const spawnPos = this.camera.position.clone().add(
+      new THREE.Vector3((Math.random() - 0.5) * 3, 0, (Math.random() - 0.5) * 3)
+    );
+    if (!this.arena.isPassable(spawnPos.x, spawnPos.z)) {
+      const start = this.arena.getPlayerStart();
+      spawnPos.set(start.x + (Math.random() - 0.5) * 3, 0, start.z + (Math.random() - 0.5) * 3);
+    }
+    const clone = new PlayerClone(this.scene, this.playerName, spawnPos, this.arena, {
+      maxHealth: this.playerMaxHealth,
+      currentHealth: this.playerHealth,
+      weaponId: this.weapon.currentWeapon,
+      infiniteAmmo: this.infiniteAmmo,
+      damageMultiplier: this.getDamageMultiplier()
+    });
+    this.clones.push(clone);
+    this.hud.showMessage(`${clone.name} CRIADO (${this.clones.length}/${CLONE_MAX}) · ${clone.maxHealth} HP`);
+    return true;
+  }
+
+  handleBotShot(shooter, target) {
+    if (!target || !target.alive || !this.isHostileTarget(target)) return;
+    const damage = shooter.getShotDamage() || 10;
+    this.registerDamage(target, damage);
+    const died = target.takeDamage(damage);
+
+    if (target === this.boss) {
+      this.hud.updateBossHealth(this.boss.health, this.boss.maxHealth);
+      if (died && this.resolveBossKill(target)) this.endGame();
+      return;
+    }
+    if (died) {
+      if (this.weapon.pendingHits.some(h => h.target === target)) {
+        this.weapon.pendingHits = this.weapon.pendingHits.filter(h => h.target !== target);
+      }
+      this.resolveKill(target, shooter.name);
+      if (this.mode === 'multiplayer' && this.network) {
+        this.network.sendKill(target.id);
+      }
+    }
   }
 
   registerDamage(hit, damage) {
@@ -1711,9 +1763,9 @@ export class Game {
     this.wave++;
     this.stats.waves = this.wave;
     this.addXp(50 + this.wave * 10);
-    this.updateWaveDisplay();
-    this.hud.showMessage(`WAVE ${this.wave}`);
-    this.checkAchievements();
+    this.timeRemaining += WAVE_TIME_BONUS_S;
+    this.hud.showMessage(`WAVE ${this.wave} · +${WAVE_TIME_BONUS_S}s`);
+    this.updateWaveDisplay();    this.checkAchievements();
     if ((this.modeCfg && this.modeCfg.bossRush) || this.wave % 10 === 0) {
       this.spawnWaveBoss();
     } else if (this.wave % 5 === 0) {
@@ -1787,6 +1839,20 @@ export class Game {
       document.body.appendChild(this.waveDisplayEl);
     }
     this.waveDisplayCreated = true;
+  }
+
+  updateDayNightCycle(delta) {
+    if (!this.renderer || !this.renderer.setNightFactor) return;
+    const target = this.timeRemaining <= NIGHT_STARTS_AT_S
+      ? Math.min(1, (NIGHT_STARTS_AT_S - this.timeRemaining) / NIGHT_STARTS_AT_S)
+      : 0;
+    const current = this.renderer.getNightFactor();
+    if (Math.abs(target - current) < 0.002) return;
+    this.renderer.setNightFactor(target);
+    if (!this._nightAnnounced && target > 0.05) {
+      this._nightAnnounced = true;
+      this.hud.showMessage('🌙 A NOITE ESTÁ CAINDO...');
+    }
   }
 
   updateWaveDisplay() {
@@ -2459,6 +2525,7 @@ endGame() {
         return;
       }
       this.hud.updateTimer(this.timeRemaining);
+      this.updateDayNightCycle(delta);
     }
 
     this.updateCooldowns(delta);
@@ -2552,23 +2619,51 @@ endGame() {
 
     for (const bot of this.bots) {
       if (!bot.alive) continue;
-      const killed = bot.update(delta, this.targets);
-      if (killed) {
-        this.handleBotKill(bot, killed);
+      const shotTarget = bot.update(delta, this.targets);
+      if (shotTarget) {
+        this.handleBotShot(bot, shotTarget);
       }
       for (const target of this.targets) {
         if (!target.alive || target.dormant) continue;
         const d = target.mesh.position.distanceTo(bot.position);
         if (d < target.attackRange) {
           bot.takeDamage(target.attackDamage * delta);
-        }
-      }
+        }      }
       if (this.boss && this.boss.alive) {
         const db = this.boss.mesh.position.distanceTo(bot.position);
         if (db < 4) {
           bot.takeDamage(20 * delta);
         }
       }
+      if (bot.label) {
+        bot.label.update(
+          { x: bot.position.x, y: 2.35, z: bot.position.z },
+          this.camera, window.innerWidth, window.innerHeight
+        );
+      }
+    }
+
+    this.clones = this.clones.filter(c => c.alive);
+    for (const clone of this.clones) {
+      clone.syncPlayer(this.weapon.currentWeapon, this.infiniteAmmo, this.getDamageMultiplier());
+      const shotTarget = clone.update(delta, this.targets, this.player.getPosition());
+      if (shotTarget) {
+        this.handleBotShot(clone, shotTarget);
+      }
+      // Vida própria: hostis em contato causam dano contínuo ao clone.
+      for (const t of this.targets) {
+        if (!t.alive || t.dormant || t.isProtectedAlly) continue;
+        const d = t.mesh.position.distanceTo(clone.position);
+        if (d < (t.attackRange || 2.5)) {
+          clone.takeDamage((t.attackDamage || 5) * delta);
+          if (!clone.alive) break;
+        }
+      }
+      if (this.boss && this.boss.alive && clone.alive) {
+        const db = this.boss.mesh.position.distanceTo(clone.position);
+        if (db < 4) clone.takeDamage(20 * delta);
+      }
+      clone.updateLabel(this.camera, window.innerWidth, window.innerHeight);
     }
 
     if (this.mode === 'multiplayer') {
@@ -2592,6 +2687,8 @@ destroy() {
   this._destroyed = true;
   this.running = false;
   this.player.unlock();
+  for (const clone of this.clones) clone.destroy();
+  this.clones = [];
   this.renderer.destroy();
   this.hud.hide();
   if (this._keyHandler) this._keyHandler = null;

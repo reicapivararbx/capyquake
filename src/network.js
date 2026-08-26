@@ -12,6 +12,11 @@ export class Network {
     this._reconnectTimer = null;
     this.ping = null;
     this._pingInterval = null;
+    this.rawListeners = [];
+  }
+
+  onRawMessage(fn) {
+    if (typeof fn === 'function') this.rawListeners.push(fn);
   }
 
   connect(name) {
@@ -76,6 +81,9 @@ export class Network {
         case 'testModeAck':
           if (this.callbacks.testModeAck) this.callbacks.testModeAck(msg);
           break;
+      }
+      for (const fn of this.rawListeners) {
+        try { fn(msg); } catch {}
       }
     };
 

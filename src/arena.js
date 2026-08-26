@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 
 const CELL_SIZE = 4;
-const ARENA_COLS = 50;
-const ARENA_ROWS = 50;
+const ARENA_COLS = 130;
+const ARENA_ROWS = 130;
 
 function seededRandom(seed) {
   let s = seed;
