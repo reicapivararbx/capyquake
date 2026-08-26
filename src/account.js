@@ -1,5 +1,7 @@
 const USERNAME_RE = /^[a-zA-Z0-9_-]+$/;
 
+const ADMIN_ROLES = new Set(['best_capybara', 'developer', 'admin', 'head_admin', 'co_king', 'king']);
+
 // Espelho client-side dos cargos do servidor (server/validation.js).
 export const ROLE_LABELS = {
   king: '👑 Capybara_King',
@@ -200,6 +202,18 @@ export const Account = {
       out.addEventListener('click', () => this.logout());
 
       bar.append(info, pwdBtn, out);
+
+      if (ADMIN_ROLES.has(this.user.role)) {
+        const onProd = location.hostname === 'm.zanona.com.br';
+        const adminBtn = document.createElement('a');
+        adminBtn.id = 'btn-admin-panel';
+        adminBtn.href = onProd ? 'https://m.zanona.com.br/admin/login' : '/admin/login';
+        adminBtn.target = '_blank';
+        adminBtn.rel = 'noopener';
+        adminBtn.textContent = '🔐 PAINEL ADMIN';
+        adminBtn.style.cssText = 'background:linear-gradient(135deg,#ff9f43,#f97316);color:#161005;font-weight:800;padding:6px 12px;border-radius:8px;text-decoration:none;font-size:12px;margin-left:6px;';
+        bar.appendChild(adminBtn);
+      }
     } else {
       const btn = document.createElement('button');
       btn.id = 'btn-open-auth';
