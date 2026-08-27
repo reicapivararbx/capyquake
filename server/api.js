@@ -321,7 +321,7 @@ export async function handleApi(req, res, pathname, query) {
         if (!row || !verifyPassword(b.currentPassword, row.password_hash)) {
           throw new ApiError('FORBIDDEN', 'Senha atual incorreta.', 403);
         }
-        if (String(b.newPassword).length < 8) throw new ApiError('INVALID_PASSWORD', 'Nova senha deve ter no mínimo 8 caracteres.', 400);
+        if (String(b.newPassword).length < 8) throw new ApiError('INVALID_PASSWORD', 'Nova senha deve ter no mínimo 6 caracteres.', 400);
         db.prepare('UPDATE users SET password_hash=?, updated_at=? WHERE id=?').run(hashPassword(b.newPassword), Date.now(), admin.id);
         return json(res, 200, { success: true });
       }

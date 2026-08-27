@@ -17,7 +17,7 @@ export const ROLE_RANK = {
   custom: 5,
   best_capybara: 6,
   developer: 7,
-  admin: 8,
+  admin: 6,
   head_admin: 9,
   co_king: 10,
   king: 11
@@ -61,7 +61,7 @@ export function validateUsername(raw) {
   return username;
 }
 
-export function validatePassword(password, { min = 8 } = {}) {
+export function validatePassword(password, { min = 6 } = {}) {
   const p = String(password ?? '');
   if (!p) throw new ApiError('INVALID_PASSWORD', 'Informe uma senha.');
   if (p.length < min) throw new ApiError('INVALID_PASSWORD', `Senha deve ter no mínimo ${min} caracteres.`);

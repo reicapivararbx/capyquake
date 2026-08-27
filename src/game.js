@@ -2026,7 +2026,7 @@ export class Game {
         <div style="text-align:center;">
           <h1 style="color:#c4b5fd;font-size:32px;letter-spacing:4px;font-family:sans-serif;">VOLTE SEMPRE</h1>
         </div>`;
-      setTimeout(() => this.returnToMenu(), 1200);
+      setTimeout(() => { try { window.close(); } catch {} location.href = '/'; }, 1200);
     };
   }
 

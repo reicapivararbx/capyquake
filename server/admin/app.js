@@ -109,7 +109,7 @@ function userActionsPanel(u) {
       <div id="ua-perm-checks" class="checks" style="margin-top:6px"></div>
     </div>
     <div class="row">
-      <div><label>Nova senha</label><input id="ua-pass" type="password" placeholder="mín. 8 caracteres"></div>
+      <div><label>Nova senha</label><input id="ua-pass" type="password" placeholder="mín. 6 caracteres"></div>
       <button id="ua-btn-pass" data-label="SET PASSWORD">SET PASSWORD</button>
     </div>
     <div class="row">
@@ -248,7 +248,7 @@ function createUserModal(reload) {
   root.innerHTML = `<div class="modal-bg"><div class="modal" role="dialog" aria-modal="true" style="max-height:85vh;overflow-y:auto">
     <h3>+ CREATE USER</h3>
     <label>Username</label><input id="cu-username" maxlength="24" autocomplete="off" placeholder="3-24: letras, números, - _">
-    <label>Senha</label><input id="cu-pass" type="password" autocomplete="new-password" placeholder="mín. 8">
+    <label>Senha</label><input id="cu-pass" type="password" autocomplete="new-password" placeholder="mín. 6">
     <label>Confirmar senha</label><input id="cu-confirm" type="password" autocomplete="new-password">
     <label>Cargo</label>
     <select id="cu-role">${creatable.map(r => `<option value="${r}">${esc(roleLabel(r))}</option>`).join('')}</select>
@@ -657,7 +657,7 @@ function pageSettings() {
     <div class="panel"><h2>TROCAR SENHA</h2>
       <div class="row">
         <div><label>Senha atual</label><input id="s-cur-pass" type="password" placeholder="senha atual"></div>
-        <div><label>Nova senha</label><input id="s-new-pass" type="password" placeholder="mín. 8 caracteres"></div>
+        <div><label>Nova senha</label><input id="s-new-pass" type="password" placeholder="mín. 6 caracteres"></div>
         <div><label>Confirmar nova senha</label><input id="s-confirm-pass" type="password"></div>
       </div>
       <button id="s-btn-pass" data-label="SALVAR SENHA" style="margin-top:8px">SALVAR SENHA</button>
