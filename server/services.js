@@ -72,7 +72,8 @@ function publicUser(u) {
     suspendedUntil: rest.suspendedUntil ?? rest.suspended_until ?? null,
     createdAt: rest.createdAt ?? rest.created_at,
     updatedAt: rest.updatedAt ?? rest.updated_at,
-    lastLoginAt: rest.lastLoginAt ?? rest.last_login_at ?? null
+    lastLoginAt: rest.lastLoginAt ?? rest.last_login_at ?? null,
+    customPermissions: rest.customPermissions ?? rest.custom_permissions ?? null,
   };
 }
 
