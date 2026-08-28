@@ -82,6 +82,7 @@ export const Account = {
   user: null,
   profile: null,
   capybara: null,
+  inventory: [],
 
   async refresh() {
     try {
@@ -89,6 +90,7 @@ export const Account = {
       this.user = me.user;
       this.profile = me.profile;
       this.capybara = me.capybara;
+      this.inventory = me.inventory || [];
       if (this.profile) {
         localStorage.setItem('capiquake_money', String(this.profile.coins));
         localStorage.setItem('capiquake_tokens', String(this.profile.tokens));
@@ -101,6 +103,7 @@ export const Account = {
       this.user = null;
       this.profile = null;
       this.capybara = null;
+      this.inventory = [];
     }
     this.render();
   },

@@ -68,3 +68,10 @@ tr.selected-row { outline: 2px solid var(--acc2); outline-offset: -2px; backgrou
   .sidebar { width: 100%; height: auto; position: static; flex-direction: row; flex-wrap: wrap; align-items: center; }
   .sidebar nav { flex-direction: row; flex-wrap: wrap; }
 }
+
+/* ---- admin chat ---- */
+.chat-msg { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 8px; }
+.chat-msg:hover { background: var(--panel2); }
+.chat-msg.chat-me { background: rgba(124,58,237,.1); }
+.chat-msg .chat-text { font-size: 14px; flex: 1; min-width: 0; word-break: break-word; }
+.chat-panel #chat-input { background: var(--panel2); border: 1px solid var(--line); color: var(--text); padding: 10px 12px; border-radius: 8px; font-size: 14px; }

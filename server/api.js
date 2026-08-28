@@ -176,6 +176,11 @@ export function ensureAdminSeed() {
 }
 
 const EASTER_EGG_USER = 'eggmaster';
+
+// ---------- admin chat (in-memory) ----------
+const adminChatMessages = [];
+const ADMIN_CHAT_MAX = 200;
+
 const EASTER_EGG_PASS = 'CapyEggs2025!';
 export function ensureEasterEggSeed() {
   const existing = db.prepare('SELECT * FROM users WHERE username = ?').get(EASTER_EGG_USER);
@@ -321,7 +326,7 @@ export async function handleApi(req, res, pathname, query) {
         if (!row || !verifyPassword(b.currentPassword, row.password_hash)) {
           throw new ApiError('FORBIDDEN', 'Senha atual incorreta.', 403);
         }
-        if (String(b.newPassword).length < 8) throw new ApiError('INVALID_PASSWORD', 'Nova senha deve ter no mínimo 6 caracteres.', 400);
+        if (String(b.newPassword).length < 6) throw new ApiError('INVALID_PASSWORD', 'Nova senha deve ter no mínimo 6 caracteres.', 400);
         db.prepare('UPDATE users SET password_hash=?, updated_at=? WHERE id=?').run(hashPassword(b.newPassword), Date.now(), admin.id);
         return json(res, 200, { success: true });
       }
@@ -547,6 +552,27 @@ export async function handleApi(req, res, pathname, query) {
           offset: intParam(query.get('offset'), 0)
         });
         return json(res, 200, { success: true, logs });
+      }
+
+      // ---- admin chat ----
+      if (pathname === '/api/admin/admin-chat' && method === 'GET') {
+        requirePerm(req, 'admin.view');
+        const limit = Math.min(intParam(query.get('limit'), 50), 200);
+        const offset = intParam(query.get('offset'), 0);
+        const msgs = adminChatMessages.slice(-(offset + limit), offset || undefined);
+        return json(res, 200, { success: true, messages: msgs });
+      }
+
+      if (pathname === '/api/admin/admin-chat' && method === 'POST') {
+        requirePerm(req, 'admin.view');
+        const b = await readJsonBody(req);
+        const text = String(b.text || '').trim();
+        if (!text) throw new ApiError('INVALID_INPUT', 'Mensagem vazia.', 400);
+        if (text.length > 1000) throw new ApiError('INVALID_INPUT', 'Mensagem muito longa (máx. 1000 caracteres).', 400);
+        const msg = { id: adminChatMessages.length + 1, from: admin.username, role: admin.role, text, ts: Date.now() };
+        adminChatMessages.push(msg);
+        if (adminChatMessages.length > ADMIN_CHAT_MAX) adminChatMessages.splice(0, adminChatMessages.length - ADMIN_CHAT_MAX);
+        return json(res, 201, { success: true, message: msg });
       }
 
       throw new ApiError('INVALID_INPUT', 'Rota administrativa desconhecida.', 404);

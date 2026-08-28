@@ -2141,7 +2141,7 @@ export class Game {
 
   updateAdminAmmoText() {
     const btn = document.getElementById('btn-inf-ammo');
-    if (btn) btn.textContent = 'INFINITA: ' + (this.infiniteAmmo ? 'TRUE' : 'FALSE');
+    if (btn) { btn.textContent = 'INFINITA: ' + (this.infiniteAmmo ? 'TRUE' : 'FALSE'); btn.classList.toggle('on', this.infiniteAmmo); }
   }
 
   addXp(amount) {

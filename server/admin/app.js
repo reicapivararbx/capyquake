@@ -281,7 +281,7 @@ function createUserModal(reload) {
     if (!username) problem = 'Informe um username.';
     else if (username.length < 3 || username.length > 24) problem = 'Username deve ter entre 3 e 24 caracteres.';
     else if (!/^[a-zA-Z0-9_-]+$/.test(username)) problem = 'Use apenas letras, números, - e _.';
-    else if (!password || password.length < 8) problem = 'Senha deve ter no mínimo 8 caracteres.';
+    else if (!password || password.length < 6) problem = 'Senha deve ter no mínimo 6 caracteres.';
     else if (password !== confirmPassword) problem = 'As senhas não conferem.';
     if (problem) { errEl.textContent = problem; errEl.hidden = false; return; }
     const body = { username, password, confirmPassword, role };
@@ -671,7 +671,7 @@ function pageSettings() {
     const np = $('#s-new-pass').value;
     const cp = $('#s-confirm-pass').value;
     if (!cur || !np) { toast('Preencha todos os campos.', true); return; }
-    if (np.length < 8) { toast('Nova senha deve ter no mínimo 8 caracteres.', true); return; }
+    if (np.length < 6) { toast('Nova senha deve ter no mínimo 6 caracteres.', true); return; }
     if (np !== cp) { toast('As senhas não conferem.', true); return; }
     runAction(e.target, async () => {
       await api('/api/admin/change-password', { method: 'POST', idemKey: crypto.randomUUID(), body: { currentPassword: cur, newPassword: np } });
@@ -681,6 +681,67 @@ function pageSettings() {
     }, '✓ SENHA TROCADA');
   });
 }
+
+// ---------- aba CHAT ----------
+
+let chatPollTimer = null;
+
+async function pageAdminChat() {
+  if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; }
+  content.innerHTML = `<h1>💬 Chat Admins</h1>
+    <div class="panel chat-panel" style="display:flex;flex-direction:column;height:calc(100vh - 140px);">
+      <div id="chat-messages" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:6px;padding:8px 0;"></div>
+      <div style="display:flex;gap:8px;padding-top:8px;border-top:1px solid var(--line);">
+        <input id="chat-input" placeholder="Digite sua mensagem..." style="flex:1" autocomplete="off">
+        <button id="chat-send">ENVIAR</button>
+      </div>
+    </div>`;
+  const msgsEl = document.getElementById('chat-messages');
+  const inputEl = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send');
+
+  async function loadMessages() {
+    try {
+      const d = await api('/api/admin/admin-chat?limit=100');
+      const msgs = d.messages || [];
+      const wasAtBottom = msgsEl.scrollTop + msgsEl.clientHeight >= msgsEl.scrollHeight - 30;
+      msgsEl.innerHTML = msgs.length === 0
+        ? '<p class="dim" style="text-align:center;margin:auto">Nenhuma mensagem ainda. Seja o primeiro!</p>'
+        : msgs.map(m => {
+            const time = new Date(m.ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+            const isMe = m.from === ME.username;
+            return `<div class="chat-msg ${isMe ? 'chat-me' : ''}">
+              <span class="pill ${esc(m.role)}" style="font-size:10px">${esc(m.from)}</span>
+              <span class="chat-text">${esc(m.text)}</span>
+              <span class="dim" style="font-size:10px;margin-left:auto;white-space:nowrap">${time}</span>
+            </div>`;
+          }).join('');
+      if (wasAtBottom) msgsEl.scrollTop = msgsEl.scrollHeight;
+    } catch {}
+  }
+
+  async function sendMsg() {
+    const text = inputEl.value.trim();
+    if (!text) return;
+    sendBtn.disabled = true;
+    try {
+      await api('/api/admin/admin-chat', { method: 'POST', body: { text } });
+      inputEl.value = '';
+      await loadMessages();
+    } catch (e) { toast(e.message, true); }
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }
+
+  sendBtn.addEventListener('click', sendMsg);
+  inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMsg(); });
+
+  await loadMessages();
+  inputEl.focus();
+  chatPollTimer = setInterval(loadMessages, 3000);
+  window.addEventListener('hashchange', () => { if (chatPollTimer) { clearInterval(chatPollTimer); chatPollTimer = null; } }, { once: true });
+}
+
 
 // ---------- router ----------
 
@@ -697,6 +758,7 @@ async function route() {
     if (parts[0] === 'players') return await pagePlayers(intParam0(params.get('offset')), params.get('q') || '');
     if (parts[0] === 'game-tools') return await pageTools(params);
     if (parts[0] === 'logs') return await pageLogs(intParam0(params.get('offset')));
+    if (parts[0] === 'chat') return await pageAdminChat();
     if (parts[0] === 'settings') return pageSettings();
     return await pageDashboard();
   } catch (e) { content.innerHTML = `<p class="bad-msg">${esc(e.message)}</p>`; }

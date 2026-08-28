@@ -12,6 +12,7 @@ import { WEAPONS } from './weapon.js';
 import { ACHIEVEMENTS } from './achievements-data.js';
 import { initAccount } from './account.js';
 import { LobbyChat } from './lobby-chat.js';
+import { initHub, showHub, hideHub } from "./hub.js";
 import { initCommands, handleCommandSocketMessage, attachCommandAutocomplete } from './commands.js';
 
 initAccount();
@@ -24,6 +25,25 @@ const network = new Network();
 let game = null;
 let mobileControls = null;
 let shopPreviousScreen = 'menu';
+
+// Hub Game Hub
+initHub({
+  onPlay: () => {
+    const name = menu.getPlayerName();
+    window.__spCtx = { playerName: name, map: null, purchases: {} };
+    window.__modeFlow = 'singleplayer';
+    showTutorial(() => openModeSelect());
+  },
+  onMultiplayer: () => {
+    const nameInput = document.getElementById('player-name');
+    const mpName = document.getElementById('mp-name');
+    if (mpName && !mpName.value.trim() && nameInput) mpName.value = nameInput.value;
+    menu.hide();
+    document.getElementById('mp-setup').style.display = 'flex';
+    setMpStatus(network.connected ? 'Conectado' : 'Conectando...', network.connected ? 'online' : null);
+    if (!network.connected) network.connect(mpName ? mpName.value : '');
+  }
+});
 
 const TUTORIAL_STEPS = [
   'Bem-vindo ao CapiQuake! Use [W][A][S][D] para se mover e o MOUSE para atirar.',
@@ -97,12 +117,12 @@ function startGame(opts) {
   document.getElementById('btn-hud-inventory').style.display = 'block';
 }
 
-function hideAllScreens() {
+function hideAllScreens() { hideHub();
   document.getElementById('achievements-screen').style.display = 'none';
   menu.hideStandaloneShop();
 }
 
-function showMenu() {
+function showMenu() { hideHub();
   hideAllScreens();
   menu.show();
   document.getElementById('btn-ingame-shop').style.display = 'none';
@@ -149,6 +169,9 @@ document.getElementById('btn-mode-back').addEventListener('click', () => {
   document.getElementById('mode-select').style.display = 'none';
   menu.show();
 });
+
+// Hub button
+document.getElementById('btn-hub').addEventListener('click', () => { menu.hide(); showHub(); });
 
 menu.onSingleplayer((playerName, map, purchases) => {
   window.__spCtx = { playerName, map, purchases };
