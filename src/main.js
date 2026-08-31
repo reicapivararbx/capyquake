@@ -173,6 +173,16 @@ document.getElementById('btn-mode-back').addEventListener('click', () => {
 // Hub button
 document.getElementById('btn-hub').addEventListener('click', () => { menu.hide(); showHub(); });
 
+// Other Capy projects
+const projectsDialog = document.getElementById('projects-dialog');
+document.getElementById('btn-projects-menu').addEventListener('click', () => {
+  if (!projectsDialog.open) projectsDialog.showModal();
+});
+document.getElementById('btn-projects-close').addEventListener('click', () => projectsDialog.close());
+projectsDialog.addEventListener('click', (event) => {
+  if (event.target === projectsDialog) projectsDialog.close();
+});
+
 menu.onSingleplayer((playerName, map, purchases) => {
   window.__spCtx = { playerName, map, purchases };
   window.__modeFlow = 'singleplayer';

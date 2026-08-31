@@ -1372,8 +1372,11 @@ export class Game {
     if (creditedName === this.playerName) {
       const m = this.getMoneyMultiplier();
       const t = this.getTokenMultiplier();
-      const dropMoney = Math.round((hit.getDropMoney ? hit.getDropMoney() : (hit.dropMoney || 0)) * m);
+      let dropMoney = Math.round((hit.getDropMoney ? hit.getDropMoney() : (hit.dropMoney || 0)) * m);
       const dropTokens = Math.round((hit.getDropTokens ? hit.getDropTokens() : (hit.dropTokens || 0)) * t);
+      if (this.modeCfg && this.modeCfg.moneyMul) {
+        dropMoney *= this.modeCfg.moneyMul;
+      }
       this.money += dropMoney;
       this.tokens += dropTokens;
       this.saveBalance();
@@ -1389,9 +1392,6 @@ export class Game {
       if (this.modeCfg && this.modeCfg.lifesteal) {
         this.playerHealth = Math.min(this.playerMaxHealth, this.playerHealth + this.modeCfg.lifesteal);
         this.hud.updateHealth(this.playerHealth, this.playerMaxHealth);
-      }
-      if (this.modeCfg && this.modeCfg.moneyMul) {
-        dropMoney *= this.modeCfg.moneyMul;
       }
       if (this.modeCfg && this.modeCfg.tokenPerKill) {
         this.tokens += this.modeCfg.tokenPerKill;
