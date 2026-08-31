@@ -1,4 +1,7 @@
 node_modules/
+.env
+.env.*
+!.env.example
 .omo/
 .playwright-mcp/
 .tmp-test/
