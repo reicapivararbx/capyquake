@@ -12,14 +12,10 @@ test('portal central publica os três projetos nas rotas canônicas', async () =
   assert.match(html, /href="\/capyquake\/"/);
   assert.match(html, /href="\/capyrails\/"/);
   assert.match(html, /href="\/capyzen\/"/);
-  assert.match(html, /2 JOGOS ONLINE/);
-});
-
-test('Capyzen informa que ainda não possui build público', async () => {
-  const html = await read('portal/capyzen/index.html');
-  assert.match(html, /não possui um build público/);
-  assert.match(html, /EM DESENVOLVIMENTO/);
-  assert.doesNotMatch(html, /Jogar Capyzen/i);
+  assert.match(html, /3 JOGOS ONLINE/);
+  assert.match(html, /Jogar Capyzen/);
+  assert.match(html, /Simulação e cuidado/);
+  assert.doesNotMatch(html, /Capyzen[\s\S]{0,500}EM BREVE/i);
 });
 
 test('nginx preserva APIs e WebSockets ao separar os projetos', async () => {
@@ -30,6 +26,7 @@ test('nginx preserva APIs e WebSockets ao separar os projetos', async () => {
   assert.match(config, /location \/capyquake\//);
   assert.match(config, /location \/railsgame\//);
   assert.match(config, /location = \/ \{ root \/var\/www\/html\/capyportal;/);
-  assert.match(config, /location = \/capyzen\/ \{ root \/var\/www\/html\/capyportal;/);
+  assert.match(config, /location \/capyzen\/ \{ root \/var\/www\/html;/);
+  assert.doesNotMatch(config, /location = \/capyzen\/ \{ root \/var\/www\/html\/capyportal;/);
   assert.doesNotMatch(config, /alias \/var\/www\/html\/capyportal\/index\.html/);
 });
