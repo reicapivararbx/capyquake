@@ -29,4 +29,7 @@ test('nginx preserva APIs e WebSockets ao separar os projetos', async () => {
   assert.match(config, /location = \/capyrails\/ws/);
   assert.match(config, /location \/capyquake\//);
   assert.match(config, /location \/railsgame\//);
+  assert.match(config, /location = \/ \{ root \/var\/www\/html\/capyportal;/);
+  assert.match(config, /location = \/capyzen\/ \{ root \/var\/www\/html\/capyportal;/);
+  assert.doesNotMatch(config, /alias \/var\/www\/html\/capyportal\/index\.html/);
 });
