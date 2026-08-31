@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#090b0d">
-  <meta name="description" content="Portal oficial dos projetos Capy: Capyquake, Capyrails e Capyzen.">
+  <meta name="description" content="Portal oficial dos projetos: Capyquake, Capyrails, Capyzen e Find the Markers.">
   <link rel="canonical" href="https://m.zanona.com.br/">
   <title>Capy Projects — Jogos e mundos Capy</title>
   <script>document.documentElement.classList.add('js')</script>
@@ -21,6 +21,7 @@
       --gold: #dfad45;
       --green: #7fc78b;
       --violet: #9d7cff;
+      --blue: #54b7ff;
       --max: 1180px;
     }
     * { box-sizing: border-box; }
@@ -82,17 +83,19 @@
     .node.quake { left: 12%; top: 19%; color: var(--orange); transform: rotate(-4deg); }
     .node.rails { right: 10%; top: 34%; color: var(--gold); transform: rotate(4deg); }
     .node.zen { left: 35%; bottom: 13%; color: var(--violet); }
+    .node.markers { right: 14%; bottom: 10%; color: var(--blue); transform: rotate(-3deg); }
     .node-core { left: 50%; top: 50%; width: 108px; height: 108px; border-color: rgba(255,255,255,.22); border-radius: 50%; transform: translate(-50%,-50%); background: radial-gradient(circle, #242a30, #101317 68%); color: var(--text); font-size: 13px; letter-spacing: .15em; }
     section { padding: 80px 0; }
     .section-head { display: flex; align-items: end; justify-content: space-between; gap: 32px; margin-bottom: 28px; }
     .section-head h2 { margin: 0; font-size: clamp(34px, 5vw, 58px); letter-spacing: -.04em; line-height: 1; }
     .section-head p { max-width: 440px; margin: 0; color: var(--muted); }
-    .projects { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 18px; }
+    .projects { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px; }
     .project { --accent: var(--orange); position: relative; min-height: 430px; padding: 26px; border: 1px solid var(--line); border-radius: 22px; background: linear-gradient(160deg, rgba(255,255,255,.06), rgba(255,255,255,.018)); overflow: hidden; display: flex; flex-direction: column; transition: transform .2s, border-color .2s; }
     .project::before { content: ""; position: absolute; width: 240px; height: 240px; right: -110px; top: -120px; border-radius: 50%; background: var(--accent); opacity: .13; filter: blur(2px); }
     .project:hover { transform: translateY(-5px); border-color: color-mix(in srgb, var(--accent) 48%, transparent); }
     .project.rails { --accent: var(--gold); }
     .project.zen { --accent: var(--violet); }
+    .project.markers { --accent: var(--blue); }
     .project-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
     .project-symbol { display: grid; place-items: center; width: 58px; height: 58px; border: 1px solid color-mix(in srgb, var(--accent) 42%, transparent); border-radius: 17px; background: color-mix(in srgb, var(--accent) 10%, transparent); color: var(--accent); font-weight: 950; letter-spacing: .06em; }
     .badge { padding: 6px 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: .12em; }
@@ -169,14 +172,14 @@
     <div class="shell hero">
       <div data-reveal>
         <p class="eyebrow">m.zanona.com.br · portal oficial</p>
-        <h1>Um endereço.<br><em>Três mundos</em> Capy.</h1>
+        <h1>Um endereço.<br><em>Todos os projetos</em>.</h1>
         <p class="lead">O ponto de partida para jogos, experiências e histórias protagonizadas pelas capivaras mais improváveis da internet.</p>
         <div class="hero-actions">
           <a class="button primary" href="#projetos">Explorar projetos <span aria-hidden="true">↓</span></a>
           <a class="button" href="/capyquake/">Jogar Capyquake <span aria-hidden="true">→</span></a>
         </div>
       </div>
-      <div class="world-map" aria-label="Mapa visual dos três projetos Capy" data-reveal>
+      <div class="world-map" aria-label="Mapa visual dos quatro projetos" data-reveal>
         <div class="orbit" aria-hidden="true">
           <svg viewBox="0 0 500 410" preserveAspectRatio="none">
             <path d="M92 104 C190 40 306 250 415 161 S300 368 214 314 S155 160 92 104" fill="none" stroke="rgba(255,255,255,.13)" stroke-width="1.5" stroke-dasharray="5 8"/>
@@ -185,6 +188,7 @@
         <div class="node quake" data-label="AÇÃO">CQ</div>
         <div class="node rails" data-label="JORNADA">CR</div>
         <div class="node zen" data-label="CUIDADO">CZ</div>
+        <div class="node markers" data-label="EM DEV">FM</div>
         <div class="node node-core" data-label="PORTAL">CAPY</div>
       </div>
     </div>
@@ -220,6 +224,14 @@
             <div class="facts"><span>2D</span><span>Tamagotchi</span><span>Progressão</span><span>Save local</span></div>
             <a class="button" href="/capyzen/">Jogar Capyzen <span aria-hidden="true">→</span></a>
           </article>
+          <article class="project markers" data-reveal>
+            <div class="project-top"><div class="project-symbol">FM</div><span class="badge">EM DEV</span></div>
+            <h3>Find the Markers</h3>
+            <span class="kind">Projeto em desenvolvimento</span>
+            <p>O repositório já está reservado. Conceito, mecânicas e identidade serão definidos na próxima etapa.</p>
+            <div class="facts"><span>Repositório público</span><span>Em desenvolvimento</span></div>
+            <a class="button" href="https://github.com/reicapivararbx/find-the-markers">Ver repositório <span aria-hidden="true">→</span></a>
+          </article>
         </div>
       </div>
     </section>
@@ -242,7 +254,7 @@
   </main>
 
   <footer>
-    <div class="shell footer-row"><span>© <span id="year">2026</span> Capy Projects</span><span>Capyquake · Capyrails · Capyzen</span></div>
+    <div class="shell footer-row"><span>© <span id="year">2026</span> Capy Projects</span><span>Capyquake · Capyrails · Capyzen · Find the Markers</span></div>
   </footer>
   <script>
     document.getElementById('year').textContent = new Date().getFullYear();

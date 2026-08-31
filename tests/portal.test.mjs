@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (path) => readFile(join(root, path), 'utf8');
 
-test('portal central publica os três projetos nas rotas canônicas', async () => {
+test('portal central publica os três jogos e o projeto em desenvolvimento', async () => {
   const html = await read('portal/index.html');
   assert.match(html, /href="\/capyquake\/"/);
   assert.match(html, /href="\/capyrails\/"/);
@@ -16,6 +16,10 @@ test('portal central publica os três projetos nas rotas canônicas', async () =
   assert.match(html, /Jogar Capyzen/);
   assert.match(html, /Simulação e cuidado/);
   assert.doesNotMatch(html, /Capyzen[\s\S]{0,500}EM BREVE/i);
+  assert.match(html, /Find the Markers/);
+  assert.match(html, /href="https:\/\/github\.com\/reicapivararbx\/find-the-markers"/);
+  assert.match(html, /<span class="badge">EM DEV<\/span>/);
+  assert.match(html, /Repositório público/);
 });
 
 test('nginx preserva APIs e WebSockets ao separar os projetos', async () => {
