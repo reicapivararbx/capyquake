@@ -8,9 +8,13 @@ process.env.CAPYQUAKE_DB_PATH = join(mkdtempSync(join(tmpdir(), 'cq-test-')), 't
 
 const { createUser, authenticate, getUserById, giveCoins, setCoins, giveTokens,
   giveXp, setXp, setLevel, levelUp, addItemToInventory, removeItemFromInventory,
-  getInventory, getFullAccount, reportMatch, resetPlayer } = await import('../server/services.js');
+  getInventory, getFullAccount, reportMatch, resetPlayer,
+  createGlobalMessage, getActiveMotd, deactivateGlobalMessage, listGlobalMessages,
+  createPortalNews, listPortalNews, getPortalNewsBySlug, updatePortalNews,
+  createPortalWiki, listPortalWiki, createPortalAchievement, listPortalAchievements,
+  dashboardStats } = await import('../server/services.js');
 const { applyXp, xpNeededForLevel } = await import('../server/xplevel.js');
-const { ApiError } = await import('../server/validation.js');
+const { ApiError, ROLE_RANK, hasPermission, PERMISSIONS } = await import('../server/validation.js');
 const { hashPassword, verifyPassword } = await import('../server/passwords.js');
 
 let owner;
@@ -145,4 +149,69 @@ test('reset exige confirmacao por username e zera escopos', async () => {
   assert.equal(acc.profile.coins, 0);
   assert.equal(acc.profile.level, 1);
   assert.equal(acc.inventory.length, 0);
+});
+
+test('ROLE_RANK: admin > developer > best_capybara', () => {
+  assert.ok(ROLE_RANK.admin > ROLE_RANK.developer);
+  assert.ok(ROLE_RANK.developer > ROLE_RANK.best_capybara);
+  assert.ok(ROLE_RANK.king > ROLE_RANK.head_admin);
+});
+
+test('hasPermission: gates messages.global e portal.* por cargo', () => {
+  assert.equal(hasPermission({ role: 'best_capybara' }, 'admin.view'), true);
+  assert.equal(hasPermission({ role: 'best_capybara' }, 'messages.global'), false);
+  assert.equal(hasPermission({ role: 'best_capybara' }, 'portal.news'), false);
+  assert.equal(hasPermission({ role: 'developer' }, 'messages.global'), true);
+  assert.equal(hasPermission({ role: 'admin' }, 'portal.wiki'), true);
+  assert.equal(hasPermission({ role: 'king' }, 'portal.achievements'), true);
+  assert.equal(hasPermission({ role: 'citizen' }, 'admin.view'), false);
+  assert.ok(PERMISSIONS.admin.includes('messages.global'));
+  assert.ok(PERMISSIONS.admin.includes('portal.news'));
+});
+
+test('global_messages: announce, motd único ativo e deactivate', () => {
+  const actor = actorOf();
+  const a = createGlobalMessage({ kind: 'announce', body: 'Olá arena', actorId: actor.id });
+  assert.equal(a.kind, 'announce');
+  assert.equal(a.active, true);
+  const m1 = createGlobalMessage({ kind: 'motd', body: 'MOTD 1', actorId: actor.id });
+  assert.equal(getActiveMotd()?.body, 'MOTD 1');
+  createGlobalMessage({ kind: 'motd', body: 'MOTD 2', actorId: actor.id });
+  assert.equal(getActiveMotd()?.body, 'MOTD 2');
+  const listed = listGlobalMessages({ kind: 'motd', activeOnly: true });
+  assert.equal(listed.length, 1);
+  assert.equal(listed[0].body, 'MOTD 2');
+  deactivateGlobalMessage(m1.id);
+  assert.throws(() => createGlobalMessage({ kind: 'announce', body: '  ' }), { code: 'INVALID_INPUT' });
+  assert.throws(() => createGlobalMessage({ kind: 'x', body: 'nope' }), { code: 'INVALID_INPUT' });
+  void a;
+});
+
+test('portal news/wiki/achievements CRUD e dashboard counts', () => {
+  const actor = actorOf();
+  const news = createPortalNews({
+    title: 'Patch 1.0', summary: 'resumo', body: 'corpo', published: true, actorId: actor.id
+  });
+  assert.ok(news.slug);
+  assert.equal(getPortalNewsBySlug(news.slug, { publishedOnly: true })?.title, 'Patch 1.0');
+  updatePortalNews(news.id, { published: false, actorId: actor.id });
+  assert.equal(getPortalNewsBySlug(news.slug, { publishedOnly: true }), null);
+  assert.equal(listPortalNews({ publishedOnly: false }).some(n => n.id === news.id), true);
+
+  const wiki = createPortalWiki({
+    gameId: 'capyquake', title: 'Guia DB', bodyMd: '# hi', published: true, actorId: actor.id
+  });
+  assert.equal(listPortalWiki({ gameId: 'capyquake', publishedOnly: true }).some(w => w.id === wiki.id), true);
+
+  const ach = createPortalAchievement({
+    gameId: 'capyquake', name: 'DB Win', description: 'from admin', published: true, actorId: actor.id
+  });
+  assert.equal(listPortalAchievements({ gameId: 'capyquake', publishedOnly: true }).some(x => x.id === ach.id), true);
+
+  const stats = dashboardStats();
+  assert.equal(typeof stats.publishedNews, 'number');
+  assert.equal(typeof stats.portalWiki, 'number');
+  assert.equal(typeof stats.portalAchievements, 'number');
+  assert.ok(stats.portalWiki >= 1);
+  assert.ok(stats.portalAchievements >= 1);
 });

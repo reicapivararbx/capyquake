@@ -661,6 +661,428 @@ export function dashboardStats() {
     totalCoins: db.prepare('SELECT COALESCE(SUM(coins),0) AS c FROM game_profiles').get().c,
     totalTokens: db.prepare('SELECT COALESCE(SUM(tokens),0) AS c FROM game_profiles').get().c,
     totalTransactions: db.prepare('SELECT COUNT(*) AS c FROM currency_transactions').get().c,
-    recentActions: listLogs({ limit: 10 })
+    recentActions: listLogs({ limit: 10 }),
+    activeMotd: getActiveMotd()?.body || null,
+    publishedNews: db.prepare('SELECT COUNT(*) AS c FROM portal_news WHERE published=1').get().c,
+    portalWiki: db.prepare('SELECT COUNT(*) AS c FROM portal_wiki_articles WHERE published=1').get().c,
+    portalAchievements: db.prepare('SELECT COUNT(*) AS c FROM portal_achievements WHERE published=1').get().c
   };
+}
+
+const MSG_KINDS = new Set(['announce', 'motd', 'broadcast']);
+
+function slugify(raw, fallback = 'item') {
+  const s = String(raw ?? '')
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 80);
+  return s || fallback;
+}
+
+function mapGlobalMessage(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    kind: r.kind,
+    body: r.body,
+    active: !!r.active,
+    createdBy: r.created_by ?? null,
+    createdAt: r.created_at,
+    expiresAt: r.expires_at ?? null,
+    authorUsername: r.author_username || null
+  };
+}
+
+export function createGlobalMessage({ kind, body, actorId, expiresAt = null, active = true }) {
+  if (!MSG_KINDS.has(kind)) throw new ApiError('INVALID_INPUT', 'Tipo de mensagem inválido.', 400);
+  const text = String(body ?? '').trim();
+  if (!text) throw new ApiError('INVALID_INPUT', 'Mensagem vazia.', 400);
+  if (text.length > 2000) throw new ApiError('INVALID_INPUT', 'Mensagem muito longa (máx. 2000).', 400);
+  const t = now();
+  return tx(() => {
+    if (kind === 'motd' && active) {
+      db.prepare("UPDATE global_messages SET active=0 WHERE kind='motd' AND active=1").run();
+    }
+    const info = db.prepare(
+      `INSERT INTO global_messages (kind, body, active, created_by, created_at, expires_at)
+       VALUES (?, ?, ?, ?, ?, ?)`
+    ).run(kind, text, active ? 1 : 0, actorId ?? null, t, expiresAt ?? null);
+    return getGlobalMessageById(Number(info.lastInsertRowid));
+  });
+}
+
+export function getGlobalMessageById(id) {
+  const r = db.prepare(
+    `SELECT m.*, u.username AS author_username
+     FROM global_messages m LEFT JOIN users u ON u.id = m.created_by
+     WHERE m.id = ?`
+  ).get(Number(id));
+  return mapGlobalMessage(r);
+}
+
+export function listGlobalMessages({ kind, activeOnly = false, limit = 50, offset = 0 } = {}) {
+  const lim = intInRange(limit, 1, 200, 'INVALID_INPUT', 'limit');
+  const off = intInRange(offset, 0, 1e9, 'INVALID_INPUT', 'offset');
+  const where = [];
+  const params = [];
+  if (kind) {
+    if (!MSG_KINDS.has(kind)) throw new ApiError('INVALID_INPUT', 'Tipo de mensagem inválido.', 400);
+    where.push('m.kind = ?');
+    params.push(kind);
+  }
+  if (activeOnly) {
+    where.push('m.active = 1');
+    where.push('(m.expires_at IS NULL OR m.expires_at > ?)');
+    params.push(now());
+  }
+  const sqlWhere = where.length ? `WHERE ${where.join(' AND ')}` : '';
+  return db.prepare(
+    `SELECT m.*, u.username AS author_username
+     FROM global_messages m LEFT JOIN users u ON u.id = m.created_by
+     ${sqlWhere} ORDER BY m.created_at DESC LIMIT ? OFFSET ?`
+  ).all(...params, lim, off).map(mapGlobalMessage);
+}
+
+export function getActiveMotd() {
+  const r = db.prepare(
+    `SELECT m.*, u.username AS author_username
+     FROM global_messages m LEFT JOIN users u ON u.id = m.created_by
+     WHERE m.kind='motd' AND m.active=1
+       AND (m.expires_at IS NULL OR m.expires_at > ?)
+     ORDER BY m.created_at DESC LIMIT 1`
+  ).get(now());
+  return mapGlobalMessage(r);
+}
+
+export function deactivateGlobalMessage(id) {
+  const row = getGlobalMessageById(id);
+  if (!row) throw new ApiError('NOT_FOUND', 'Mensagem não encontrada.', 404);
+  db.prepare('UPDATE global_messages SET active=0 WHERE id=?').run(Number(id));
+  return getGlobalMessageById(id);
+}
+
+function mapNews(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    summary: r.summary || '',
+    body: r.body || '',
+    published: !!r.published,
+    publishedAt: r.published_at ?? null,
+    createdBy: r.created_by ?? null,
+    updatedBy: r.updated_by ?? null,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+    authorUsername: r.author_username || null
+  };
+}
+
+export function listPortalNews({ publishedOnly = false, limit = 50, offset = 0 } = {}) {
+  const lim = intInRange(limit, 1, 200, 'INVALID_INPUT', 'limit');
+  const off = intInRange(offset, 0, 1e9, 'INVALID_INPUT', 'offset');
+  const where = publishedOnly ? 'WHERE n.published=1' : '';
+  return db.prepare(
+    `SELECT n.*, u.username AS author_username
+     FROM portal_news n LEFT JOIN users u ON u.id = n.created_by
+     ${where}
+     ORDER BY COALESCE(n.published_at, n.created_at) DESC LIMIT ? OFFSET ?`
+  ).all(lim, off).map(mapNews);
+}
+
+export function getPortalNewsBySlug(slug, { publishedOnly = false } = {}) {
+  const s = String(slug ?? '').trim();
+  if (!s) return null;
+  const r = db.prepare(
+    `SELECT n.*, u.username AS author_username
+     FROM portal_news n LEFT JOIN users u ON u.id = n.created_by
+     WHERE n.slug = ? ${publishedOnly ? 'AND n.published=1' : ''}`
+  ).get(s);
+  return mapNews(r);
+}
+
+export function getPortalNewsById(id) {
+  const r = db.prepare(
+    `SELECT n.*, u.username AS author_username
+     FROM portal_news n LEFT JOIN users u ON u.id = n.created_by WHERE n.id = ?`
+  ).get(Number(id));
+  return mapNews(r);
+}
+
+export function createPortalNews({ title, summary = '', body = '', slug, published = false, actorId }) {
+  const tTitle = String(title ?? '').trim();
+  if (!tTitle) throw new ApiError('INVALID_INPUT', 'Título obrigatório.', 400);
+  if (tTitle.length > 200) throw new ApiError('INVALID_INPUT', 'Título muito longo.', 400);
+  const finalSlug = slugify(slug || tTitle, 'news');
+  const t = now();
+  const pub = !!published;
+  try {
+    const info = db.prepare(
+      `INSERT INTO portal_news
+        (slug, title, summary, body, published, published_at, created_by, updated_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      finalSlug, tTitle, String(summary ?? '').slice(0, 500), String(body ?? '').slice(0, 50000),
+      pub ? 1 : 0, pub ? t : null, actorId ?? null, actorId ?? null, t, t
+    );
+    return getPortalNewsById(Number(info.lastInsertRowid));
+  } catch (e) {
+    if (String(e.message || e).includes('UNIQUE')) {
+      throw new ApiError('CONFLICT', 'Slug de novidade já existe.', 409);
+    }
+    throw e;
+  }
+}
+
+export function updatePortalNews(id, { title, summary, body, slug, published, actorId }) {
+  const existing = getPortalNewsById(id);
+  if (!existing) throw new ApiError('NOT_FOUND', 'Novidade não encontrada.', 404);
+  const t = now();
+  const nextTitle = title !== undefined ? String(title).trim() : existing.title;
+  if (!nextTitle) throw new ApiError('INVALID_INPUT', 'Título obrigatório.', 400);
+  const nextSlug = slug !== undefined ? slugify(slug, existing.slug) : existing.slug;
+  const nextSummary = summary !== undefined ? String(summary).slice(0, 500) : existing.summary;
+  const nextBody = body !== undefined ? String(body).slice(0, 50000) : existing.body;
+  let nextPublished = existing.published;
+  let nextPublishedAt = existing.publishedAt;
+  if (published !== undefined) {
+    nextPublished = !!published;
+    if (nextPublished && !existing.published) nextPublishedAt = t;
+    if (!nextPublished) nextPublishedAt = null;
+  }
+  try {
+    db.prepare(
+      `UPDATE portal_news SET slug=?, title=?, summary=?, body=?, published=?, published_at=?,
+        updated_by=?, updated_at=? WHERE id=?`
+    ).run(
+      nextSlug, nextTitle, nextSummary, nextBody, nextPublished ? 1 : 0, nextPublishedAt,
+      actorId ?? null, t, Number(id)
+    );
+  } catch (e) {
+    if (String(e.message || e).includes('UNIQUE')) {
+      throw new ApiError('CONFLICT', 'Slug de novidade já existe.', 409);
+    }
+    throw e;
+  }
+  return getPortalNewsById(id);
+}
+
+export function deletePortalNews(id) {
+  const existing = getPortalNewsById(id);
+  if (!existing) throw new ApiError('NOT_FOUND', 'Novidade não encontrada.', 404);
+  db.prepare('DELETE FROM portal_news WHERE id=?').run(Number(id));
+  return existing;
+}
+
+function mapWiki(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    gameId: r.game_id,
+    slug: r.slug,
+    title: r.title,
+    description: r.description || '',
+    bodyMd: r.body_md || '',
+    published: !!r.published,
+    sortOrder: r.sort_order ?? 0,
+    createdBy: r.created_by ?? null,
+    updatedBy: r.updated_by ?? null,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at
+  };
+}
+
+export function listPortalWiki({ gameId, publishedOnly = false, limit = 100, offset = 0 } = {}) {
+  const lim = intInRange(limit, 1, 500, 'INVALID_INPUT', 'limit');
+  const off = intInRange(offset, 0, 1e9, 'INVALID_INPUT', 'offset');
+  const where = [];
+  const params = [];
+  if (gameId) { where.push('game_id = ?'); params.push(String(gameId)); }
+  if (publishedOnly) where.push('published = 1');
+  const sqlWhere = where.length ? `WHERE ${where.join(' AND ')}` : '';
+  return db.prepare(
+    `SELECT * FROM portal_wiki_articles ${sqlWhere}
+     ORDER BY sort_order ASC, title ASC LIMIT ? OFFSET ?`
+  ).all(...params, lim, off).map(mapWiki);
+}
+
+export function getPortalWikiById(id) {
+  return mapWiki(db.prepare('SELECT * FROM portal_wiki_articles WHERE id=?').get(Number(id)));
+}
+
+export function getPortalWikiArticle(gameId, slug, { publishedOnly = false } = {}) {
+  const r = db.prepare(
+    `SELECT * FROM portal_wiki_articles WHERE game_id=? AND slug=? ${publishedOnly ? 'AND published=1' : ''}`
+  ).get(String(gameId), String(slug));
+  return mapWiki(r);
+}
+
+export function createPortalWiki({ gameId, slug, title, description = '', bodyMd = '', published = false, sortOrder = 0, actorId }) {
+  const g = String(gameId ?? '').trim();
+  const tTitle = String(title ?? '').trim();
+  if (!g) throw new ApiError('INVALID_INPUT', 'gameId obrigatório.', 400);
+  if (!tTitle) throw new ApiError('INVALID_INPUT', 'Título obrigatório.', 400);
+  const finalSlug = slugify(slug || tTitle, 'artigo');
+  const t = now();
+  try {
+    const info = db.prepare(
+      `INSERT INTO portal_wiki_articles
+        (game_id, slug, title, description, body_md, published, sort_order, created_by, updated_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      g, finalSlug, tTitle, String(description).slice(0, 500), String(bodyMd).slice(0, 200000),
+      published ? 1 : 0, Number(sortOrder) || 0, actorId ?? null, actorId ?? null, t, t
+    );
+    return getPortalWikiById(Number(info.lastInsertRowid));
+  } catch (e) {
+    if (String(e.message || e).includes('UNIQUE')) {
+      throw new ApiError('CONFLICT', 'Artigo wiki já existe para este jogo/slug.', 409);
+    }
+    throw e;
+  }
+}
+
+export function updatePortalWiki(id, { gameId, slug, title, description, bodyMd, published, sortOrder, actorId }) {
+  const existing = getPortalWikiById(id);
+  if (!existing) throw new ApiError('NOT_FOUND', 'Artigo wiki não encontrado.', 404);
+  const t = now();
+  const next = {
+    gameId: gameId !== undefined ? String(gameId).trim() : existing.gameId,
+    slug: slug !== undefined ? slugify(slug, existing.slug) : existing.slug,
+    title: title !== undefined ? String(title).trim() : existing.title,
+    description: description !== undefined ? String(description).slice(0, 500) : existing.description,
+    bodyMd: bodyMd !== undefined ? String(bodyMd).slice(0, 200000) : existing.bodyMd,
+    published: published !== undefined ? !!published : existing.published,
+    sortOrder: sortOrder !== undefined ? Number(sortOrder) || 0 : existing.sortOrder
+  };
+  if (!next.gameId || !next.title) throw new ApiError('INVALID_INPUT', 'gameId e título obrigatórios.', 400);
+  try {
+    db.prepare(
+      `UPDATE portal_wiki_articles SET game_id=?, slug=?, title=?, description=?, body_md=?,
+        published=?, sort_order=?, updated_by=?, updated_at=? WHERE id=?`
+    ).run(
+      next.gameId, next.slug, next.title, next.description, next.bodyMd,
+      next.published ? 1 : 0, next.sortOrder, actorId ?? null, t, Number(id)
+    );
+  } catch (e) {
+    if (String(e.message || e).includes('UNIQUE')) {
+      throw new ApiError('CONFLICT', 'Artigo wiki já existe para este jogo/slug.', 409);
+    }
+    throw e;
+  }
+  return getPortalWikiById(id);
+}
+
+export function deletePortalWiki(id) {
+  const existing = getPortalWikiById(id);
+  if (!existing) throw new ApiError('NOT_FOUND', 'Artigo wiki não encontrado.', 404);
+  db.prepare('DELETE FROM portal_wiki_articles WHERE id=?').run(Number(id));
+  return existing;
+}
+
+function mapAchievement(r) {
+  if (!r) return null;
+  return {
+    id: r.id,
+    key: r.achievement_key,
+    gameId: r.game_id,
+    name: r.name,
+    description: r.description || '',
+    legacyTier: r.legacy_tier ?? null,
+    secret: !!r.secret,
+    published: !!r.published,
+    sortOrder: r.sort_order ?? 0,
+    createdBy: r.created_by ?? null,
+    updatedBy: r.updated_by ?? null,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at
+  };
+}
+
+export function listPortalAchievements({ gameId, publishedOnly = false, limit = 200, offset = 0 } = {}) {
+  const lim = intInRange(limit, 1, 500, 'INVALID_INPUT', 'limit');
+  const off = intInRange(offset, 0, 1e9, 'INVALID_INPUT', 'offset');
+  const where = [];
+  const params = [];
+  if (gameId) { where.push('game_id = ?'); params.push(String(gameId)); }
+  if (publishedOnly) where.push('published = 1');
+  const sqlWhere = where.length ? `WHERE ${where.join(' AND ')}` : '';
+  return db.prepare(
+    `SELECT * FROM portal_achievements ${sqlWhere}
+     ORDER BY sort_order ASC, name ASC LIMIT ? OFFSET ?`
+  ).all(...params, lim, off).map(mapAchievement);
+}
+
+export function getPortalAchievementById(id) {
+  return mapAchievement(db.prepare('SELECT * FROM portal_achievements WHERE id=?').get(Number(id)));
+}
+
+export function createPortalAchievement({ key, gameId, name, description = '', legacyTier = null, secret = false, published = true, sortOrder = 0, actorId }) {
+  const tName = String(name ?? '').trim();
+  const g = String(gameId ?? '').trim();
+  if (!tName) throw new ApiError('INVALID_INPUT', 'Nome obrigatório.', 400);
+  if (!g) throw new ApiError('INVALID_INPUT', 'gameId obrigatório.', 400);
+  const finalKey = slugify(key || `${g}-${tName}`, 'ach');
+  const t = now();
+  try {
+    const info = db.prepare(
+      `INSERT INTO portal_achievements
+        (achievement_key, game_id, name, description, legacy_tier, secret, published, sort_order,
+         created_by, updated_by, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).run(
+      finalKey, g, tName, String(description).slice(0, 1000), legacyTier ?? null,
+      secret ? 1 : 0, published ? 1 : 0, Number(sortOrder) || 0,
+      actorId ?? null, actorId ?? null, t, t
+    );
+    return getPortalAchievementById(Number(info.lastInsertRowid));
+  } catch (e) {
+    if (String(e.message || e).includes('UNIQUE')) {
+      throw new ApiError('CONFLICT', 'Chave de conquista já existe.', 409);
+    }
+    throw e;
+  }
+}
+
+export function updatePortalAchievement(id, { key, gameId, name, description, legacyTier, secret, published, sortOrder, actorId }) {
+  const existing = getPortalAchievementById(id);
+  if (!existing) throw new ApiError('NOT_FOUND', 'Conquista não encontrada.', 404);
+  const t = now();
+  const next = {
+    key: key !== undefined ? slugify(key, existing.key) : existing.key,
+    gameId: gameId !== undefined ? String(gameId).trim() : existing.gameId,
+    name: name !== undefined ? String(name).trim() : existing.name,
+    description: description !== undefined ? String(description).slice(0, 1000) : existing.description,
+    legacyTier: legacyTier !== undefined ? legacyTier : existing.legacyTier,
+    secret: secret !== undefined ? !!secret : existing.secret,
+    published: published !== undefined ? !!published : existing.published,
+    sortOrder: sortOrder !== undefined ? Number(sortOrder) || 0 : existing.sortOrder
+  };
+  if (!next.name || !next.gameId) throw new ApiError('INVALID_INPUT', 'Nome e gameId obrigatórios.', 400);
+  try {
+    db.prepare(
+      `UPDATE portal_achievements SET achievement_key=?, game_id=?, name=?, description=?, legacy_tier=?,
+        secret=?, published=?, sort_order=?, updated_by=?, updated_at=? WHERE id=?`
+    ).run(
+      next.key, next.gameId, next.name, next.description, next.legacyTier,
+      next.secret ? 1 : 0, next.published ? 1 : 0, next.sortOrder,
+      actorId ?? null, t, Number(id)
+    );
+  } catch (e) {
+    if (String(e.message || e).includes('UNIQUE')) {
+      throw new ApiError('CONFLICT', 'Chave de conquista já existe.', 409);
+    }
+    throw e;
+  }
+  return getPortalAchievementById(id);
+}
+
+export function deletePortalAchievement(id) {
+  const existing = getPortalAchievementById(id);
+  if (!existing) throw new ApiError('NOT_FOUND', 'Conquista não encontrada.', 404);
+  db.prepare('DELETE FROM portal_achievements WHERE id=?').run(Number(id));
+  return existing;
 }
