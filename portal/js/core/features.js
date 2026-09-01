@@ -8,7 +8,7 @@ export const features = Object.freeze({
   achievementsCatalog: true,
   wiki: true,
   search: true,
-  news: false,
+  news: true,
   social: false,
   followers: false,
   avatarCustomization: false,

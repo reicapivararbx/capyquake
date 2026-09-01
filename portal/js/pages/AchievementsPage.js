@@ -65,29 +65,53 @@ export function renderAchievementsPage(gameId) {
     section.append(back);
   }
 
-  const items = listAchievements(gameId);
-  if (!items.length) {
-    section.append(
-      renderEmptyState({
-        title: 'Nenhuma conquista listada',
-        body: 'Ainda não há catálogo documentado para este jogo no portal.',
-      }),
-    );
-    return section;
-  }
-
+  const staticItems = listAchievements(gameId);
   const grid = document.createElement('div');
   grid.className = 'ach-grid';
-  for (const ach of items) {
-    grid.append(renderAchievementCard(ach));
-  }
   section.append(grid);
+
+  const empty = renderEmptyState({
+    title: 'Nenhuma conquista listada',
+    body: 'Ainda não há catálogo documentado para este jogo no portal.',
+  });
+  if (!staticItems.length) section.append(empty);
 
   const note = document.createElement('p');
   note.className = 'page-note';
   note.textContent =
     'Desbloqueios pessoais dependem da API do jogo. O portal não marca conquistas como obtidas sem dados reais.';
   section.append(note);
+
+  const seen = new Set();
+  for (const ach of staticItems) {
+    seen.add(ach.id);
+    grid.append(renderAchievementCard(ach));
+  }
+
+  const q = gameId ? `?gameId=${encodeURIComponent(gameId)}&limit=200` : '?limit=200';
+  import('../services/api.js').then(({ api }) => {
+    api(`/api/portal/achievements${q}`).then((res) => {
+      if (!res.ok || !res.data?.achievements?.length) return;
+      let added = 0;
+      for (const raw of res.data.achievements) {
+        const id = raw.key || String(raw.id);
+        if (!id || seen.has(id)) continue;
+        seen.add(id);
+        grid.append(
+          renderAchievementCard({
+            id,
+            gameId: raw.gameId,
+            name: raw.name,
+            description: raw.description || '',
+            legacyTier: raw.legacyTier || undefined,
+            secret: !!raw.secret,
+          }),
+        );
+        added += 1;
+      }
+      if (added && empty.isConnected) empty.remove();
+    });
+  });
 
   return section;
 }

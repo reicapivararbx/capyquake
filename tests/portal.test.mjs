@@ -70,10 +70,35 @@ test('portal modular usa /capy-portal/ e não invade /assets/ do Capyquake', asy
 test('portal home não inventa dados sociais ou de servidores', async () => {
   const home = await read('portal/js/ui/HomePage.js');
   assert.match(home, /Nenhuma novidade publicada ainda/);
+  assert.match(home, /\/api\/portal\/news/);
   assert.match(home, /Sem dados sociais no portal ainda/);
   assert.match(home, /browser de salas públicas ainda não está disponível/i);
   assert.doesNotMatch(home, /\bMiku\b/i);
   assert.doesNotMatch(home, /Roblox/i);
+});
+
+test('admin geral rebrand + módulos portal/messages', async () => {
+  const index = await read('server/admin/index.html');
+  const login = await read('server/admin/login.html');
+  const app = await read('server/admin/app.js');
+  assert.match(index, /Portal Capy · Admin Geral|PORTAL CAPY/);
+  assert.match(index, /#\/messages/);
+  assert.match(index, /#\/portal-news/);
+  assert.match(index, /#\/portal-wiki/);
+  assert.match(index, /#\/portal-achievements/);
+  assert.match(login, /ADMIN GERAL/);
+  assert.match(app, /pageMessages/);
+  assert.match(app, /pagePortalNews/);
+  assert.match(app, /messages\.global/);
+  assert.match(app, /portal\.news/);
+});
+
+test('features.news ligado e NewsPage consome API real', async () => {
+  const features = await read('portal/js/core/features.js');
+  assert.match(features, /news:\s*true/);
+  const news = await read('portal/js/pages/NewsPage.js');
+  assert.match(news, /\/api\/portal\/news/);
+  assert.match(news, /api\(/);
 });
 
 test('rarity SSOT getAchievementRarity cobre a tabela oficial', async () => {

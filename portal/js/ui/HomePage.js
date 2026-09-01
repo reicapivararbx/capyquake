@@ -129,12 +129,29 @@ function buildSecondary() {
   news.id = 'novidades';
   news.innerHTML = `
     <h3>Novidades</h3>
-    <div class="empty-state" style="margin-top:12px;border:0;padding:0;text-align:left">
+    <div class="empty-state" style="margin-top:12px;border:0;padding:0;text-align:left" data-home-news>
       <strong>Nenhuma novidade publicada ainda.</strong>
       Quando houver changelog oficial, ele aparece aqui — sem inventar posts.
     </div>
     <p style="margin-top:12px"><a class="btn btn--sm" href="/novidades">Abrir novidades</a></p>
   `;
+  if (features.news) {
+    import('../services/api.js').then(({ api }) => {
+      api('/api/portal/news?limit=5').then((res) => {
+        if (!res.ok || !res.data?.news?.length) return;
+        const box = news.querySelector('[data-home-news]');
+        if (!box) return;
+        const items = res.data.news.slice(0, 5);
+        box.className = '';
+        box.innerHTML = items
+          .map(
+            (n) =>
+              `<p style="margin:0 0 8px"><a href="/novidades/${encodeURIComponent(n.slug)}"><strong>${escapeHtml(n.title)}</strong></a>${n.summary ? `<br><span class="dim">${escapeHtml(n.summary)}</span>` : ''}</p>`,
+          )
+          .join('');
+      });
+    });
+  }
 
   const social = document.createElement('div');
   social.className = 'home-panel';
@@ -171,4 +188,12 @@ function buildManifesto() {
     </div>
   `;
   return section;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
