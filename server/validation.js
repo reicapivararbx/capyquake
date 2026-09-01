@@ -17,11 +17,65 @@ export const ROLE_RANK = {
   custom: 5,
   best_capybara: 6,
   developer: 7,
-  admin: 6,
+  admin: 8,
   head_admin: 9,
   co_king: 10,
   king: 11
 };
+
+if (!(ROLE_RANK.admin > ROLE_RANK.developer && ROLE_RANK.developer > ROLE_RANK.best_capybara)) {
+  throw new Error('ROLE_RANK hierarchy broken: expected admin > developer > best_capybara');
+}
+
+export const VIEW_PERMS = Object.freeze([
+  'admin.view', 'users.view', 'game.view', 'inventory.view', 'economy.view'
+]);
+
+const STAFF_ACTION_PERMS = Object.freeze([
+  'admin.logs', 'game.heal',
+  'users.suspend', 'users.ban', 'users.create', 'users.password',
+  'economy.give', 'economy.remove', 'economy.set',
+  'inventory.give', 'inventory.remove',
+  'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll',
+  'messages.global',
+  'portal.news', 'portal.wiki', 'portal.achievements'
+]);
+
+export const PERMISSIONS = Object.freeze({
+  visitante: Object.freeze([]),
+  citizen: Object.freeze([]),
+  cool: Object.freeze([]),
+  hazbin: Object.freeze([]),
+  friend: Object.freeze([]),
+  best_capybara: Object.freeze([...VIEW_PERMS]),
+  developer: Object.freeze([...VIEW_PERMS, ...STAFF_ACTION_PERMS]),
+  admin: Object.freeze([...VIEW_PERMS, ...STAFF_ACTION_PERMS]),
+  head_admin: Object.freeze([...VIEW_PERMS, ...STAFF_ACTION_PERMS, 'roles.manage']),
+  co_king: Object.freeze([...VIEW_PERMS, ...STAFF_ACTION_PERMS, 'roles.manage']),
+  king: Object.freeze(['*'])
+});
+
+export function hasPermission(user, perm) {
+  if (!user) return false;
+  if (user.role === 'custom') {
+    try {
+      const customPerms = JSON.parse(user.customPermissions || '[]');
+      return customPerms.includes('*') || customPerms.includes(perm);
+    } catch {
+      return false;
+    }
+  }
+  const perms = PERMISSIONS[user?.role] || [];
+  return perms.includes('*') || perms.includes(perm);
+}
+
+export function getAvailablePermissions() {
+  const seen = new Set();
+  for (const perms of Object.values(PERMISSIONS)) {
+    for (const p of perms) if (p !== '*') seen.add(p);
+  }
+  return [...seen].sort();
+}
 
 export const ROLE_LABELS = {
   king: '👑 Capybara_King',
