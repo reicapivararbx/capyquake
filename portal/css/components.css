@@ -1,0 +1,272 @@
+/* Shared UI: buttons, badges, cards */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition:
+    transform var(--dur) var(--ease),
+    border-color var(--dur) var(--ease),
+    background var(--dur) var(--ease);
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+  transform: none;
+}
+
+.btn--primary {
+  border-color: transparent;
+  background: var(--primary);
+  color: var(--primary-fg);
+  box-shadow: var(--shadow-primary);
+}
+
+.btn--primary:hover {
+  background: var(--primary-hover);
+  border-color: transparent;
+}
+
+.btn--ghost {
+  background: transparent;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--sm {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 12px;
+}
+
+/* Project / game status badge */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  white-space: nowrap;
+}
+
+.status-badge__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+.status-badge--online {
+  color: #b9e8c0;
+  border-color: color-mix(in srgb, var(--online) 28%, transparent);
+  background: color-mix(in srgb, var(--online) 7%, transparent);
+}
+
+.status-badge--online .status-badge__dot {
+  background: var(--online);
+  box-shadow: 0 0 10px var(--online);
+}
+
+.status-badge--development {
+  color: #cbb6ff;
+  border-color: color-mix(in srgb, var(--development) 32%, transparent);
+  background: color-mix(in srgb, var(--development) 8%, transparent);
+}
+
+.status-badge--development .status-badge__dot {
+  background: var(--development);
+}
+
+.status-badge--coming_soon,
+.status-badge--coming-soon {
+  color: #9fd4ff;
+  border-color: color-mix(in srgb, var(--coming-soon) 32%, transparent);
+  background: color-mix(in srgb, var(--coming-soon) 8%, transparent);
+}
+
+.status-badge--maintenance {
+  color: #f0d48a;
+  border-color: color-mix(in srgb, var(--maintenance) 32%, transparent);
+  background: color-mix(in srgb, var(--maintenance) 8%, transparent);
+}
+
+.status-badge--offline {
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+
+/* Game card */
+.game-card {
+  --accent: var(--primary);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  padding: 22px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015));
+  overflow: hidden;
+  transition:
+    transform var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.game-card::before {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  right: -90px;
+  top: -100px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: 0.12;
+  pointer-events: none;
+}
+
+.game-card:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--accent) 42%, transparent);
+}
+
+.game-card--quake { --accent: var(--primary); }
+.game-card--rails { --accent: var(--gold); }
+.game-card--zen { --accent: var(--violet); }
+.game-card--markers { --accent: var(--blue); }
+
+.game-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  position: relative;
+}
+
+.game-card__symbol {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  color: var(--accent);
+  font-weight: 950;
+  letter-spacing: 0.05em;
+  font-size: 14px;
+}
+
+.game-card__title {
+  margin: 28px 0 6px;
+  font-size: 1.5rem;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  position: relative;
+}
+
+.game-card__kind {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.game-card__desc {
+  margin: 10px 0 0;
+  color: var(--text-muted);
+  font-size: var(--fs-secondary);
+  position: relative;
+}
+
+.game-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0 20px;
+  position: relative;
+}
+
+.game-card__tags span {
+  padding: 5px 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.045);
+  color: #b8bec4;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.game-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  position: relative;
+}
+
+.game-card__actions .btn {
+  flex: 1 1 auto;
+  min-width: 120px;
+}
+
+.game-card__actions .btn--primary,
+.game-card__actions .btn[data-accent] {
+  border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+.game-card__actions .btn--primary:hover,
+.game-card__actions .btn[data-accent]:hover {
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.empty-state {
+  padding: 28px 20px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-xl);
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--fs-secondary);
+}
+
+.empty-state strong {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+  font-size: var(--fs-body);
+}
