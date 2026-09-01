@@ -354,7 +354,8 @@ async function pageUsers(offset = 0, q = '', role = '') {
 
 async function pageDashboard() {
   const { stats } = await api('/api/admin/dashboard');
-  content.innerHTML = `<h1>Dashboard</h1>
+  content.innerHTML = `<h1>Dashboard Geral</h1>
+    <p class="dim" style="margin-top:-8px;margin-bottom:16px">Portal Capy Admin Geral · métricas reais do Capyquake + módulos do portal</p>
     <div class="cards">
       <div class="card"><b>${fmt(stats.totalUsers)}</b><span>Total users</span></div>
       <div class="card"><b>${fmt(stats.activeUsers)}</b><span>Active</span></div>
@@ -362,9 +363,252 @@ async function pageDashboard() {
       <div class="card"><b>${fmt(stats.totalCoins)}</b><span>Total coins</span></div>
       <div class="card"><b>${fmt(stats.totalTokens)}</b><span>Total tokens</span></div>
       <div class="card"><b>${fmt(stats.totalTransactions)}</b><span>Transactions</span></div>
+      <div class="card"><b>${fmt(stats.publishedNews || 0)}</b><span>News publicadas</span></div>
+      <div class="card"><b>${fmt(stats.portalWiki || 0)}</b><span>Wiki publicadas</span></div>
+      <div class="card"><b>${fmt(stats.portalAchievements || 0)}</b><span>Conquistas portal</span></div>
     </div>
+    ${stats.activeMotd ? `<div class="panel"><h2>MOTD ATIVO</h2><p>${esc(stats.activeMotd)}</p></div>` : '<div class="panel"><h2>MOTD</h2><p class="dim">Nenhum MOTD ativo.</p></div>'}
     <h1 style="font-size:15px;color:var(--dim)">RECENT ADMIN ACTIONS</h1>
     ${tableLogs(stats.recentActions)}`;
+}
+
+async function pageMessages() {
+  if (!can('messages.global')) {
+    content.innerHTML = `<h1>Mensagens Globais</h1><p class="dim">Sem permissão <code>messages.global</code>.</p>`;
+    return;
+  }
+  const data = await api('/api/admin/messages?limit=40');
+  content.innerHTML = `<h1>Mensagens Globais</h1>
+    <div class="panel"><h2>NOVO ANÚNCIO / MOTD</h2>
+      <div class="row">
+        <div><label>Tipo</label>
+          <select id="msg-kind"><option value="announce">announce</option><option value="motd">motd</option><option value="broadcast">broadcast</option></select>
+        </div>
+      </div>
+      <label>Mensagem</label>
+      <textarea class="textarea" id="msg-body" maxlength="2000" placeholder="Texto do anúncio ou MOTD"></textarea>
+      <div class="row" style="margin-top:10px">
+        <button id="msg-send" data-label="PUBLICAR">PUBLICAR</button>
+      </div>
+      ${data.motd ? `<p class="dim" style="margin-top:12px">MOTD atual: <b>${esc(data.motd.body)}</b></p>` : '<p class="dim" style="margin-top:12px">Sem MOTD ativo.</p>'}
+    </div>
+    <div class="panel"><h2>HISTÓRICO</h2>
+      ${data.messages.length ? `<table><thead><tr><th>Quando</th><th>Tipo</th><th>Texto</th><th>Autor</th><th>Ativo</th><th></th></tr></thead><tbody>
+        ${data.messages.map(m => `<tr>
+          <td>${dt(m.createdAt)}</td><td><span class="pill">${esc(m.kind)}</span></td>
+          <td>${esc(m.body)}</td><td>${esc(m.authorUsername || '—')}</td>
+          <td>${m.active ? '<span class="pill active">sim</span>' : '<span class="dim">não</span>'}</td>
+          <td>${m.active ? `<button class="ghost msg-off" data-id="${m.id}" data-label="DESATIVAR">DESATIVAR</button>` : ''}</td>
+        </tr>`).join('')}
+      </tbody></table>` : '<p class="dim">Nenhuma mensagem ainda.</p>'}
+    </div>`;
+  $('#msg-send').onclick = () => runAction($('#msg-send'), async () => {
+    await api('/api/admin/messages', {
+      method: 'POST', idemKey: uuid(),
+      body: { kind: $('#msg-kind').value, body: $('#msg-body').value }
+    });
+    toast('Mensagem publicada.');
+    await pageMessages();
+  }, 'OK');
+  content.querySelectorAll('.msg-off').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => runAction(btn, async () => {
+      await api('/api/admin/messages/' + btn.dataset.id, { method: 'POST', body: { action: 'deactivate' } });
+      toast('Mensagem desativada.');
+      await pageMessages();
+    }, 'OK');
+  });
+}
+
+async function pagePortalNews() {
+  if (!can('portal.news')) {
+    content.innerHTML = `<h1>Novidades</h1><p class="dim">Sem permissão <code>portal.news</code>.</p>`;
+    return;
+  }
+  const data = await api('/api/admin/portal/news?limit=50');
+  content.innerHTML = `<h1>Portal · Novidades</h1>
+    <div class="panel"><h2>NOVA POSTAGEM</h2>
+      <div class="row">
+        <div><label>Título</label><input id="pn-title" maxlength="200"></div>
+        <div><label>Slug (opcional)</label><input id="pn-slug" maxlength="80" placeholder="auto"></div>
+      </div>
+      <label>Resumo</label><input id="pn-summary" maxlength="500">
+      <label>Corpo</label><textarea class="textarea" id="pn-body"></textarea>
+      <div class="row" style="margin-top:10px">
+        <label style="display:flex;gap:8px;align-items:center;text-transform:none;color:var(--text)"><input type="checkbox" id="pn-pub"> Publicar agora</label>
+        <button id="pn-create" data-label="CRIAR">CRIAR</button>
+      </div>
+    </div>
+    <div class="panel"><h2>LISTA</h2>
+      ${data.news.length ? `<table><thead><tr><th>ID</th><th>Título</th><th>Slug</th><th>Status</th><th>Atualizado</th><th></th></tr></thead><tbody>
+        ${data.news.map(n => `<tr>
+          <td>${n.id}</td><td><b>${esc(n.title)}</b><br><span class="dim">${esc(n.summary || '')}</span></td>
+          <td class="dim">${esc(n.slug)}</td>
+          <td>${n.published ? '<span class="pill active">publicado</span>' : '<span class="dim">rascunho</span>'}</td>
+          <td>${dt(n.updatedAt)}</td>
+          <td class="row" style="margin:0">
+            <button class="ghost pn-toggle" data-id="${n.id}" data-pub="${n.published ? 0 : 1}" data-label="${n.published ? 'DESPUBLICAR' : 'PUBLICAR'}">${n.published ? 'DESPUBLICAR' : 'PUBLICAR'}</button>
+            <button class="ghost pn-del" data-id="${n.id}" data-label="APAGAR">APAGAR</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>` : '<p class="dim">Nenhuma novidade.</p>'}
+    </div>`;
+  $('#pn-create').onclick = () => runAction($('#pn-create'), async () => {
+    await api('/api/admin/portal/news', {
+      method: 'POST', idemKey: uuid(),
+      body: {
+        title: $('#pn-title').value, slug: $('#pn-slug').value || undefined,
+        summary: $('#pn-summary').value, body: $('#pn-body').value,
+        published: $('#pn-pub').checked
+      }
+    });
+    toast('Novidade criada.');
+    await pagePortalNews();
+  }, 'OK');
+  content.querySelectorAll('.pn-toggle').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => runAction(btn, async () => {
+      await api('/api/admin/portal/news/' + btn.dataset.id, {
+        method: 'POST', body: { published: btn.dataset.pub === '1' }
+      });
+      await pagePortalNews();
+    }, 'OK');
+  });
+  content.querySelectorAll('.pn-del').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => confirmModal({
+      title: 'Apagar novidade?',
+      bodyHtml: `<p>ID #${btn.dataset.id}</p>`,
+      onConfirm: () => runAction(btn, async () => {
+        await api('/api/admin/portal/news/' + btn.dataset.id + '/delete', { method: 'POST', body: {} });
+        toast('Apagada.');
+        await pagePortalNews();
+      }, 'OK')
+    });
+  });
+}
+
+async function pagePortalWiki() {
+  if (!can('portal.wiki')) {
+    content.innerHTML = `<h1>Wiki</h1><p class="dim">Sem permissão <code>portal.wiki</code>.</p>`;
+    return;
+  }
+  const data = await api('/api/admin/portal/wiki?limit=100');
+  content.innerHTML = `<h1>Portal · Wiki</h1>
+    <div class="panel"><h2>NOVO ARTIGO (DB)</h2>
+      <p class="dim">Artigos estáticos do portal continuam em markdown; estes vão para a API <code>/api/portal/wiki</code>.</p>
+      <div class="row">
+        <div><label>Game ID</label><input id="pw-game" value="capyquake"></div>
+        <div><label>Título</label><input id="pw-title"></div>
+        <div><label>Slug</label><input id="pw-slug" placeholder="auto"></div>
+      </div>
+      <label>Descrição</label><input id="pw-desc">
+      <label>Corpo (markdown)</label><textarea class="textarea" id="pw-body"></textarea>
+      <div class="row" style="margin-top:10px">
+        <label style="display:flex;gap:8px;align-items:center;text-transform:none;color:var(--text)"><input type="checkbox" id="pw-pub"> Publicar</label>
+        <button id="pw-create" data-label="CRIAR">CRIAR</button>
+      </div>
+    </div>
+    <div class="panel"><h2>ARTIGOS DB</h2>
+      ${data.articles.length ? `<table><thead><tr><th>ID</th><th>Jogo</th><th>Título</th><th>Slug</th><th>Status</th><th></th></tr></thead><tbody>
+        ${data.articles.map(a => `<tr>
+          <td>${a.id}</td><td>${esc(a.gameId)}</td><td><b>${esc(a.title)}</b></td><td class="dim">${esc(a.slug)}</td>
+          <td>${a.published ? '<span class="pill active">ok</span>' : '<span class="dim">draft</span>'}</td>
+          <td>
+            <button class="ghost pw-toggle" data-id="${a.id}" data-pub="${a.published ? 0 : 1}" data-label="TOGGLE">${a.published ? 'DESPUBLICAR' : 'PUBLICAR'}</button>
+            <button class="ghost pw-del" data-id="${a.id}" data-label="APAGAR">APAGAR</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>` : '<p class="dim">Nenhum artigo no banco.</p>'}
+    </div>`;
+  $('#pw-create').onclick = () => runAction($('#pw-create'), async () => {
+    await api('/api/admin/portal/wiki', {
+      method: 'POST', idemKey: uuid(),
+      body: {
+        gameId: $('#pw-game').value, title: $('#pw-title').value, slug: $('#pw-slug').value || undefined,
+        description: $('#pw-desc').value, bodyMd: $('#pw-body').value, published: $('#pw-pub').checked
+      }
+    });
+    toast('Artigo criado.');
+    await pagePortalWiki();
+  }, 'OK');
+  content.querySelectorAll('.pw-toggle').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => runAction(btn, async () => {
+      await api('/api/admin/portal/wiki/' + btn.dataset.id, { method: 'POST', body: { published: btn.dataset.pub === '1' } });
+      await pagePortalWiki();
+    }, 'OK');
+  });
+  content.querySelectorAll('.pw-del').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => runAction(btn, async () => {
+      await api('/api/admin/portal/wiki/' + btn.dataset.id + '/delete', { method: 'POST', body: {} });
+      await pagePortalWiki();
+    }, 'OK');
+  });
+}
+
+async function pagePortalAchievements() {
+  if (!can('portal.achievements')) {
+    content.innerHTML = `<h1>Conquistas</h1><p class="dim">Sem permissão <code>portal.achievements</code>.</p>`;
+    return;
+  }
+  const data = await api('/api/admin/portal/achievements?limit=200');
+  content.innerHTML = `<h1>Portal · Conquistas</h1>
+    <div class="panel"><h2>NOVA CONQUISTA (DB)</h2>
+      <p class="dim">O catálogo estático do portal permanece; itens DB alimentam <code>/api/portal/achievements</code>.</p>
+      <div class="row">
+        <div><label>Game ID</label><input id="pa-game" value="capyquake"></div>
+        <div><label>Nome</label><input id="pa-name"></div>
+        <div><label>Key</label><input id="pa-key" placeholder="auto"></div>
+      </div>
+      <label>Descrição</label><input id="pa-desc">
+      <div class="row">
+        <div><label>Tier legado</label><input id="pa-tier" placeholder="COMMON / RARE…"></div>
+        <label style="display:flex;gap:8px;align-items:center;text-transform:none;color:var(--text)"><input type="checkbox" id="pa-secret"> Secreta</label>
+        <label style="display:flex;gap:8px;align-items:center;text-transform:none;color:var(--text)"><input type="checkbox" id="pa-pub" checked> Publicada</label>
+        <button id="pa-create" data-label="CRIAR">CRIAR</button>
+      </div>
+    </div>
+    <div class="panel"><h2>LISTA DB</h2>
+      ${data.achievements.length ? `<table><thead><tr><th>ID</th><th>Key</th><th>Jogo</th><th>Nome</th><th>Status</th><th></th></tr></thead><tbody>
+        ${data.achievements.map(a => `<tr>
+          <td>${a.id}</td><td class="dim">${esc(a.key)}</td><td>${esc(a.gameId)}</td>
+          <td><b>${esc(a.name)}</b>${a.secret ? ' 🔒' : ''}<br><span class="dim">${esc(a.description)}</span></td>
+          <td>${a.published ? '<span class="pill active">ok</span>' : '<span class="dim">off</span>'}</td>
+          <td>
+            <button class="ghost pa-toggle" data-id="${a.id}" data-pub="${a.published ? 0 : 1}" data-label="TOGGLE">${a.published ? 'OFF' : 'ON'}</button>
+            <button class="ghost pa-del" data-id="${a.id}" data-label="APAGAR">APAGAR</button>
+          </td>
+        </tr>`).join('')}
+      </tbody></table>` : '<p class="dim">Nenhuma conquista no banco.</p>'}
+    </div>`;
+  $('#pa-create').onclick = () => runAction($('#pa-create'), async () => {
+    await api('/api/admin/portal/achievements', {
+      method: 'POST', idemKey: uuid(),
+      body: {
+        gameId: $('#pa-game').value, name: $('#pa-name').value, key: $('#pa-key').value || undefined,
+        description: $('#pa-desc').value, legacyTier: $('#pa-tier').value || null,
+        secret: $('#pa-secret').checked, published: $('#pa-pub').checked
+      }
+    });
+    toast('Conquista criada.');
+    await pagePortalAchievements();
+  }, 'OK');
+  content.querySelectorAll('.pa-toggle').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => runAction(btn, async () => {
+      await api('/api/admin/portal/achievements/' + btn.dataset.id, { method: 'POST', body: { published: btn.dataset.pub === '1' } });
+      await pagePortalAchievements();
+    }, 'OK');
+  });
+  content.querySelectorAll('.pa-del').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => runAction(btn, async () => {
+      await api('/api/admin/portal/achievements/' + btn.dataset.id + '/delete', { method: 'POST', body: {} });
+      await pagePortalAchievements();
+    }, 'OK');
+  });
 }
 
 function tableLogs(logs) {
@@ -753,6 +997,10 @@ async function route() {
   content.querySelectorAll('button').forEach(b => b.disabled = false);
   try {
     if (parts[0] === 'dashboard' || !parts[0]) return await pageDashboard();
+    if (parts[0] === 'messages') return await pageMessages();
+    if (parts[0] === 'portal-news') return await pagePortalNews();
+    if (parts[0] === 'portal-wiki') return await pagePortalWiki();
+    if (parts[0] === 'portal-achievements') return await pagePortalAchievements();
     if (parts[0] === 'users') return await pageUsers(intParam0(params.get('offset')), params.get('q') || '', params.get('role') || '');
     if (parts[0] === 'players' && parts[1]) return await pagePlayerDetail(parts[1]);
     if (parts[0] === 'players') return await pagePlayers(intParam0(params.get('offset')), params.get('q') || '');
@@ -777,6 +1025,10 @@ window.addEventListener('hashchange', route);
     await loadPermissions();
     $('#me').textContent = `${ME.username} · ${roleLabel(ME.role)}`;
     if (ME.role === 'player') { location.href = '/admin/login'; return; }
+    document.querySelectorAll('[data-nav][data-perm]').forEach(a => {
+      const need = a.getAttribute('data-perm');
+      if (need && !can(need)) a.hidden = true;
+    });
     document.querySelectorAll('[data-nav]').forEach(a => a.classList.add(a.getAttribute('href') === location.hash || (!location.hash && a.getAttribute('href') === '#/dashboard') ? 'active' : ''));
     window.addEventListener('hashchange', () => {
       document.querySelectorAll('[data-nav]').forEach(a =>

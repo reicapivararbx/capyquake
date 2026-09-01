@@ -3,24 +3,31 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CAPYQUAKE · Admin</title>
+<title>Portal Capy · Admin Geral</title>
 <link rel="stylesheet" href="/admin/admin.css">
 </head>
 <body>
 <div class="layout">
   <aside class="sidebar" id="sidebar">
-    <div class="brand">CAPYQUAKE<span>ADMIN</span></div>
+    <div class="brand">PORTAL CAPY<span>ADMIN GERAL</span></div>
     <nav aria-label="Administração">
-      <a href="#/dashboard" data-nav>📊 Dashboard</a>
-      <a href="#/users" data-nav>👥 Users</a>
-      <a href="#/players" data-nav>🎮 Players</a>
-      <a href="#/game-tools" data-nav>🛠️ Game Tools</a>
-      <a href="#/logs" data-nav>📜 Logs</a>
-      <a href="#/chat" data-nav>💬 Chat</a>
-      <a href="#/settings" data-nav>⚙️ Settings</a>
+      <div class="nav-group">Geral</div>
+      <a href="#/dashboard" data-nav>Dashboard Geral</a>
+      <a href="#/messages" data-nav data-perm="messages.global">Mensagens Globais</a>
+      <div class="nav-group">Portal</div>
+      <a href="#/portal-news" data-nav data-perm="portal.news">Novidades</a>
+      <a href="#/portal-wiki" data-nav data-perm="portal.wiki">Wiki</a>
+      <a href="#/portal-achievements" data-nav data-perm="portal.achievements">Conquistas</a>
+      <div class="nav-group">Capyquake</div>
+      <a href="#/users" data-nav>Users</a>
+      <a href="#/players" data-nav>Players</a>
+      <a href="#/game-tools" data-nav>Game Tools</a>
+      <a href="#/logs" data-nav>Logs</a>
+      <a href="#/chat" data-nav>Chat Staff</a>
+      <a href="#/settings" data-nav>Settings</a>
     </nav>
     <div class="me" id="me"></div>
-    <a id="btn-back-game" class="ghost" href="/" style="text-decoration:none;text-align:center;display:block;">🎮 VOLTAR AO JOGO</a>
+    <a id="btn-back-game" class="ghost" href="/" style="text-decoration:none;text-align:center;display:block;">← Portal / Jogo</a>
   </aside>
   <main id="content" class="content" tabindex="-1"></main>
 </div>

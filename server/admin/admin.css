@@ -9,9 +9,13 @@ body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.45 sys
 .sidebar { width: 220px; background: var(--panel); border-right: 1px solid var(--line); padding: 18px 14px; display: flex; flex-direction: column; gap: 8px; position: sticky; top: 0; height: 100vh; }
 .brand { font-weight: 800; letter-spacing: 1px; margin-bottom: 10px; }
 .brand span { color: var(--acc); display: block; font-size: 11px; letter-spacing: 3px; }
-.sidebar nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+.sidebar nav { display: flex; flex-direction: column; gap: 4px; flex: 1; overflow-y: auto; }
+.nav-group { color: var(--dim); font-size: 10px; letter-spacing: 2px; text-transform: uppercase; margin: 12px 4px 4px; opacity: .85; }
+.nav-group:first-child { margin-top: 0; }
 .sidebar a { color: var(--dim); text-decoration: none; padding: 9px 10px; border-radius: 8px; }
 .sidebar a:hover, .sidebar a.active { background: var(--panel2); color: var(--text); }
+.sidebar a[hidden] { display: none; }
+.textarea { width: 100%; min-height: 100px; background: var(--panel2); border: 1px solid var(--line); color: var(--text); padding: 10px; border-radius: 8px; font: inherit; resize: vertical; }
 .me { color: var(--dim); font-size: 13px; padding: 6px; border-top: 1px solid var(--line); }
 button, .btn { background: var(--acc); color: #161005; border: 0; padding: 9px 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
 button:disabled { opacity: .55; cursor: wait; }
