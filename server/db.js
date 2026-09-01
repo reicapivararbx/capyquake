@@ -90,7 +90,64 @@ const MIGRATIONS = [
   CREATE INDEX IF NOT EXISTS idx_logs_action ON admin_logs(action);
   CREATE INDEX IF NOT EXISTS idx_logs_created ON admin_logs(created_at);`,
   'REBUILD_USERS_ROLES',
-  `ALTER TABLE users ADD COLUMN custom_permissions TEXT;`
+  `ALTER TABLE users ADD COLUMN custom_permissions TEXT;`,
+  `CREATE TABLE IF NOT EXISTS global_messages (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    kind TEXT NOT NULL CHECK (kind IN ('announce','motd','broadcast')),
+    body TEXT NOT NULL,
+    active INTEGER NOT NULL DEFAULT 1 CHECK (active IN (0,1)),
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at INTEGER NOT NULL,
+    expires_at INTEGER
+  );
+  CREATE INDEX IF NOT EXISTS idx_global_messages_kind ON global_messages(kind);
+  CREATE INDEX IF NOT EXISTS idx_global_messages_active ON global_messages(active, created_at);`,
+  `CREATE TABLE IF NOT EXISTS portal_news (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    slug TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    title TEXT NOT NULL,
+    summary TEXT NOT NULL DEFAULT '',
+    body TEXT NOT NULL DEFAULT '',
+    published INTEGER NOT NULL DEFAULT 0 CHECK (published IN (0,1)),
+    published_at INTEGER,
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    updated_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_portal_news_published ON portal_news(published, published_at);`,
+  `CREATE TABLE IF NOT EXISTS portal_wiki_articles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    game_id TEXT NOT NULL,
+    slug TEXT NOT NULL COLLATE NOCASE,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    body_md TEXT NOT NULL DEFAULT '',
+    published INTEGER NOT NULL DEFAULT 0 CHECK (published IN (0,1)),
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    updated_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    UNIQUE(game_id, slug)
+  );
+  CREATE INDEX IF NOT EXISTS idx_portal_wiki_game ON portal_wiki_articles(game_id, published);`,
+  `CREATE TABLE IF NOT EXISTS portal_achievements (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    achievement_key TEXT NOT NULL UNIQUE COLLATE NOCASE,
+    game_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL DEFAULT '',
+    legacy_tier TEXT,
+    secret INTEGER NOT NULL DEFAULT 0 CHECK (secret IN (0,1)),
+    published INTEGER NOT NULL DEFAULT 1 CHECK (published IN (0,1)),
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    created_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    updated_by INTEGER REFERENCES users(id) ON DELETE SET NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL
+  );
+  CREATE INDEX IF NOT EXISTS idx_portal_ach_game ON portal_achievements(game_id, published);`
 ];
 
 function rebuildUsersRolesTable() {
