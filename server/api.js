@@ -9,68 +9,18 @@ import {
   addItemToInventory, removeItemFromInventory, getInventory, maxStats, heal,
   banUser, suspendUser, unbanUser, changeRole, resetPlayer, logAdminAction,
   listLogs, listTransactions, searchUsers, dashboardStats, countUsers, getItemsCatalog,
-  changeOwnPassword, adminSetPassword, revokeTargetSessions
+  changeOwnPassword, adminSetPassword, revokeTargetSessions,
+  createGlobalMessage, listGlobalMessages, getGlobalMessageById, getActiveMotd, deactivateGlobalMessage,
+  listPortalNews, getPortalNewsBySlug, getPortalNewsById, createPortalNews, updatePortalNews, deletePortalNews,
+  listPortalWiki, getPortalWikiById, getPortalWikiArticle, createPortalWiki, updatePortalWiki, deletePortalWiki,
+  listPortalAchievements, getPortalAchievementById, createPortalAchievement, updatePortalAchievement, deletePortalAchievement
 } from './services.js';
-import { ApiError, ROLE_RANK, ROLES, ROLE_LABELS, ADMIN_VIEW_ROLES } from './validation.js';
+import {
+  ApiError, ROLE_RANK, ROLES, ROLE_LABELS, ADMIN_VIEW_ROLES,
+  VIEW_PERMS, PERMISSIONS, hasPermission, getAvailablePermissions
+} from './validation.js';
 
-// Permissões por cargo. best_capybara visualiza tudo, mas não pode executar ações.
-const VIEW_PERMS = ['admin.view', 'users.view', 'game.view', 'inventory.view', 'economy.view'];
-export const PERMISSIONS = {
-  visitante: [],
-  citizen: [],
-  cool: [],
-  hazbin: [],
-  friend: [],
-  // ✨ The Best Capybara: somente visualização.
-  best_capybara: [...VIEW_PERMS],
-  developer: [...VIEW_PERMS,
-    'admin.logs', 'game.heal',
-    'users.suspend', 'users.ban', 'users.create', 'users.password',
-    'economy.give', 'economy.remove', 'economy.set',
-    'inventory.give', 'inventory.remove',
-    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll'],
-  admin: [...VIEW_PERMS,
-    'admin.logs', 'game.heal',
-    'users.suspend', 'users.ban', 'users.create', 'users.password',
-    'economy.give', 'economy.remove', 'economy.set',
-    'inventory.give', 'inventory.remove',
-    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll'],
-  head_admin: [...VIEW_PERMS,
-    'admin.logs', 'game.heal',
-    'users.suspend', 'users.ban', 'users.create', 'users.password',
-    'economy.give', 'economy.remove', 'economy.set',
-    'inventory.give', 'inventory.remove',
-    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll',
-    'roles.manage'],
-  co_king: [...VIEW_PERMS,
-    'admin.logs', 'game.heal',
-    'users.suspend', 'users.ban', 'users.create', 'users.password',
-    'economy.give', 'economy.remove', 'economy.set',
-    'inventory.give', 'inventory.remove',
-    'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll',
-    'roles.manage'],
-  king: ['*']
-};
-
-export function hasPermission(user, perm) {
-  if (!user) return false;
-  if (user.role === 'custom') {
-    try {
-      const customPerms = JSON.parse(user.customPermissions || '[]');
-      return customPerms.includes('*') || customPerms.includes(perm);
-    } catch { return false; }
-  }
-  const perms = PERMISSIONS[user?.role] || [];
-  return perms.includes('*') || perms.includes(perm);
-}
-
-export function getAvailablePermissions() {
-  const seen = new Set();
-  for (const perms of Object.values(PERMISSIONS)) {
-    for (const p of perms) if (p !== '*') seen.add(p);
-  }
-  return [...seen].sort();
-}
+export { PERMISSIONS, hasPermission, getAvailablePermissions };
 
 function requireAuth(req) {
   if (!req.user) throw new ApiError('UNAUTHORIZED', 'Sessão necessária.', 401);
@@ -267,6 +217,53 @@ export async function handleApi(req, res, pathname, query) {
         labels: ROLE_LABELS,
         adminViewRoles: ADMIN_VIEW_ROLES
       });
+    }
+
+    if (pathname === '/api/portal/motd' && method === 'GET') {
+      return json(res, 200, { success: true, motd: getActiveMotd() });
+    }
+
+    if (pathname === '/api/portal/news' && method === 'GET') {
+      const items = listPortalNews({
+        publishedOnly: true,
+        limit: intParam(query.get('limit'), 20),
+        offset: intParam(query.get('offset'), 0)
+      });
+      return json(res, 200, { success: true, news: items });
+    }
+
+    const publicNewsSlug = pathname.match(/^\/api\/portal\/news\/([^/]+)$/);
+    if (publicNewsSlug && method === 'GET') {
+      const item = getPortalNewsBySlug(decodeURIComponent(publicNewsSlug[1]), { publishedOnly: true });
+      if (!item) throw new ApiError('NOT_FOUND', 'Novidade não encontrada.', 404);
+      return json(res, 200, { success: true, news: item });
+    }
+
+    if (pathname === '/api/portal/wiki' && method === 'GET') {
+      const items = listPortalWiki({
+        gameId: query.get('gameId') || undefined,
+        publishedOnly: true,
+        limit: intParam(query.get('limit'), 100),
+        offset: intParam(query.get('offset'), 0)
+      });
+      return json(res, 200, { success: true, articles: items });
+    }
+
+    const publicWiki = pathname.match(/^\/api\/portal\/wiki\/([^/]+)\/([^/]+)$/);
+    if (publicWiki && method === 'GET') {
+      const item = getPortalWikiArticle(decodeURIComponent(publicWiki[1]), decodeURIComponent(publicWiki[2]), { publishedOnly: true });
+      if (!item) throw new ApiError('NOT_FOUND', 'Artigo não encontrado.', 404);
+      return json(res, 200, { success: true, article: item });
+    }
+
+    if (pathname === '/api/portal/achievements' && method === 'GET') {
+      const items = listPortalAchievements({
+        gameId: query.get('gameId') || undefined,
+        publishedOnly: true,
+        limit: intParam(query.get('limit'), 200),
+        offset: intParam(query.get('offset'), 0)
+      });
+      return json(res, 200, { success: true, achievements: items });
     }
 
     // ---- game sync ----
@@ -573,6 +570,180 @@ export async function handleApi(req, res, pathname, query) {
         adminChatMessages.push(msg);
         if (adminChatMessages.length > ADMIN_CHAT_MAX) adminChatMessages.splice(0, adminChatMessages.length - ADMIN_CHAT_MAX);
         return json(res, 201, { success: true, message: msg });
+      }
+
+      if (pathname === '/api/admin/messages' && method === 'GET') {
+        requirePerm(req, 'messages.global');
+        return json(res, 200, {
+          success: true,
+          messages: listGlobalMessages({
+            kind: query.get('kind') || undefined,
+            activeOnly: query.get('active') === '1',
+            limit: intParam(query.get('limit'), 50),
+            offset: intParam(query.get('offset'), 0)
+          }),
+          motd: getActiveMotd()
+        });
+      }
+
+      if (pathname === '/api/admin/messages' && method === 'POST') {
+        requirePerm(req, 'messages.global');
+        const b = await readJsonBody(req);
+        const kind = String(b.kind || 'announce');
+        const msg = mutate(() => createGlobalMessage({
+          kind,
+          body: b.body ?? b.message ?? b.text,
+          actorId: admin.id,
+          expiresAt: b.expiresAt ? Number(b.expiresAt) : null,
+          active: b.active !== false
+        }));
+        logAdminAction(admin.id, null, kind === 'motd' ? 'SET_MOTD' : 'GLOBAL_MESSAGE', {
+          id: msg.id, kind: msg.kind, body: msg.body
+        }, true);
+        return json(res, 201, { success: true, message: msg });
+      }
+
+      const msgIdMatch = pathname.match(/^\/api\/admin\/messages\/(\d+)$/);
+      if (msgIdMatch && method === 'POST') {
+        requirePerm(req, 'messages.global');
+        const id = Number(msgIdMatch[1]);
+        const b = await readJsonBody(req);
+        if (b.action === 'deactivate' || b.deactivate) {
+          const msg = deactivateGlobalMessage(id);
+          logAdminAction(admin.id, null, 'DEACTIVATE_MESSAGE', { id: msg.id, kind: msg.kind }, true);
+          return json(res, 200, { success: true, message: msg });
+        }
+        throw new ApiError('INVALID_INPUT', 'Ação de mensagem desconhecida.', 400);
+      }
+
+      if (pathname === '/api/admin/portal/news' && method === 'GET') {
+        requirePerm(req, 'portal.news');
+        return json(res, 200, {
+          success: true,
+          news: listPortalNews({
+            publishedOnly: false,
+            limit: intParam(query.get('limit'), 50),
+            offset: intParam(query.get('offset'), 0)
+          })
+        });
+      }
+
+      if (pathname === '/api/admin/portal/news' && method === 'POST') {
+        requirePerm(req, 'portal.news');
+        const b = await readJsonBody(req);
+        const item = mutate(() => createPortalNews({
+          title: b.title, summary: b.summary, body: b.body, slug: b.slug,
+          published: !!b.published, actorId: admin.id
+        }));
+        logAdminAction(admin.id, null, 'PORTAL_NEWS_CREATE', { id: item.id, slug: item.slug }, true);
+        return json(res, 201, { success: true, news: item });
+      }
+
+      const newsIdMatch = pathname.match(/^\/api\/admin\/portal\/news\/(\d+)(\/[a-z-]+)?$/);
+      if (newsIdMatch && method === 'POST') {
+        requirePerm(req, 'portal.news');
+        const id = Number(newsIdMatch[1]);
+        const action = newsIdMatch[2] || '';
+        if (action === '/delete') {
+          const item = deletePortalNews(id);
+          logAdminAction(admin.id, null, 'PORTAL_NEWS_DELETE', { id: item.id, slug: item.slug }, true);
+          return json(res, 200, { success: true, news: item });
+        }
+        const b = await readJsonBody(req);
+        const item = mutate(() => updatePortalNews(id, {
+          title: b.title, summary: b.summary, body: b.body, slug: b.slug,
+          published: b.published, actorId: admin.id
+        }));
+        logAdminAction(admin.id, null, 'PORTAL_NEWS_UPDATE', { id: item.id, slug: item.slug }, true);
+        return json(res, 200, { success: true, news: item });
+      }
+
+      if (pathname === '/api/admin/portal/wiki' && method === 'GET') {
+        requirePerm(req, 'portal.wiki');
+        return json(res, 200, {
+          success: true,
+          articles: listPortalWiki({
+            gameId: query.get('gameId') || undefined,
+            publishedOnly: false,
+            limit: intParam(query.get('limit'), 100),
+            offset: intParam(query.get('offset'), 0)
+          })
+        });
+      }
+
+      if (pathname === '/api/admin/portal/wiki' && method === 'POST') {
+        requirePerm(req, 'portal.wiki');
+        const b = await readJsonBody(req);
+        const item = mutate(() => createPortalWiki({
+          gameId: b.gameId, slug: b.slug, title: b.title, description: b.description,
+          bodyMd: b.bodyMd ?? b.body, published: !!b.published, sortOrder: b.sortOrder, actorId: admin.id
+        }));
+        logAdminAction(admin.id, null, 'PORTAL_WIKI_CREATE', { id: item.id, gameId: item.gameId, slug: item.slug }, true);
+        return json(res, 201, { success: true, article: item });
+      }
+
+      const wikiIdMatch = pathname.match(/^\/api\/admin\/portal\/wiki\/(\d+)(\/[a-z-]+)?$/);
+      if (wikiIdMatch && method === 'POST') {
+        requirePerm(req, 'portal.wiki');
+        const id = Number(wikiIdMatch[1]);
+        const action = wikiIdMatch[2] || '';
+        if (action === '/delete') {
+          const item = deletePortalWiki(id);
+          logAdminAction(admin.id, null, 'PORTAL_WIKI_DELETE', { id: item.id, slug: item.slug }, true);
+          return json(res, 200, { success: true, article: item });
+        }
+        const b = await readJsonBody(req);
+        const item = mutate(() => updatePortalWiki(id, {
+          gameId: b.gameId, slug: b.slug, title: b.title, description: b.description,
+          bodyMd: b.bodyMd ?? b.body, published: b.published, sortOrder: b.sortOrder, actorId: admin.id
+        }));
+        logAdminAction(admin.id, null, 'PORTAL_WIKI_UPDATE', { id: item.id, slug: item.slug }, true);
+        return json(res, 200, { success: true, article: item });
+      }
+
+      if (pathname === '/api/admin/portal/achievements' && method === 'GET') {
+        requirePerm(req, 'portal.achievements');
+        return json(res, 200, {
+          success: true,
+          achievements: listPortalAchievements({
+            gameId: query.get('gameId') || undefined,
+            publishedOnly: false,
+            limit: intParam(query.get('limit'), 200),
+            offset: intParam(query.get('offset'), 0)
+          })
+        });
+      }
+
+      if (pathname === '/api/admin/portal/achievements' && method === 'POST') {
+        requirePerm(req, 'portal.achievements');
+        const b = await readJsonBody(req);
+        const item = mutate(() => createPortalAchievement({
+          key: b.key, gameId: b.gameId, name: b.name, description: b.description,
+          legacyTier: b.legacyTier, secret: !!b.secret, published: b.published !== false,
+          sortOrder: b.sortOrder, actorId: admin.id
+        }));
+        logAdminAction(admin.id, null, 'PORTAL_ACH_CREATE', { id: item.id, key: item.key }, true);
+        return json(res, 201, { success: true, achievement: item });
+      }
+
+      const achIdMatch = pathname.match(/^\/api\/admin\/portal\/achievements\/(\d+)(\/[a-z-]+)?$/);
+      if (achIdMatch && method === 'POST') {
+        requirePerm(req, 'portal.achievements');
+        const id = Number(achIdMatch[1]);
+        const action = achIdMatch[2] || '';
+        if (action === '/delete') {
+          const item = deletePortalAchievement(id);
+          logAdminAction(admin.id, null, 'PORTAL_ACH_DELETE', { id: item.id, key: item.key }, true);
+          return json(res, 200, { success: true, achievement: item });
+        }
+        const b = await readJsonBody(req);
+        const item = mutate(() => updatePortalAchievement(id, {
+          key: b.key, gameId: b.gameId, name: b.name, description: b.description,
+          legacyTier: b.legacyTier, secret: b.secret, published: b.published,
+          sortOrder: b.sortOrder, actorId: admin.id
+        }));
+        logAdminAction(admin.id, null, 'PORTAL_ACH_UPDATE', { id: item.id, key: item.key }, true);
+        return json(res, 200, { success: true, achievement: item });
       }
 
       throw new ApiError('INVALID_INPUT', 'Rota administrativa desconhecida.', 404);

@@ -163,4 +163,45 @@ test('seguranca e integracao HTTP do CapiQuake', async (t) => {
   }
   assert.equal(last.status, 429);
   assert.equal(last.data.error.code, 'RATE_LIMITED');
+
+  // --- portal público + admin messages/content ---
+  assert.equal((await anon('/api/portal/news')).status, 200);
+  assert.equal((await anon('/api/portal/wiki')).status, 200);
+  assert.equal((await anon('/api/portal/achievements')).status, 200);
+  assert.equal((await anon('/api/portal/motd')).status, 200);
+  assert.equal((await playerC('/api/admin/messages')).status, 403);
+  assert.equal((await playerC('/api/admin/portal/news')).status, 403);
+
+  const msg = await adminC('/api/admin/messages', {
+    method: 'POST', body: { kind: 'motd', body: 'MOTD via API test' }
+  });
+  assert.equal(msg.status, 201);
+  assert.equal((await anon('/api/portal/motd')).data.motd?.body, 'MOTD via API test');
+
+  const newsPost = await adminC('/api/admin/portal/news', {
+    method: 'POST',
+    body: { title: 'API News', summary: 's', body: 'b', published: true }
+  });
+  assert.equal(newsPost.status, 201);
+  const pubNews = await anon('/api/portal/news');
+  assert.ok(pubNews.data.news.some(n => n.title === 'API News'));
+  const bySlug = await anon('/api/portal/news/' + encodeURIComponent(newsPost.data.news.slug));
+  assert.equal(bySlug.status, 200);
+  assert.equal(bySlug.data.news.title, 'API News');
+
+  assert.equal((await adminC('/api/admin/portal/wiki', {
+    method: 'POST',
+    body: { gameId: 'capyquake', title: 'Wiki API', bodyMd: '# x', published: true }
+  })).status, 201);
+  assert.equal((await adminC('/api/admin/portal/achievements', {
+    method: 'POST',
+    body: { gameId: 'capyquake', name: 'Ach API', published: true }
+  })).status, 201);
+  assert.ok((await anon('/api/portal/wiki?gameId=capyquake')).data.articles.length >= 1);
+  assert.ok((await anon('/api/portal/achievements?gameId=capyquake')).data.achievements.length >= 1);
+
+  const dash = await adminC('/api/admin/dashboard');
+  assert.equal(dash.status, 200);
+  assert.equal(typeof dash.data.stats.publishedNews, 'number');
+  assert.ok(dash.data.stats.publishedNews >= 1);
 });

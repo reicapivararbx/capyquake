@@ -11,7 +11,8 @@ import {
   setCoins, giveTokens, setTokens, setXp, maxStats, addItemToInventory,
   removeItemFromInventory, resetPlayer, changeRole,
   getCapybara, updateCapybara, getInventory, getProfileRaw,
-  searchUsers, listLogs, dashboardStats, countUsers, levelUp
+  searchUsers, listLogs, dashboardStats, countUsers, levelUp,
+  createGlobalMessage
 } from './services.js';
 
 ensureAdminSeed();
@@ -179,8 +180,8 @@ const CHAT_COMMANDS = [
   // --- Server Admin ---
   { name: 'online', params: [], perm: 'admin.view', destructive: false, desc: 'Jogadores online' },
   { name: 'serverstats', params: [], perm: 'admin.view', destructive: false, desc: 'Estatísticas do servidor' },
-  { name: 'announce', params: ['message'], perm: 'admin.view', destructive: false, desc: 'Anuncia para todos' },
-  { name: 'motd', params: ['message'], perm: 'admin.view', destructive: false, desc: 'Define mensagem do dia' },
+  { name: 'announce', params: ['message'], perm: 'messages.global', destructive: false, desc: 'Anuncia para todos' },
+  { name: 'motd', params: ['message'], perm: 'messages.global', destructive: false, desc: 'Define mensagem do dia' },
   { name: 'playercount', params: [], perm: 'admin.view', destructive: false, desc: 'Quantidade de jogadores' },
   { name: 'totalusers', params: [], perm: 'admin.view', destructive: false, desc: 'Total de usuários' },
   { name: 'totalbanned', params: [], perm: 'admin.view', destructive: false, desc: 'Total de banidos' },
@@ -683,7 +684,9 @@ async function handleChatCommand(ws, msg) {
       case 'announce': {
         const text = args.join(' ').slice(0, 200);
         if (!text) return reply(false, 'Informe a mensagem.');
-        const announceData = JSON.stringify({ type: 'globalChat', data: { name: '[ADMIN]', role: 'admin', message: text, ts: Date.now() } });
+        const stored = createGlobalMessage({ kind: 'announce', body: text, actorId: actor.id });
+        logAdminAction(actor.id, null, 'GLOBAL_MESSAGE', { id: stored.id, kind: 'announce', body: text, via: 'chat-command' }, true);
+        const announceData = JSON.stringify({ type: 'globalChat', data: { name: '[ADMIN]', role: actor.role || 'admin', message: text, ts: Date.now(), messageId: stored.id } });
         for (const client of wss.clients) {
           if (client.readyState === 1) client.send(announceData);
         }
@@ -692,7 +695,12 @@ async function handleChatCommand(ws, msg) {
       case 'motd': {
         const text = args.join(' ').slice(0, 200);
         if (!text) return reply(false, 'Informe a mensagem.');
-        logAdminAction(actor.id, null, 'SET_MOTD', { message: text, via: 'chat-command' }, true);
+        const stored = createGlobalMessage({ kind: 'motd', body: text, actorId: actor.id });
+        logAdminAction(actor.id, null, 'SET_MOTD', { id: stored.id, message: text, via: 'chat-command' }, true);
+        const motdData = JSON.stringify({ type: 'motd', data: { body: text, id: stored.id, ts: Date.now() } });
+        for (const client of wss.clients) {
+          if (client.readyState === 1) client.send(motdData);
+        }
         return reply(true, `MOTD definido: "${text}"`);
       }
       case 'playercount': {
