@@ -48,7 +48,8 @@ export async function showHub() {
 }
 
 export function hideHub() {
-  if (!hubEl) hubEl.style.display = 'none';
+  if (!hubEl) return;
+  hubEl.style.display = 'none';
 }
 
 function renderShell() {
