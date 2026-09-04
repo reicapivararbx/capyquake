@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
+import { createServer } from 'node:net';
 import { mkdtempSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
@@ -8,16 +9,27 @@ import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const dataDir = mkdtempSync(join(tmpdir(), 'cq-api-'));
-
-const PORT = 8123;
-const BASE = `http://127.0.0.1:${PORT}`;
 const ADMIN_PASS = 'AdminPassTeste!9';
 const ADMIN_CODE = 'codigo-teste-42';
 
-function client() {
+/** Ephemeral free port — fixed ports collide with other local services (501). */
+function freePort() {
+  return new Promise((resolve, reject) => {
+    const s = createServer();
+    s.unref();
+    s.on('error', reject);
+    s.listen(0, '127.0.0.1', () => {
+      const addr = s.address();
+      const port = typeof addr === 'object' && addr ? addr.port : 0;
+      s.close((err) => (err ? reject(err) : resolve(port)));
+    });
+  });
+}
+
+function client(base) {
   let cookie = '';
   const call = async (path, opts = {}) => {
-    const res = await fetch(BASE + path, {
+    const res = await fetch(base + path, {
       method: opts.method || 'GET',
       headers: { 'Content-Type': 'application/json', ...(cookie ? { Cookie: cookie } : {}), ...(opts.headers || {}) },
       body: opts.body ? JSON.stringify(opts.body) : undefined,
@@ -32,6 +44,8 @@ function client() {
 }
 
 test('seguranca e integracao HTTP do CapiQuake', async (t) => {
+  const PORT = await freePort();
+  const BASE = `http://127.0.0.1:${PORT}`;
   const child = spawn('node', [join(root, 'server/index.js')], {
     env: {
       ...process.env,
@@ -49,9 +63,9 @@ test('seguranca e integracao HTTP do CapiQuake', async (t) => {
     await new Promise(r => setTimeout(r, 200));
   }
 
-  const anon = client();
-  const playerC = client();
-  const adminC = client();
+  const anon = client(BASE);
+  const playerC = client(BASE);
+  const adminC = client(BASE);
 
   // --- registro e login ---
   const reg = await anon('/api/auth/register', {
@@ -149,7 +163,7 @@ test('seguranca e integracao HTTP do CapiQuake', async (t) => {
   assert.equal((await fetch(BASE + '/api/users/me', { headers: { Cookie: 'cq_session=invalido' } })).status, 401);
 
   // --- logout revoga ---
-  const c2 = client();
+  const c2 = client(BASE);
   await c2('/api/auth/register', { method: 'POST', body: { username: 'diego', password: 'SenhaForte!1', confirmPassword: 'SenhaForte!1' } });
   assert.equal((await c2('/api/users/me')).status, 200);
   await c2('/api/auth/logout', { method: 'POST' });
@@ -157,7 +171,7 @@ test('seguranca e integracao HTTP do CapiQuake', async (t) => {
 
   // --- rate limit ---
   let last;
-  const spam = client();
+  const spam = client(BASE);
   for (let i = 0; i < 18; i++) {
     last = await spam('/api/auth/login', { method: 'POST', body: { username: 'carla', password: 'x' + i } });
   }
@@ -177,6 +191,66 @@ test('seguranca e integracao HTTP do CapiQuake', async (t) => {
   });
   assert.equal(msg.status, 201);
   assert.equal((await anon('/api/portal/motd')).data.motd?.body, 'MOTD via API test');
+
+  const activeEmpty = await anon('/api/portal/messages/active');
+  assert.equal(activeEmpty.status, 200);
+  assert.ok(Array.isArray(activeEmpty.data.messages));
+  assert.equal(typeof activeEmpty.data.serverTime, 'number');
+
+  const { WebSocket } = await import('ws');
+  const wsEvents = [];
+  const ws = await new Promise((resolve, reject) => {
+    const sock = new WebSocket(`ws://127.0.0.1:${PORT}/ws`);
+    const t = setTimeout(() => reject(new Error('ws connect timeout')), 5000);
+    sock.on('open', () => { clearTimeout(t); resolve(sock); });
+    sock.on('error', reject);
+    sock.on('message', (raw) => {
+      try { wsEvents.push(JSON.parse(String(raw))); } catch { /* ignore */ }
+    });
+  });
+  await new Promise((r) => setTimeout(r, 150));
+  assert.ok(wsEvents.some((e) => e.type === 'global_messages_snapshot'));
+
+  const bc = await adminC('/api/admin/messages', {
+    method: 'POST',
+    body: { kind: 'broadcast', body: 'LIVE 5s verify', durationSeconds: 5 }
+  });
+  assert.equal(bc.status, 201);
+  assert.equal(bc.data.message.durationSeconds, 5);
+  assert.ok(bc.data.message.expiresAt > Date.now());
+  assert.equal(bc.data.message.status, 'active');
+
+  await new Promise((r) => setTimeout(r, 200));
+  assert.ok(wsEvents.some((e) => e.type === 'global_message_created' && e.data?.message === 'LIVE 5s verify'));
+
+  const activeNow = await anon('/api/portal/messages/active');
+  assert.equal(activeNow.status, 200);
+  assert.ok(activeNow.data.messages.some((m) => m.id === bc.data.message.id && m.status === 'active'));
+
+  await new Promise((r) => setTimeout(r, 5500));
+  const activeLater = await anon('/api/portal/messages/active');
+  assert.equal(activeLater.data.messages.some((m) => m.id === bc.data.message.id), false);
+
+  const hist = await adminC('/api/admin/messages?limit=40');
+  const expiredRow = hist.data.messages.find((m) => m.id === bc.data.message.id);
+  assert.ok(expiredRow);
+  assert.equal(expiredRow.status, 'expired');
+
+  const off = await adminC(`/api/admin/messages/${bc.data.message.id}`, {
+    method: 'POST', body: { action: 'deactivate' }
+  });
+  assert.equal(off.status, 200);
+
+  const onAgain = await adminC(`/api/admin/messages/${bc.data.message.id}`, {
+    method: 'POST', body: { action: 'reactivate', durationSeconds: 30 }
+  });
+  assert.equal(onAgain.status, 200);
+  assert.equal(onAgain.data.message.status, 'active');
+  assert.equal(onAgain.data.message.durationSeconds, 30);
+  await new Promise((r) => setTimeout(r, 150));
+  assert.ok(wsEvents.some((e) => e.type === 'global_message_created' && e.data?.id === bc.data.message.id));
+
+  ws.close();
 
   const newsPost = await adminC('/api/admin/portal/news', {
     method: 'POST',
@@ -204,4 +278,44 @@ test('seguranca e integracao HTTP do CapiQuake', async (t) => {
   assert.equal(dash.status, 200);
   assert.equal(typeof dash.data.stats.publishedNews, 'number');
   assert.ok(dash.data.stats.publishedNews >= 1);
+
+  // --- social / public profile / lobbies ---
+  // Fresh client: `anon` still holds carla's register cookie and is not a guest.
+  const guest = client(BASE);
+  assert.equal((await guest('/api/friends')).status, 401);
+  assert.equal((await guest('/api/friends/request', { method: 'POST', body: { username: 'carla' } })).status, 401);
+  assert.equal((await guest('/api/lobbies')).status, 200);
+  assert.ok(Array.isArray((await guest('/api/lobbies')).data.lobbies));
+  assert.equal((await guest('/api/lobbies')).data.lobbies.length, 0);
+
+  const pub = await guest('/api/users/carla');
+  assert.equal(pub.status, 200);
+  assert.equal(pub.data.profile.username, 'carla');
+  assert.equal(pub.data.profile.stats, null);
+  assert.ok(!JSON.stringify(pub.data).includes('password'));
+  assert.ok(!('coins' in (pub.data.profile || {})));
+  assert.ok(!JSON.stringify(pub.data.profile).includes('"coins"'));
+
+  const priv = await playerC('/api/users/me/privacy', { method: 'PATCH', body: { statsPublic: true } });
+  assert.equal(priv.status, 200);
+  assert.equal(priv.data.statsPublic, true);
+  const pub2 = await guest('/api/users/carla');
+  assert.ok(pub2.data.profile.stats);
+  assert.ok(!JSON.stringify(pub2.data.profile).includes('"coins"'));
+
+  const c3 = client(BASE);
+  await c3('/api/auth/register', {
+    method: 'POST',
+    body: { username: 'elena', password: 'SenhaForte!1', confirmPassword: 'SenhaForte!1' }
+  });
+  assert.equal((await playerC('/api/friends/request', { method: 'POST', body: { username: 'elena' } })).status, 200);
+  assert.equal((await c3('/api/friends/accept', { method: 'POST', body: { username: 'carla' } })).status, 200);
+  const fl = await playerC('/api/friends');
+  assert.ok(fl.data.friends.some(f => f.username === 'elena'));
+  assert.equal((await playerC('/api/follow/elena', { method: 'POST' })).status, 200);
+  assert.ok((await anon('/api/users/elena/followers')).data.users.some(u => u.username === 'carla'));
+
+  const search = await playerC('/api/users/search?q=ele');
+  assert.equal(search.status, 200);
+  assert.ok(search.data.users.every(u => !('coins' in u) && !('password_hash' in u)));
 });

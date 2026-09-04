@@ -23,6 +23,9 @@ test('admin geral rebrand + módulos portal/messages', async () => {
   assert.match(app, /pagePortalNews/);
   assert.match(app, /messages\.global/);
   assert.match(app, /portal\.news/);
+  assert.match(app, /durationSeconds/);
+  assert.match(app, /MSG_DURATION_PRESETS|Até desativar/);
+  assert.match(app, /reactivate/);
 });
 
 test('nginx preserva APIs e WebSockets ao separar os projetos', async () => {

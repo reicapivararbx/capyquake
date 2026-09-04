@@ -9,10 +9,16 @@ process.env.CAPYQUAKE_DB_PATH = join(mkdtempSync(join(tmpdir(), 'cq-test-')), 't
 const { createUser, authenticate, getUserById, giveCoins, setCoins, giveTokens,
   giveXp, setXp, setLevel, levelUp, addItemToInventory, removeItemFromInventory,
   getInventory, getFullAccount, reportMatch, resetPlayer,
-  createGlobalMessage, getActiveMotd, deactivateGlobalMessage, listGlobalMessages,
+  createGlobalMessage, getGlobalMessageById, getActiveMotd, deactivateGlobalMessage, listGlobalMessages,
+  listActiveGlobalMessages, reactivateGlobalMessage, resolveMessageDuration,
   createPortalNews, listPortalNews, getPortalNewsBySlug, updatePortalNews,
   createPortalWiki, listPortalWiki, createPortalAchievement, listPortalAchievements,
-  dashboardStats } = await import('../server/services.js');
+  dashboardStats, toPublicProfile, setStatsPublic, requestFriend, acceptFriend,
+  declineFriend, removeFriend, blockUser, unblockUser, listFriends,
+  followUser, unfollowUser, listFollowers, listFollowing } = await import('../server/services.js');
+const { listPublicLobbies, bindRooms, getLobby } = await import('../server/lobbies.js');
+const { touchOnline, setRoom, clearPresence, presencePayload, _resetPresenceForTests } =
+  await import('../server/presence.js');
 const { applyXp, xpNeededForLevel } = await import('../server/xplevel.js');
 const { ApiError, ROLE_RANK, hasPermission, PERMISSIONS } = await import('../server/validation.js');
 const { hashPassword, verifyPassword } = await import('../server/passwords.js');
@@ -131,8 +137,10 @@ test('reportMatch limita ganhos absurdos do cliente', async () => {
     moneyEarned: 10 ** 15, tokensEarned: 10 ** 12, xpEarned: 10 ** 14,
     kills: 10 ** 9, damageDealt: 10 ** 18, playTimeSeconds: 10 ** 6, won: true
   });
-  assert.ok(r.coins <= 5e12);
-  assert.ok(r.applied.kills <= 2e6);
+  assert.equal(r.applied.coins, 2e5);
+  assert.equal(r.applied.tokens, 1e3);
+  assert.equal(r.applied.xp, 25e3);
+  assert.equal(r.applied.kills, 5e3);
   const acc = getFullAccount(alvo.id);
   assert.equal(acc.profile.matches, 1);
 });
@@ -174,6 +182,7 @@ test('global_messages: announce, motd único ativo e deactivate', () => {
   const a = createGlobalMessage({ kind: 'announce', body: 'Olá arena', actorId: actor.id });
   assert.equal(a.kind, 'announce');
   assert.equal(a.active, true);
+  assert.equal(a.status, 'active');
   const m1 = createGlobalMessage({ kind: 'motd', body: 'MOTD 1', actorId: actor.id });
   assert.equal(getActiveMotd()?.body, 'MOTD 1');
   createGlobalMessage({ kind: 'motd', body: 'MOTD 2', actorId: actor.id });
@@ -185,6 +194,64 @@ test('global_messages: announce, motd único ativo e deactivate', () => {
   assert.throws(() => createGlobalMessage({ kind: 'announce', body: '  ' }), { code: 'INVALID_INPUT' });
   assert.throws(() => createGlobalMessage({ kind: 'x', body: 'nope' }), { code: 'INVALID_INPUT' });
   void a;
+});
+
+test('global_messages: duration, expiry status, reactivate e listActive', async () => {
+  const actor = actorOf();
+  const timed = createGlobalMessage({
+    kind: 'broadcast',
+    body: 'sume em 5s',
+    actorId: actor.id,
+    durationSeconds: 5
+  });
+  assert.equal(timed.durationSeconds, 5);
+  assert.ok(timed.expiresAt != null);
+  assert.ok(timed.expiresAt > Date.now());
+  assert.equal(timed.status, 'active');
+  assert.ok(listActiveGlobalMessages().some((m) => m.id === timed.id));
+
+  const manual = createGlobalMessage({
+    kind: 'announce',
+    body: 'fica',
+    actorId: actor.id,
+    durationSeconds: null
+  });
+  assert.equal(manual.durationSeconds, null);
+  assert.equal(manual.expiresAt, null);
+  assert.equal(manual.status, 'active');
+
+  const toExpire = createGlobalMessage({
+    kind: 'announce',
+    body: 'já era',
+    actorId: actor.id,
+    durationSeconds: 30
+  });
+  const { db } = await import('../server/db.js');
+  db.prepare('UPDATE global_messages SET expires_at = ? WHERE id = ?').run(Date.now() - 1000, toExpire.id);
+  const expired = getGlobalMessageById(toExpire.id);
+  assert.equal(expired.status, 'expired');
+  assert.equal(expired.active, false);
+  assert.equal(listActiveGlobalMessages().some((m) => m.id === expired.id), false);
+  assert.notEqual(getActiveMotd()?.body, 'já era');
+
+  const off = deactivateGlobalMessage(manual.id, { actorId: actor.id });
+  assert.equal(off.status, 'disabled');
+  assert.ok(off.disabledAt != null);
+
+  const again = reactivateGlobalMessage(manual.id, {
+    actorId: actor.id,
+    durationSeconds: 30
+  });
+  assert.equal(again.status, 'active');
+  assert.equal(again.durationSeconds, 30);
+  assert.ok(again.expiresAt > Date.now());
+  assert.equal(again.disabledAt, null);
+
+  const dur = resolveMessageDuration({ durationSeconds: 60, publishedAt: 1_000_000 });
+  assert.equal(dur.durationSeconds, 60);
+  assert.equal(dur.expiresAt, 1_000_000 + 60_000);
+  assert.deepEqual(resolveMessageDuration({ durationSeconds: null }), { durationSeconds: null, expiresAt: null });
+  assert.throws(() => resolveMessageDuration({ durationSeconds: 0 }), { code: 'INVALID_INPUT' });
 });
 
 test('portal news/wiki/achievements CRUD e dashboard counts', () => {
@@ -214,4 +281,95 @@ test('portal news/wiki/achievements CRUD e dashboard counts', () => {
   assert.equal(typeof stats.portalAchievements, 'number');
   assert.ok(stats.portalWiki >= 1);
   assert.ok(stats.portalAchievements >= 1);
+});
+
+test('perfil público: stats default private, opt-in, sem leak de economia', () => {
+  const a = player('pub_a_' + Date.now());
+  const b = player('pub_b_' + Date.now());
+  giveCoins(actorOf(), a.id, 999, 'test');
+  const stranger = toPublicProfile(a.username, b);
+  assert.equal(stranger.statsPublic, false);
+  assert.equal(stranger.stats, null);
+  assert.equal(stranger.capybara, null);
+  assert.ok(!('coins' in stranger));
+  assert.ok(!JSON.stringify(stranger).includes('999'));
+  assert.ok(!JSON.stringify(stranger).includes('password'));
+
+  const selfView = toPublicProfile(a.username, a);
+  assert.ok(selfView.stats);
+  assert.equal(selfView.stats.level, 1);
+
+  setStatsPublic(a.id, true);
+  const open = toPublicProfile(a.username, b);
+  assert.equal(open.statsPublic, true);
+  assert.ok(open.stats);
+  assert.equal(typeof open.stats.kills, 'number');
+  assert.ok(open.capybara?.name);
+  assert.ok(!JSON.stringify(open).includes('coins'));
+  assert.ok(!JSON.stringify(open).includes('tokens'));
+});
+
+test('amizades: request/accept/list/unfriend/block', () => {
+  const a = player('fr_a_' + Date.now());
+  const b = player('fr_b_' + Date.now());
+  assert.equal(requestFriend(a.id, b.username).status, 'pending_out');
+  assert.throws(() => requestFriend(a.id, b.username), { code: 'CONFLICT' });
+  assert.equal(acceptFriend(b.id, a.username).status, 'friends');
+  const list = listFriends(a.id);
+  assert.equal(list.friends.some(f => f.username === b.username), true);
+  removeFriend(a.id, b.username);
+  assert.equal(listFriends(a.id).friends.length, 0);
+  blockUser(a.id, b.username);
+  assert.throws(() => requestFriend(b.id, a.username), { code: 'FORBIDDEN' });
+  unblockUser(a.id, b.username);
+  assert.throws(() => requestFriend(a.id, a.username), { code: 'INVALID_INPUT' });
+});
+
+test('follows: follow/unfollow/lists e bloqueio', () => {
+  const a = player('fo_a_' + Date.now());
+  const b = player('fo_b_' + Date.now());
+  assert.equal(followUser(a.id, b.username).following, true);
+  assert.throws(() => followUser(a.id, b.username), { code: 'CONFLICT' });
+  assert.throws(() => followUser(a.id, a.username), { code: 'INVALID_INPUT' });
+  assert.equal(listFollowing(a.username).users.some(u => u.username === b.username), true);
+  assert.equal(listFollowers(b.username).users.some(u => u.username === a.username), true);
+  unfollowUser(a.id, b.username);
+  assert.equal(listFollowing(a.username).users.length, 0);
+  blockUser(b.id, a.username);
+  assert.throws(() => followUser(a.id, b.username), { code: 'FORBIDDEN' });
+});
+
+test('lobbies efêmeros e presence payload', () => {
+  _resetPresenceForTests();
+  const rooms = new Map();
+  bindRooms(rooms);
+  assert.deepEqual(listPublicLobbies(), []);
+  rooms.set(1, {
+    code: 'ABCD',
+    started: false,
+    host: 'h',
+    players: new Map([['h', { name: 'HostCapy' }]])
+  });
+  rooms.set(2, {
+    code: 'ZZZZ',
+    started: true,
+    host: null,
+    players: new Map()
+  });
+  const open = listPublicLobbies();
+  assert.equal(open.length, 1);
+  assert.equal(open[0].code, 'ABCD');
+  assert.equal(open[0].hostName, 'HostCapy');
+  assert.equal(open[0].maxPlayers, 6);
+  assert.equal(getLobby('ABCD')?.playerCount, 1);
+  assert.equal(listPublicLobbies({ includeStarted: true }).length, 2);
+
+  touchOnline(42);
+  assert.equal(presencePayload(42).status, 'online');
+  setRoom(42, 'ABCD', false);
+  assert.equal(presencePayload(42, { includeLobbyCode: true }).lobbyCode, 'ABCD');
+  assert.equal(presencePayload(42).lobbyCode, undefined);
+  clearPresence(42);
+  assert.equal(presencePayload(42).status, 'offline');
+  bindRooms(new Map());
 });
