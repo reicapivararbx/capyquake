@@ -52,8 +52,16 @@ export function hideHub() {
   hubEl.style.display = 'none';
 }
 
+function closeSidebar() {
+  const side = hubEl?.querySelector('.hub-sidebar');
+  const overlay = hubEl?.querySelector('.hub-overlay');
+  side?.classList.remove('open');
+  overlay?.classList.remove('visible');
+}
+
 function renderShell() {
   hubEl.innerHTML = `
+    <div class="hub-overlay" id="hub-overlay" aria-hidden="true"></div>
     <aside class="hub-sidebar" id="hub-sidebar">
       <div class="hub-brand">CAPYQUAKE<span>GAME HUB</span></div>
       <nav class="hub-nav" id="hub-nav">
@@ -86,23 +94,33 @@ function renderShell() {
 
   // mobile toggle
   document.getElementById('hub-menu-toggle').addEventListener('click', () => {
-    hubEl.querySelector('.hub-sidebar').classList.toggle('open');
+    const side = hubEl.querySelector('.hub-sidebar');
+    const overlay = hubEl.querySelector('.hub-overlay');
+    const open = side.classList.toggle('open');
+    overlay?.classList.toggle('visible', open);
   });
 
+  document.getElementById('hub-overlay')?.addEventListener('click', closeSidebar);
+
   // close sidebar on content click (mobile)
-  hubEl.querySelector('.hub-content').addEventListener('click', () => {
-    hubEl.querySelector('.hub-sidebar').classList.remove('open');
-  });
+  hubEl.querySelector('.hub-content').addEventListener('click', closeSidebar);
 
   renderProfile();
 }
 
 function renderProfile() {
   const user = Account.user;
-  const profile = Account.profile;
   const bar = document.getElementById('hub-sidebar-profile');
   const pill = document.getElementById('hub-user-pill');
-  if (!user) return;
+  if (!user) {
+    if (bar) bar.innerHTML = `<div class="hub-avatar">?</div>
+      <div class="hub-profile-info">
+        <div class="hub-profile-name">Convidado</div>
+        <div class="hub-profile-role"><span class="pill visitante">${esc(ROLE_LABELS.visitante || 'Visitante')}</span></div>
+      </div>`;
+    if (pill) pill.innerHTML = `<span class="pill visitante" style="font-size:11px">Convidado</span>`;
+    return;
+  }
   const roleLabel = ROLE_LABELS[user.role] || user.role;
   if (bar) bar.innerHTML = `<div class="hub-avatar">${(user.displayName || user.username || '?')[0].toUpperCase()}</div>
     <div class="hub-profile-info">
@@ -116,8 +134,7 @@ function navigateTo(page) {
   currentPage = page;
   hubEl.querySelectorAll('.hub-nav-item').forEach(a =>
     a.classList.toggle('active', a.dataset.page === page));
-  // close mobile sidebar
-  hubEl.querySelector('.hub-sidebar').classList.remove('open');
+  closeSidebar();
 
   const content = document.getElementById('hub-content');
   switch (page) {
@@ -134,16 +151,61 @@ function navigateTo(page) {
   }
 }
 
+const RARITY_COLORS = {
+  COMMON: '#9ca3af', UNCOMMON: '#4ade80', RARE: '#60a5fa', EPIC: '#c084fc',
+  LEGENDARY: '#fbbf24', MYTHIC: '#f472b6', DIVINE: '#f97316', CURSED: '#ef4444', '???': '#fff'
+};
+
+function fmtPlayTime(sec) {
+  const s = Math.max(0, Number(sec) || 0);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  if (m > 0) return `${m}m`;
+  return `${s}s`;
+}
+
 // ---- DASHBOARD ----
 function renderDashboard(el) {
-  const user = Account.user || {};
+  const user = Account.user;
   const profile = Account.profile || {};
   const capy = Account.capybara || {};
+  const inv = Account.inventory || [];
+  const greetName = user ? (user.displayName || user.username || 'Jogador') : 'Jogador';
+  const guestBanner = !user
+    ? `<div class="hub-guest-banner">Você está como convidado. Entre na sua conta para sincronizar progresso, inventário e conquistas.</div>`
+    : '';
+
+  const achPreview = (ACHIEVEMENTS || []).slice(0, 5);
+  const achHtml = achPreview.length === 0
+    ? `<p class="hub-empty">Nenhuma conquista recente.</p>`
+    : `<div class="hub-ach-preview">${achPreview.map(a => `
+        <div class="hub-ach-mini" style="border-left-color:${RARITY_COLORS[a.rarity] || '#333'}">
+          <span class="hub-ach-mini-rarity" style="color:${RARITY_COLORS[a.rarity] || '#999'}">${esc(a.rarity)}</span>
+          <span class="hub-ach-mini-name">${esc(a.name)}</span>
+          <span class="hub-ach-mini-desc">${esc(a.description)}</span>
+        </div>`).join('')}</div>`;
+
+  const invSlice = inv.slice(0, 6);
+  const invHtml = invSlice.length === 0
+    ? `<p class="hub-empty">Inventário vazio.</p>`
+    : `<div class="hub-inv-preview">${invSlice.map(i => {
+        const w = WEAPONS[i.itemId];
+        const name = w ? w.name : i.itemId;
+        const icon = w ? (w.icon || '🔫') : '📦';
+        return `<div class="hub-inv-item">
+          <div class="hub-inv-icon">${icon}</div>
+          <div class="hub-inv-name">${esc(name)}</div>
+          <div class="hub-inv-qty">×${fmt(i.quantity)}</div>
+        </div>`;
+      }).join('')}</div>`;
+
   el.innerHTML = `
     <div class="hub-page-header">
-      <h1>Bem-vindo de volta, ${esc(user.displayName || user.username || 'Jogador')}! 🦫</h1>
+      <h1>Bem-vindo de volta, ${esc(greetName)}! 🦫</h1>
       <p class="hub-page-sub">Confira o estado atual da sua aventura no CAPYQUAKE.</p>
     </div>
+    ${guestBanner}
     <div class="hub-stats-grid">
       <div class="hub-stat-card">
         <div class="hub-stat-icon">💰</div>
@@ -172,36 +234,63 @@ function renderDashboard(el) {
     </div>
     <div class="hub-row">
       <div class="hub-card hub-card-wide">
-        <h3>🦫 MINHA CAPIVARA</h3>
+        <h3>🦫 Minha Capivara</h3>
         <div class="hub-capybara-mini">
           <div class="hub-capy-avatar">${(capy.name || 'C')[0].toUpperCase()}</div>
           <div class="hub-capy-info">
             <div class="hub-capy-name">${esc(capy.name || 'Capy')}</div>
             <div class="hub-capy-bars">
-              ${renderBar('❤️', 'HP', capy.health)}
-              ${renderBar('⚡', 'Energia', capy.energy)}
-              ${renderBar('🍖', 'Fome', capy.hunger)}
-              ${renderBar('😊', 'Felicidade', capy.happiness)}
+              ${renderBar('❤️', 'HP', capy.health, 'health')}
+              ${renderBar('⚡', 'Energia', capy.energy, 'energy')}
+              ${renderBar('🍖', 'Fome', capy.hunger, 'hunger')}
+              ${renderBar('😊', 'Felicidade', capy.happiness, 'happiness')}
             </div>
           </div>
         </div>
       </div>
       <div class="hub-card">
-        <h3>🎮 AÇÕES RÁPIDAS</h3>
+        <h3>🎮 Ações Rápidas</h3>
         <div class="hub-actions">
-          <button class="hub-action-btn primary" id="hub-play-btn">🎮 JOGAR</button>
-          <button class="hub-action-btn secondary" id="hub-multi-btn">👥 MULTIPLAYER</button>
+          <button class="hub-action-btn orange" id="hub-play-btn">🎮 JOGAR</button>
+          <button class="hub-action-btn primary" id="hub-multi-btn">👥 MULTIPLAYER</button>
         </div>
+      </div>
+    </div>
+    <div class="hub-lower-grid">
+      <div class="hub-card">
+        <h3>📈 Progresso</h3>
+        <div class="hub-progress-list">
+          <div class="hub-progress-row"><span class="hub-progress-label">Partidas</span><span class="hub-progress-value">${fmt(profile.matches)}</span></div>
+          <div class="hub-progress-row"><span class="hub-progress-label">Abates</span><span class="hub-progress-value">${fmt(profile.kills)}</span></div>
+          <div class="hub-progress-row"><span class="hub-progress-label">Dano total</span><span class="hub-progress-value">${fmt(profile.damageDealt)}</span></div>
+          <div class="hub-progress-row"><span class="hub-progress-label">Tempo de jogo</span><span class="hub-progress-value">${fmtPlayTime(profile.playTime)}</span></div>
+        </div>
+      </div>
+      <div class="hub-card">
+        <h3>🏆 Conquistas recentes</h3>
+        ${achHtml}
+      </div>
+      <div class="hub-card">
+        <h3>🎒 Inventário resumido</h3>
+        ${invHtml}
+      </div>
+      <div class="hub-card">
+        <h3>👥 Multiplayer</h3>
+        <div class="hub-mp-status"><span class="hub-mp-dot" aria-hidden="true"></span><span>Servidor online</span></div>
+        <p class="hub-mp-copy">Crie um lobby com código de 4 letras ou entre no de um amigo. Até 6 jogadores por partida.</p>
+        <button class="hub-action-btn primary" id="hub-dash-mp-btn">🎮 ENTRAR NO MULTIPLAYER</button>
       </div>
     </div>`;
 
   document.getElementById('hub-play-btn')?.addEventListener('click', () => { hideHub(); _onPlay(); });
   document.getElementById('hub-multi-btn')?.addEventListener('click', () => { hideHub(); _onMultiplayer(); });
+  document.getElementById('hub-dash-mp-btn')?.addEventListener('click', () => { hideHub(); _onMultiplayer(); });
 }
 
-function renderBar(icon, label, value) {
+function renderBar(icon, label, value, kind) {
   const v = Math.max(0, Math.min(100, Number(value) || 0));
-  return `<div class="hub-bar-row"><span class="hub-bar-icon">${icon}</span><span class="hub-bar-label">${label}</span><div class="hub-bar-track"><div class="hub-bar-fill" style="width:${v}%"></div></div><span class="hub-bar-val">${v}</span></div>`;
+  const cls = kind ? ` bar-${kind}` : '';
+  return `<div class="hub-bar-row"><span class="hub-bar-icon">${icon}</span><span class="hub-bar-label">${label}</span><div class="hub-bar-track"><div class="hub-bar-fill${cls}" style="width:${v}%"></div></div><span class="hub-bar-val">${v}</span></div>`;
 }
 
 // ---- CAPYBARA ----
@@ -213,10 +302,10 @@ function renderCapybara(el) {
       <div class="hub-capy-big-avatar">${(capy.name || 'C')[0].toUpperCase()}</div>
       <h2>${esc(capy.name || 'Capy')}</h2>
       <div class="hub-capy-bars-big">
-        ${renderBar('❤️', 'Saúde', capy.health)}
-        ${renderBar('⚡', 'Energia', capy.energy)}
-        ${renderBar('🍖', 'Fome', capy.hunger)}
-        ${renderBar('😊', 'Felicidade', capy.happiness)}
+        ${renderBar('❤️', 'Saúde', capy.health, 'health')}
+        ${renderBar('⚡', 'Energia', capy.energy, 'energy')}
+        ${renderBar('🍖', 'Fome', capy.hunger, 'hunger')}
+        ${renderBar('😊', 'Felicidade', capy.happiness, 'happiness')}
       </div>
     </div>`;
 }
@@ -263,12 +352,11 @@ function renderShop(el) {
 // ---- ACHIEVEMENTS ----
 function renderAchievements(el) {
   const list = (ACHIEVEMENTS || []).slice(0, 20);
-  const rarityColors = { COMMON: '#9ca3af', UNCOMMON: '#4ade80', RARE: '#60a5fa', EPIC: '#c084fc', LEGENDARY: '#fbbf24', MYTHIC: '#f472b6', DIVINE: '#f97316', CURSED: '#ef4444', '???': '#fff' };
   el.innerHTML = `
     <div class="hub-page-header"><h1>🏆 CONQUISTAS</h1><p class="hub-page-sub">${list.length} conquistas disponíveis</p></div>
     <div class="hub-achievements-grid">${list.map(a => `
-      <div class="hub-ach-card" style="border-color:${rarityColors[a.rarity] || '#333'}">
-        <div class="hub-ach-rarity" style="color:${rarityColors[a.rarity] || '#999'}">${a.rarity}</div>
+      <div class="hub-ach-card" style="border-color:${RARITY_COLORS[a.rarity] || '#333'}">
+        <div class="hub-ach-rarity" style="color:${RARITY_COLORS[a.rarity] || '#999'}">${a.rarity}</div>
         <div class="hub-ach-name">${esc(a.name)}</div>
         <div class="hub-ach-desc">${esc(a.description)}</div>
       </div>`).join('')}</div>`;
@@ -279,11 +367,11 @@ function renderProgress(el) {
   const profile = Account.profile || {};
   el.innerHTML = `
     <div class="hub-page-header"><h1>📈 PROGRESSO</h1><p class="hub-page-sub">Seu progresso no CAPYQUAKE.</p></div>
-    <div class="hub-stats-grid">
+    <div class="hub-stats-grid" style="grid-template-columns:repeat(4,1fr)">
       <div class="hub-stat-card"><div class="hub-stat-icon">🎮</div><div class="hub-stat-info"><span class="hub-stat-label">PARTIDAS</span><span class="hub-stat-value">${fmt(profile.matches)}</span></div></div>
       <div class="hub-stat-card"><div class="hub-stat-icon">💀</div><div class="hub-stat-info"><span class="hub-stat-label">ABATES</span><span class="hub-stat-value">${fmt(profile.kills)}</span></div></div>
       <div class="hub-stat-card"><div class="hub-stat-icon">🔥</div><div class="hub-stat-info"><span class="hub-stat-label">DANO TOTAL</span><span class="hub-stat-value">${fmt(profile.damageDealt)}</span></div></div>
-      <div class="hub-stat-card"><div class="hub-stat-icon">⏱️</div><div class="hub-stat-info"><span class="hub-stat-label">TEMPO DE JOGO</span><span class="hub-stat-value">${Math.floor((profile.playTime || 0) / 3600)}h</span></div></div>
+      <div class="hub-stat-card"><div class="hub-stat-icon">⏱️</div><div class="hub-stat-info"><span class="hub-stat-label">TEMPO DE JOGO</span><span class="hub-stat-value">${fmtPlayTime(profile.playTime)}</span></div></div>
     </div>`;
 }
 
@@ -313,23 +401,28 @@ function renderChat(el) {
 
 // ---- SETTINGS ----
 function renderSettings(el) {
+  const user = Account.user;
+  const accountBlock = user
+    ? `<p><b>Username:</b> ${esc(user.username)}</p>
+       <p><b>Cargo:</b> ${esc(ROLE_LABELS[user.role] || user.role)}</p>
+       <button class="hub-action-btn danger" id="hub-logout-btn" style="margin-top:12px">SAIR</button>`
+    : `<p class="hub-empty">Você está como convidado. Entre na sua conta pelo menu principal.</p>`;
+
   el.innerHTML = `
     <div class="hub-page-header"><h1>⚙️ CONFIGURAÇÕES</h1></div>
-    <div class="hub-card">
+    <div class="hub-card" style="margin-bottom:14px">
       <h3>🔑 TROCAR SENHA</h3>
-      <div class="hub-settings-form">
+      ${user ? `<div class="hub-settings-form">
         <label>Senha Atual</label><input type="password" id="hub-cp-current" autocomplete="current-password">
         <label>Nova Senha</label><input type="password" id="hub-cp-new" autocomplete="new-password">
         <label>Confirmar</label><input type="password" id="hub-cp-confirm" autocomplete="new-password">
         <div id="hub-cp-error" class="hub-error"></div>
         <button id="hub-cp-btn" class="hub-action-btn primary" style="width:100%">SALVAR</button>
-      </div>
+      </div>` : `<p class="hub-empty">Faça login para trocar a senha.</p>`}
     </div>
     <div class="hub-card">
       <h3>👤 CONTA</h3>
-      <p><b>Username:</b> ${esc(Account.user?.username)}</p>
-      <p><b>Cargo:</b> ${esc(ROLE_LABELS[Account.user?.role] || Account.user?.role)}</p>
-      <button class="hub-action-btn danger" id="hub-logout-btn" style="margin-top:12px">SAIR</button>
+      ${accountBlock}
     </div>`;
 
   document.getElementById('hub-cp-btn')?.addEventListener('click', async () => {
