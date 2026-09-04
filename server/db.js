@@ -90,7 +90,7 @@ const MIGRATIONS = [
   CREATE INDEX IF NOT EXISTS idx_logs_action ON admin_logs(action);
   CREATE INDEX IF NOT EXISTS idx_logs_created ON admin_logs(created_at);`,
   'REBUILD_USERS_ROLES',
-  `ALTER TABLE users ADD COLUMN custom_permissions TEXT;`,
+  'SAFE_ADD_COLUMN:users:custom_permissions:TEXT',
   `CREATE TABLE IF NOT EXISTS global_messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     kind TEXT NOT NULL CHECK (kind IN ('announce','motd','broadcast')),
@@ -147,7 +147,49 @@ const MIGRATIONS = [
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL
   );
-  CREATE INDEX IF NOT EXISTS idx_portal_ach_game ON portal_achievements(game_id, published);`
+  CREATE INDEX IF NOT EXISTS idx_portal_ach_game ON portal_achievements(game_id, published);`,
+  'SAFE_ADD_COLUMN:users:stats_public:INTEGER NOT NULL DEFAULT 0',
+  `CREATE TABLE IF NOT EXISTS friendships (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    requester_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    addressee_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    status TEXT NOT NULL CHECK (status IN ('pending','accepted','declined','blocked')),
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    UNIQUE (requester_id, addressee_id),
+    CHECK (requester_id != addressee_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_friendships_addressee ON friendships(addressee_id, status);
+  CREATE INDEX IF NOT EXISTS idx_friendships_requester ON friendships(requester_id, status);`,
+  `CREATE TABLE IF NOT EXISTS follows (
+    follower_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    following_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    created_at INTEGER NOT NULL,
+    PRIMARY KEY (follower_id, following_id),
+    CHECK (follower_id != following_id)
+  );
+  CREATE INDEX IF NOT EXISTS idx_follows_following ON follows(following_id);`,
+  `CREATE TABLE IF NOT EXISTS user_achievements (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    achievement_key TEXT NOT NULL COLLATE NOCASE,
+    unlocked_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, achievement_key)
+  );
+  CREATE INDEX IF NOT EXISTS idx_user_ach_user ON user_achievements(user_id, unlocked_at);
+  CREATE INDEX IF NOT EXISTS idx_user_ach_key ON user_achievements(achievement_key);`,
+  `CREATE TABLE IF NOT EXISTS featured_achievements (
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    achievement_key TEXT NOT NULL COLLATE NOCASE,
+    sort_order INTEGER NOT NULL DEFAULT 0,
+    updated_at INTEGER NOT NULL,
+    PRIMARY KEY (user_id, achievement_key)
+  );
+  CREATE INDEX IF NOT EXISTS idx_featured_ach_user ON featured_achievements(user_id, sort_order);`,
+  'SAFE_ADD_COLUMN:global_messages:duration_seconds:INTEGER',
+  'SAFE_ADD_COLUMN:global_messages:published_at:INTEGER',
+  'SAFE_ADD_COLUMN:global_messages:disabled_at:INTEGER',
+  'SAFE_ADD_COLUMN:global_messages:disabled_by:INTEGER',
+  `CREATE INDEX IF NOT EXISTS idx_global_messages_expires ON global_messages(active, expires_at);`
 ];
 
 function rebuildUsersRolesTable() {
@@ -218,7 +260,18 @@ function runMigrations() {
   try {
     for (const m of pending) {
       if (m.sql === 'REBUILD_USERS_ROLES') continue;
-      db.exec(m.sql);
+      if (typeof m.sql === 'string' && m.sql.startsWith('SAFE_ADD_COLUMN:')) {
+        const parts = m.sql.split(':');
+        const table = parts[1];
+        const column = parts[2];
+        const typeDef = parts.slice(3).join(':');
+        const cols = db.prepare(`PRAGMA table_info(${table})`).all().map((r) => r.name);
+        if (!cols.includes(column)) {
+          db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${typeDef}`);
+        }
+      } else {
+        db.exec(m.sql);
+      }
       db.prepare('INSERT INTO _migrations (id, applied_at) VALUES (?, ?)').run(m.i, Date.now());
     }
     db.exec('COMMIT');
