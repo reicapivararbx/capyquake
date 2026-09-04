@@ -372,6 +372,81 @@ async function pageDashboard() {
     ${tableLogs(stats.recentActions)}`;
 }
 
+const MSG_DURATION_PRESETS = [
+  { value: '5', label: '5s' },
+  { value: '10', label: '10s' },
+  { value: '15', label: '15s' },
+  { value: '30', label: '30s' },
+  { value: '60', label: '1m' },
+  { value: '120', label: '2m' },
+  { value: '300', label: '5m' },
+  { value: '600', label: '10m' },
+  { value: '1800', label: '30m' },
+  { value: '3600', label: '1h' },
+  { value: 'manual', label: 'Até desativar' },
+  { value: 'custom', label: 'Personalizado' }
+];
+
+function formatDurationSeconds(sec) {
+  if (sec == null || sec === '') return 'até desativar';
+  const n = Number(sec);
+  if (!Number.isFinite(n) || n <= 0) return '—';
+  if (n < 60) return n + 's';
+  if (n < 3600) return (n % 60 === 0 ? (n / 60) + 'm' : Math.floor(n / 60) + 'm ' + (n % 60) + 's');
+  if (n % 3600 === 0) return (n / 3600) + 'h';
+  const h = Math.floor(n / 3600);
+  const m = Math.floor((n % 3600) / 60);
+  return h + 'h' + (m ? ' ' + m + 'm' : '');
+}
+
+function msgStatusLabel(m) {
+  const st = m.status || (m.active ? 'active' : 'disabled');
+  if (st === 'active') return '<span class="pill active">🟢 Ativo</span>';
+  if (st === 'expired') return '<span class="pill">🕒 Expirado</span>';
+  return '<span class="dim">⚫ Desativado</span>';
+}
+
+function readMsgDurationFields(prefix) {
+  const preset = $(prefix + '-dur')?.value || 'manual';
+  if (preset === 'manual') return { durationSeconds: null, untilDisabled: true };
+  if (preset === 'custom') {
+    const val = Number($(prefix + '-custom-val')?.value);
+    const unit = $(prefix + '-custom-unit')?.value || 's';
+    if (!Number.isFinite(val) || val <= 0) throw new Error('Duração personalizada inválida.');
+    const mult = unit === 'h' ? 3600 : unit === 'm' ? 60 : 1;
+    return { durationSeconds: Math.floor(val * mult) };
+  }
+  return { durationSeconds: Number(preset) };
+}
+
+function wireDurationToggle(prefix) {
+  const sel = $(prefix + '-dur');
+  const custom = $(prefix + '-custom');
+  if (!sel || !custom) return;
+  const sync = () => { custom.style.display = sel.value === 'custom' ? 'flex' : 'none'; };
+  sel.onchange = sync;
+  sync();
+}
+
+function durationSelectHtml(id, selected) {
+  const sel = selected == null ? 'manual' : String(selected);
+  const known = MSG_DURATION_PRESETS.some(p => p.value === sel);
+  const options = MSG_DURATION_PRESETS.map(p =>
+    `<option value="${p.value}" ${(!known && p.value === 'custom' && sel !== 'manual') || p.value === sel ? 'selected' : ''}>${p.label}</option>`
+  ).join('');
+  return `<select id="${id}">${options}</select>
+    <div id="${id.replace('-dur', '-custom')}" class="row" style="display:none;gap:8px;align-items:end;margin-top:6px">
+      <div><label>Valor</label><input id="${id.replace('-dur', '-custom-val')}" type="number" min="1" step="1" value="30" style="width:90px"></div>
+      <div><label>Unidade</label>
+        <select id="${id.replace('-dur', '-custom-unit')}">
+          <option value="s">segundos</option>
+          <option value="m">minutos</option>
+          <option value="h">horas</option>
+        </select>
+      </div>
+    </div>`;
+}
+
 async function pageMessages() {
   if (!can('messages.global')) {
     content.innerHTML = `<h1>Mensagens Globais</h1><p class="dim">Sem permissão <code>messages.global</code>.</p>`;
@@ -384,6 +459,7 @@ async function pageMessages() {
         <div><label>Tipo</label>
           <select id="msg-kind"><option value="announce">announce</option><option value="motd">motd</option><option value="broadcast">broadcast</option></select>
         </div>
+        <div><label>Duração</label>${durationSelectHtml('msg-dur', '300')}</div>
       </div>
       <label>Mensagem</label>
       <textarea class="textarea" id="msg-body" maxlength="2000" placeholder="Texto do anúncio ou MOTD"></textarea>
@@ -393,19 +469,48 @@ async function pageMessages() {
       ${data.motd ? `<p class="dim" style="margin-top:12px">MOTD atual: <b>${esc(data.motd.body)}</b></p>` : '<p class="dim" style="margin-top:12px">Sem MOTD ativo.</p>'}
     </div>
     <div class="panel"><h2>HISTÓRICO</h2>
-      ${data.messages.length ? `<table><thead><tr><th>Quando</th><th>Tipo</th><th>Texto</th><th>Autor</th><th>Ativo</th><th></th></tr></thead><tbody>
+      ${data.messages.length ? `<table><thead><tr>
+        <th>Quando</th><th>Tipo</th><th>Texto</th><th>Autor</th><th>Duração</th><th>Expira</th><th>Status</th><th>Ações</th>
+      </tr></thead><tbody>
         ${data.messages.map(m => `<tr>
-          <td>${dt(m.createdAt)}</td><td><span class="pill">${esc(m.kind)}</span></td>
-          <td>${esc(m.body)}</td><td>${esc(m.authorUsername || '—')}</td>
-          <td>${m.active ? '<span class="pill active">sim</span>' : '<span class="dim">não</span>'}</td>
-          <td>${m.active ? `<button class="ghost msg-off" data-id="${m.id}" data-label="DESATIVAR">DESATIVAR</button>` : ''}</td>
+          <td>${dt(m.createdAt)}</td>
+          <td><span class="pill">${esc(m.kind)}</span></td>
+          <td>${esc(m.body)}</td>
+          <td>${esc(m.authorUsername || '—')}</td>
+          <td class="dim">${esc(formatDurationSeconds(m.durationSeconds))}</td>
+          <td class="dim">${m.expiresAt ? dt(m.expiresAt) : '—'}</td>
+          <td>${msgStatusLabel(m)}</td>
+          <td class="row" style="margin:0;flex-wrap:wrap;gap:4px">
+            ${m.status === 'active' || m.active
+              ? `<button class="ghost msg-off" data-id="${m.id}" data-label="DESATIVAR">DESATIVAR</button>`
+              : `<button class="ghost msg-on" data-id="${m.id}" data-label="REATIVAR">REATIVAR</button>`}
+            <button class="ghost msg-del" data-id="${m.id}" data-label="EXCLUIR">EXCLUIR</button>
+          </td>
         </tr>`).join('')}
       </tbody></table>` : '<p class="dim">Nenhuma mensagem ainda.</p>'}
+    </div>
+    <div class="panel" id="msg-reactivate-panel" style="display:none">
+      <h2>REATIVAR MENSAGEM #<span id="msg-re-id"></span></h2>
+      <div class="row">
+        <div><label>Nova duração</label>${durationSelectHtml('msg-re-dur', '300')}</div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="msg-re-go" data-label="CONFIRMAR">CONFIRMAR</button>
+        <button class="ghost" id="msg-re-cancel" data-label="CANCELAR">CANCELAR</button>
+      </div>
     </div>`;
+  wireDurationToggle('msg');
+  wireDurationToggle('msg-re');
   $('#msg-send').onclick = () => runAction($('#msg-send'), async () => {
+    const dur = readMsgDurationFields('msg');
     await api('/api/admin/messages', {
       method: 'POST', idemKey: uuid(),
-      body: { kind: $('#msg-kind').value, body: $('#msg-body').value }
+      body: {
+        kind: $('#msg-kind').value,
+        body: $('#msg-body').value,
+        durationSeconds: dur.durationSeconds,
+        untilDisabled: !!dur.untilDisabled
+      }
     });
     toast('Mensagem publicada.');
     await pageMessages();
@@ -418,6 +523,44 @@ async function pageMessages() {
       await pageMessages();
     }, 'OK');
   });
+  content.querySelectorAll('.msg-del').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => runAction(btn, async () => {
+      if (!confirm('Excluir permanentemente esta mensagem?')) return;
+      await api('/api/admin/messages/' + btn.dataset.id, { method: 'DELETE' });
+      toast('Mensagem excluída.');
+      await pageMessages();
+    }, 'OK');
+  });
+  let pendingReId = null;
+  content.querySelectorAll('.msg-on').forEach(btn => {
+    armBtn(btn);
+    btn.onclick = () => {
+      pendingReId = btn.dataset.id;
+      $('#msg-re-id').textContent = pendingReId;
+      $('#msg-reactivate-panel').style.display = 'block';
+      wireDurationToggle('msg-re');
+      $('#msg-reactivate-panel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    };
+  });
+  $('#msg-re-cancel').onclick = () => {
+    pendingReId = null;
+    $('#msg-reactivate-panel').style.display = 'none';
+  };
+  $('#msg-re-go').onclick = () => runAction($('#msg-re-go'), async () => {
+    if (!pendingReId) throw new Error('Nenhuma mensagem selecionada.');
+    const dur = readMsgDurationFields('msg-re');
+    await api('/api/admin/messages/' + pendingReId, {
+      method: 'POST',
+      body: {
+        action: 'reactivate',
+        durationSeconds: dur.durationSeconds,
+        untilDisabled: !!dur.untilDisabled
+      }
+    });
+    toast('Mensagem reativada.');
+    await pageMessages();
+  }, 'OK');
 }
 
 async function pagePortalNews() {
