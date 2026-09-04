@@ -4,17 +4,24 @@ import { verifyPassword } from './passwords.js';
 import { hit } from './ratelimit.js';
 import {
   createUser, authenticate, resolveSession, revokeSession, createSession,
-  createAdminCodeSession, getUserById, getFullAccount, reportMatch, updateCapybara, getCapybara,
+  createAdminCodeSession, getUserById, findByUsername, getFullAccount, reportMatch, updateCapybara, getCapybara,
   giveCoins, setCoins, giveTokens, setTokens, giveXp, setXp, setLevel, levelUp,
   addItemToInventory, removeItemFromInventory, getInventory, maxStats, heal,
   banUser, suspendUser, unbanUser, changeRole, resetPlayer, logAdminAction,
   listLogs, listTransactions, searchUsers, dashboardStats, countUsers, getItemsCatalog,
   changeOwnPassword, adminSetPassword, revokeTargetSessions,
-  createGlobalMessage, listGlobalMessages, getGlobalMessageById, getActiveMotd, deactivateGlobalMessage,
+  createGlobalMessage, listGlobalMessages, listActiveGlobalMessages, getGlobalMessageById, getActiveMotd,
+  deactivateGlobalMessage, reactivateGlobalMessage, updateGlobalMessage, deleteGlobalMessage,
+  toPublicGlobalMessage,
   listPortalNews, getPortalNewsBySlug, getPortalNewsById, createPortalNews, updatePortalNews, deletePortalNews,
   listPortalWiki, getPortalWikiById, getPortalWikiArticle, createPortalWiki, updatePortalWiki, deletePortalWiki,
-  listPortalAchievements, getPortalAchievementById, createPortalAchievement, updatePortalAchievement, deletePortalAchievement
+  listPortalAchievements, getPortalAchievementById, createPortalAchievement, updatePortalAchievement, deletePortalAchievement,
+  toPublicProfile, setStatsPublic, listFriends, requestFriend, acceptFriend, declineFriend,
+  removeFriend, blockUser, unblockUser, followUser, unfollowUser,
+  listFollowers, listFollowing, listMyFollowers, listMyFollowing, searchUsersPublic,
+  unlockAchievement, listUserAchievements, listMyAchievements, setFeaturedAchievements
 } from './services.js';
+import { listPublicLobbies, getLobby } from './lobbies.js';
 import {
   ApiError, ROLE_RANK, ROLES, ROLE_LABELS, ADMIN_VIEW_ROLES,
   VIEW_PERMS, PERMISSIONS, hasPermission, getAvailablePermissions
@@ -98,6 +105,39 @@ async function readJsonBody(req) {
 function intParam(v, def) {
   const n = Number.parseInt(v, 10);
   return Number.isSafeInteger(n) ? n : def;
+}
+
+let globalMessageBroadcaster = null;
+
+export function setGlobalMessageBroadcaster(fn) {
+  globalMessageBroadcaster = typeof fn === 'function' ? fn : null;
+}
+
+function emitGlobalMessageEvent(event, message) {
+  if (!globalMessageBroadcaster) return;
+  try {
+    globalMessageBroadcaster(event, message);
+  } catch (err) {
+    console.error('[api] global message broadcast failed:', err);
+  }
+}
+
+function parseDurationInput(b) {
+  if (b.untilDisabled === true || b.duration === 'manual' || b.duration === 'until_disabled'
+      || b.durationSeconds === null || b.durationSeconds === -1) {
+    return { durationSeconds: null };
+  }
+  if (b.durationSeconds !== undefined && b.durationSeconds !== null && b.durationSeconds !== '') {
+    return { durationSeconds: Number(b.durationSeconds) };
+  }
+  if (b.duration != null && b.duration !== '' && b.duration !== 'custom') {
+    const n = Number(b.duration);
+    if (Number.isFinite(n)) return { durationSeconds: n };
+  }
+  if (b.expiresAt != null && b.expiresAt !== '') {
+    return { expiresAt: Number(b.expiresAt) };
+  }
+  return {};
 }
 
 // ---------- seed do admin ----------
@@ -196,6 +236,150 @@ export async function handleApi(req, res, pathname, query) {
       return json(res, 200, { success: true, ...getFullAccount(user.id), permissions: PERMISSIONS[user.role] });
     }
 
+    if (pathname === '/api/users/me/privacy' && method === 'PATCH') {
+      const user = requireAuth(req);
+      const body = await readJsonBody(req);
+      if (typeof body.statsPublic !== 'boolean') {
+        throw new ApiError('INVALID_INPUT', 'statsPublic (boolean) obrigatório.', 400);
+      }
+      const updated = setStatsPublic(user.id, body.statsPublic);
+      return json(res, 200, { success: true, user: updated, statsPublic: !!updated.statsPublic });
+    }
+
+    if (pathname === '/api/users/search' && method === 'GET') {
+      const user = requireAuth(req);
+      const wait = hit(`usearch:${user.id}`, 30, 60000);
+      if (wait) return rateLimited(res, wait);
+      const result = searchUsersPublic(user.id, {
+        q: query.get('q') || '',
+        limit: intParam(query.get('limit'), 20)
+      });
+      return json(res, 200, { success: true, ...result });
+    }
+
+    if (pathname === '/api/lobbies' && method === 'GET') {
+      const lobbies = listPublicLobbies({
+        includeStarted: query.get('includeStarted') === '1'
+      });
+      return json(res, 200, { success: true, lobbies });
+    }
+
+    const lobbyCodeMatch = pathname.match(/^\/api\/lobbies\/([A-Za-z0-9]{2,8})$/);
+    if (lobbyCodeMatch && method === 'GET') {
+      const lobby = getLobby(lobbyCodeMatch[1]);
+      if (!lobby) throw new ApiError('NOT_FOUND', 'Lobby não encontrado.', 404);
+      return json(res, 200, { success: true, lobby });
+    }
+
+    if (pathname === '/api/friends' && method === 'GET') {
+      const user = requireAuth(req);
+      return json(res, 200, { success: true, ...listFriends(user.id) });
+    }
+
+    if (pathname === '/api/friends/request' && method === 'POST') {
+      const user = requireAuth(req);
+      const wait = hit(`friend:${user.id}`, 20, 600000);
+      if (wait) return rateLimited(res, wait);
+      const body = await readJsonBody(req);
+      const result = requestFriend(user.id, body.username);
+      return json(res, 200, { success: true, ...result });
+    }
+
+    if (pathname === '/api/friends/accept' && method === 'POST') {
+      const user = requireAuth(req);
+      const body = await readJsonBody(req);
+      const result = acceptFriend(user.id, body.username);
+      return json(res, 200, { success: true, ...result });
+    }
+
+    if (pathname === '/api/friends/decline' && method === 'POST') {
+      const user = requireAuth(req);
+      const body = await readJsonBody(req);
+      const result = declineFriend(user.id, body.username);
+      return json(res, 200, { success: true, ...result });
+    }
+
+    if (pathname === '/api/friends/block' && method === 'POST') {
+      const user = requireAuth(req);
+      const body = await readJsonBody(req);
+      const result = blockUser(user.id, body.username);
+      return json(res, 200, { success: true, ...result });
+    }
+
+    const friendUnblock = pathname.match(/^\/api\/friends\/block\/([^/]+)$/);
+    if (friendUnblock && method === 'DELETE') {
+      const user = requireAuth(req);
+      const result = unblockUser(user.id, decodeURIComponent(friendUnblock[1]));
+      return json(res, 200, { success: true, ...result });
+    }
+
+    const friendUser = pathname.match(/^\/api\/friends\/([^/]+)$/);
+    if (friendUser && method === 'DELETE' && friendUser[1] !== 'block' && friendUser[1] !== 'request') {
+      const user = requireAuth(req);
+      const result = removeFriend(user.id, decodeURIComponent(friendUser[1]));
+      return json(res, 200, { success: true, ...result });
+    }
+
+    if (pathname === '/api/me/followers' && method === 'GET') {
+      const user = requireAuth(req);
+      return json(res, 200, {
+        success: true,
+        ...listMyFollowers(user.id, {
+          limit: intParam(query.get('limit'), 50),
+          offset: intParam(query.get('offset'), 0)
+        })
+      });
+    }
+
+    if (pathname === '/api/me/following' && method === 'GET') {
+      const user = requireAuth(req);
+      return json(res, 200, {
+        success: true,
+        ...listMyFollowing(user.id, {
+          limit: intParam(query.get('limit'), 50),
+          offset: intParam(query.get('offset'), 0)
+        })
+      });
+    }
+
+    const followMatch = pathname.match(/^\/api\/follow\/([^/]+)$/);
+    if (followMatch && method === 'POST') {
+      const user = requireAuth(req);
+      const wait = hit(`follow:${user.id}`, 30, 600000);
+      if (wait) return rateLimited(res, wait);
+      const result = followUser(user.id, decodeURIComponent(followMatch[1]));
+      return json(res, 200, { success: true, ...result });
+    }
+    if (followMatch && method === 'DELETE') {
+      const user = requireAuth(req);
+      const result = unfollowUser(user.id, decodeURIComponent(followMatch[1]));
+      return json(res, 200, { success: true, ...result });
+    }
+
+    const userFollowers = pathname.match(/^\/api\/users\/([^/]+)\/followers$/);
+    if (userFollowers && method === 'GET') {
+      const result = listFollowers(decodeURIComponent(userFollowers[1]), {
+        limit: intParam(query.get('limit'), 50),
+        offset: intParam(query.get('offset'), 0)
+      });
+      return json(res, 200, { success: true, ...result });
+    }
+
+    const userFollowing = pathname.match(/^\/api\/users\/([^/]+)\/following$/);
+    if (userFollowing && method === 'GET') {
+      const result = listFollowing(decodeURIComponent(userFollowing[1]), {
+        limit: intParam(query.get('limit'), 50),
+        offset: intParam(query.get('offset'), 0)
+      });
+      return json(res, 200, { success: true, ...result });
+    }
+
+    const publicUserMatch = pathname.match(/^\/api\/users\/([^/]+)$/);
+    if (publicUserMatch && method === 'GET' && publicUserMatch[1] !== 'me' && publicUserMatch[1] !== 'search') {
+      const profile = toPublicProfile(decodeURIComponent(publicUserMatch[1]), req.user || null);
+      return json(res, 200, { success: true, profile });
+    }
+
     // ---- troca de senha do proprio usuario ----
     if (pathname === '/api/auth/change-password' && method === 'POST') {
       const user = requireAuth(req);
@@ -220,7 +404,24 @@ export async function handleApi(req, res, pathname, query) {
     }
 
     if (pathname === '/api/portal/motd' && method === 'GET') {
-      return json(res, 200, { success: true, motd: getActiveMotd() });
+      const motd = getActiveMotd();
+      return json(res, 200, {
+        success: true,
+        motd: motd ? toPublicGlobalMessage(motd) : null
+      });
+    }
+
+    if ((pathname === '/api/portal/messages/active' || pathname === '/api/global-messages/active')
+        && method === 'GET') {
+      const messages = listActiveGlobalMessages({
+        limit: intParam(query.get('limit'), 20)
+      }).map(toPublicGlobalMessage);
+      return json(res, 200, {
+        success: true,
+        messages,
+        motd: toPublicGlobalMessage(getActiveMotd()),
+        serverTime: Date.now()
+      });
     }
 
     if (pathname === '/api/portal/news' && method === 'GET') {
@@ -266,9 +467,58 @@ export async function handleApi(req, res, pathname, query) {
       return json(res, 200, { success: true, achievements: items });
     }
 
+    if (pathname === '/api/achievements' && method === 'GET') {
+      const user = requireAuth(req);
+      const pack = listMyAchievements(user.id, {
+        gameId: query.get('gameId') || undefined
+      });
+      return json(res, 200, { success: true, ...pack });
+    }
+
+    if (pathname === '/api/achievements/unlock' && method === 'POST') {
+      const user = requireAuth(req);
+      const wait = hit(`achunlock:${user.id}`, 30, 60000);
+      if (wait) return rateLimited(res, wait);
+      const body = await readJsonBody(req);
+      const key = body.achievementKey || body.key || body.id;
+      if (!key) throw new ApiError('INVALID_INPUT', 'achievementKey obrigatório.', 400);
+      const result = unlockAchievement(user.id, key);
+      return json(res, 200, { success: true, ...result });
+    }
+
+    if (pathname === '/api/me/featured-achievements' && method === 'PATCH') {
+      const user = requireAuth(req);
+      const body = await readJsonBody(req);
+      const keys = body.keys ?? body.featured ?? body.achievementKeys;
+      const pack = setFeaturedAchievements(user.id, keys);
+      return json(res, 200, { success: true, ...pack });
+    }
+
+    const userAchMatch = pathname.match(/^\/api\/users\/([^/]+)\/achievements$/);
+    if (userAchMatch && method === 'GET') {
+      const raw = findByUsername(decodeURIComponent(userAchMatch[1]));
+      if (!raw || raw.status === 'banned' || raw.status === 'suspended') {
+        throw new ApiError('NOT_FOUND', 'Usuário não encontrado.', 404);
+      }
+      const viewerId = req.user?.id ?? null;
+      const isSelf = viewerId != null && Number(viewerId) === Number(raw.id);
+      const statsPublic = !!(raw.stats_public ?? raw.statsPublic);
+      if (!isSelf && !statsPublic) {
+        throw new ApiError('FORBIDDEN', 'Conquistas privadas.', 403);
+      }
+      const pack = listUserAchievements(raw.id, {
+        gameId: query.get('gameId') || undefined,
+        viewerId
+      });
+      return json(res, 200, { success: true, ...pack });
+    }
+
     // ---- game sync ----
     if (pathname === '/api/game/report' && method === 'POST') {
       const user = requireAuth(req);
+      // Partida legítima dura minutos; reports em rajada são farm scriptado.
+      const wait = hit(`report:${user.id}`, 2, 60000);
+      if (wait) return rateLimited(res, wait);
       const body = await readJsonBody(req);
       return json(res, 200, { success: true, result: reportMatch(user.id, body) });
     }
@@ -589,30 +839,84 @@ export async function handleApi(req, res, pathname, query) {
       if (pathname === '/api/admin/messages' && method === 'POST') {
         requirePerm(req, 'messages.global');
         const b = await readJsonBody(req);
-        const kind = String(b.kind || 'announce');
+        const kind = String(b.kind || b.type || 'announce');
+        const dur = parseDurationInput(b);
         const msg = mutate(() => createGlobalMessage({
           kind,
           body: b.body ?? b.message ?? b.text,
           actorId: admin.id,
-          expiresAt: b.expiresAt ? Number(b.expiresAt) : null,
+          durationSeconds: dur.durationSeconds !== undefined ? dur.durationSeconds : undefined,
+          expiresAt: dur.expiresAt !== undefined ? dur.expiresAt : undefined,
           active: b.active !== false
         }));
         logAdminAction(admin.id, null, kind === 'motd' ? 'SET_MOTD' : 'GLOBAL_MESSAGE', {
-          id: msg.id, kind: msg.kind, body: msg.body
+          id: msg.id, kind: msg.kind, body: msg.body,
+          durationSeconds: msg.durationSeconds, expiresAt: msg.expiresAt
         }, true);
+        emitGlobalMessageEvent('global_message_created', msg);
         return json(res, 201, { success: true, message: msg });
       }
 
-      const msgIdMatch = pathname.match(/^\/api\/admin\/messages\/(\d+)$/);
-      if (msgIdMatch && method === 'POST') {
+      const msgIdMatch = pathname.match(/^\/api\/admin\/messages\/(\d+)(\/[a-z-]+)?$/);
+      if (msgIdMatch && (method === 'POST' || method === 'PATCH' || method === 'DELETE')) {
         requirePerm(req, 'messages.global');
         const id = Number(msgIdMatch[1]);
-        const b = await readJsonBody(req);
-        if (b.action === 'deactivate' || b.deactivate) {
-          const msg = deactivateGlobalMessage(id);
-          logAdminAction(admin.id, null, 'DEACTIVATE_MESSAGE', { id: msg.id, kind: msg.kind }, true);
+        const sub = msgIdMatch[2] || '';
+
+        if (method === 'DELETE' || sub === '/delete') {
+          const msg = deleteGlobalMessage(id);
+          logAdminAction(admin.id, null, 'DELETE_MESSAGE', { id: msg.id, kind: msg.kind }, true);
+          emitGlobalMessageEvent('global_message_disabled', msg);
           return json(res, 200, { success: true, message: msg });
         }
+
+        if (sub === '/disable' || method === 'POST' || method === 'PATCH') {
+          const b = method === 'DELETE' ? {} : await readJsonBody(req);
+          const action = b.action || (sub === '/disable' ? 'deactivate' : b.action);
+
+          if (action === 'deactivate' || action === 'disable' || b.deactivate || sub === '/disable') {
+            const msg = deactivateGlobalMessage(id, { actorId: admin.id });
+            logAdminAction(admin.id, null, 'DEACTIVATE_MESSAGE', { id: msg.id, kind: msg.kind }, true);
+            emitGlobalMessageEvent('global_message_disabled', msg);
+            return json(res, 200, { success: true, message: msg });
+          }
+
+          if (action === 'reactivate' || action === 'enable') {
+            const dur = parseDurationInput(b);
+            if (dur.durationSeconds === undefined && dur.expiresAt === undefined
+                && b.untilDisabled !== true && b.duration !== 'manual') {
+              throw new ApiError('INVALID_INPUT', 'Informe uma nova duração ao reativar.', 400);
+            }
+            const msg = reactivateGlobalMessage(id, {
+              actorId: admin.id,
+              durationSeconds: dur.durationSeconds !== undefined ? dur.durationSeconds : null,
+              expiresAt: dur.expiresAt
+            });
+            logAdminAction(admin.id, null, 'REACTIVATE_MESSAGE', {
+              id: msg.id, kind: msg.kind, durationSeconds: msg.durationSeconds, expiresAt: msg.expiresAt
+            }, true);
+            emitGlobalMessageEvent('global_message_created', msg);
+            return json(res, 200, { success: true, message: msg });
+          }
+
+          if (action === 'update' || method === 'PATCH' || (!action && (b.body || b.message || b.durationSeconds !== undefined))) {
+            const dur = parseDurationInput(b);
+            const msg = updateGlobalMessage(id, {
+              body: b.body ?? b.message ?? b.text,
+              durationSeconds: dur.durationSeconds,
+              expiresAt: dur.expiresAt,
+              actorId: admin.id
+            });
+            logAdminAction(admin.id, null, 'UPDATE_MESSAGE', { id: msg.id, kind: msg.kind }, true);
+            emitGlobalMessageEvent('global_message_updated', msg);
+            return json(res, 200, { success: true, message: msg });
+          }
+
+          if (!action) {
+            throw new ApiError('INVALID_INPUT', 'Ação de mensagem desconhecida.', 400);
+          }
+        }
+
         throw new ApiError('INVALID_INPUT', 'Ação de mensagem desconhecida.', 400);
       }
 

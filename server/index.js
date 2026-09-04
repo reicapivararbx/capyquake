@@ -4,7 +4,7 @@ import { extname, join, normalize, relative, resolve } from 'path';
 import { fileURLToPath } from 'url';
 import { WebSocketServer } from 'ws';
 import { networkInterfaces } from 'os';
-import { handleApi, ensureAdminSeed, ensureEasterEggSeed, attachSession, hasPermission } from './api.js';
+import { handleApi, ensureAdminSeed, ensureEasterEggSeed, attachSession, hasPermission, setGlobalMessageBroadcaster } from './api.js';
 import {
   getUserById, findByUsername, banUser, suspendUser, unbanUser,
   giveCoins, giveXp, setLevel, heal, logAdminAction, revokeTargetSessions,
@@ -12,8 +12,10 @@ import {
   removeItemFromInventory, resetPlayer, changeRole,
   getCapybara, updateCapybara, getInventory, getProfileRaw,
   searchUsers, listLogs, dashboardStats, countUsers, levelUp,
-  createGlobalMessage
+  createGlobalMessage, toPublicGlobalMessage, listActiveGlobalMessages
 } from './services.js';
+import { bindRooms } from './lobbies.js';
+import { touchOnline, clearPresence, setRoom, clearRoom } from './presence.js';
 
 ensureAdminSeed();
 ensureEasterEggSeed();
@@ -60,6 +62,24 @@ const MIME_TYPES = {
 
 const rooms = new Map();
 let roomIdCounter = 0;
+bindRooms(rooms);
+
+function lobbyDisplayName(ws, msgName) {
+  if (ws.chatUser) {
+    const n = String(ws.chatUser.displayName || ws.chatUser.username || '').trim();
+    if (n) return n.slice(0, 12);
+  }
+  return String(msgName || 'Anon').slice(0, 12);
+}
+
+function syncPresenceRoom(ws, room) {
+  if (!ws.chatUser?.id) return;
+  if (!room) {
+    clearRoom(ws.chatUser.id);
+    return;
+  }
+  setRoom(ws.chatUser.id, room.code, !!room.started);
+}
 
 // ---------- chat global (menus, fora do gameplay) ----------
 
@@ -78,6 +98,34 @@ function broadcastGlobalChat(payload) {
   const data = JSON.stringify({ type: 'globalChat', data: payload });
   for (const [ws] of globalChatClients) {
     if (ws.readyState === 1) ws.send(data);
+  }
+}
+
+function broadcastToAllClients(payload) {
+  const data = typeof payload === 'string' ? payload : JSON.stringify(payload);
+  for (const client of wss.clients) {
+    if (client.readyState === 1) client.send(data);
+  }
+}
+
+function broadcastGlobalMessageEvent(event, message) {
+  const pub = toPublicGlobalMessage(message);
+  broadcastToAllClients({ type: event, data: pub, serverTime: Date.now() });
+  if (event === 'global_message_created' || event === 'global_message_updated') {
+    const kind = pub?.kind || pub?.type;
+    if (kind === 'motd') {
+      broadcastToAllClients({ type: 'motd', data: pub, serverTime: Date.now() });
+    }
+    if (kind === 'announce' || kind === 'broadcast') {
+      broadcastGlobalChat({
+        name: '[ADMIN]',
+        role: 'admin',
+        message: pub?.body || pub?.message || '',
+        ts: Date.now(),
+        messageId: pub?.id,
+        kind
+      });
+    }
   }
 }
 
@@ -686,10 +734,7 @@ async function handleChatCommand(ws, msg) {
         if (!text) return reply(false, 'Informe a mensagem.');
         const stored = createGlobalMessage({ kind: 'announce', body: text, actorId: actor.id });
         logAdminAction(actor.id, null, 'GLOBAL_MESSAGE', { id: stored.id, kind: 'announce', body: text, via: 'chat-command' }, true);
-        const announceData = JSON.stringify({ type: 'globalChat', data: { name: '[ADMIN]', role: actor.role || 'admin', message: text, ts: Date.now(), messageId: stored.id } });
-        for (const client of wss.clients) {
-          if (client.readyState === 1) client.send(announceData);
-        }
+        broadcastGlobalMessageEvent('global_message_created', stored);
         return reply(true, `Anúncio enviado: "${text}"`);
       }
       case 'motd': {
@@ -697,10 +742,7 @@ async function handleChatCommand(ws, msg) {
         if (!text) return reply(false, 'Informe a mensagem.');
         const stored = createGlobalMessage({ kind: 'motd', body: text, actorId: actor.id });
         logAdminAction(actor.id, null, 'SET_MOTD', { id: stored.id, message: text, via: 'chat-command' }, true);
-        const motdData = JSON.stringify({ type: 'motd', data: { body: text, id: stored.id, ts: Date.now() } });
-        for (const client of wss.clients) {
-          if (client.readyState === 1) client.send(motdData);
-        }
+        broadcastGlobalMessageEvent('global_message_created', stored);
         return reply(true, `MOTD definido: "${text}"`);
       }
       case 'playercount': {
@@ -1087,6 +1129,9 @@ class GameRoom {
   startGame(data, ws) {
     if (!this.isHost(ws)) return false;
     this.started = true;
+    for (const [socket] of this.players) {
+      if (socket.chatUser?.id) setRoom(socket.chatUser.id, this.code, true);
+    }
     const d = data || {};
     this.broadcast({
       type: 'gameStart',
@@ -1264,6 +1309,7 @@ const server = createServer((req, res) => {
 });
 
 const wss = new WebSocketServer({ noServer: true });
+setGlobalMessageBroadcaster(broadcastGlobalMessageEvent);
 
 server.on('upgrade', (req, socket, head) => {
   let pathname;
@@ -1299,6 +1345,8 @@ server.on('upgrade', (req, socket, head) => {
 wss.on('connection', (ws) => {
   let currentRoom = null;
 
+  if (ws.chatUser?.id) touchOnline(ws.chatUser.id);
+
   const chatName = sanitizeChatText(ws.chatUser?.displayName || ws.chatUser?.username || '', 24);
   globalChatClients.set(ws, {
     name: chatName || null,
@@ -1306,6 +1354,15 @@ wss.on('connection', (ws) => {
     userId: ws.chatUser?.id ?? null
   });
   ws.send(JSON.stringify({ type: 'globalChatHistory', data: [...globalChatHistory] }));
+  try {
+    const activeMsgs = listActiveGlobalMessages({ limit: 20 }).map(toPublicGlobalMessage);
+    ws.send(JSON.stringify({
+      type: 'global_messages_snapshot',
+      data: activeMsgs,
+      serverTime: Date.now()
+    }));
+  } catch {
+  }
 
   ws.on('message', (raw) => {
     let msg;
@@ -1313,16 +1370,23 @@ wss.on('connection', (ws) => {
 
     switch (msg.type) {
       case 'createLobby': {
-        if (currentRoom) currentRoom.removePlayer(ws);
+        if (currentRoom) {
+          currentRoom.removePlayer(ws);
+          syncPresenceRoom(ws, null);
+        }
         const room = new GameRoom();
         rooms.set(room.id, room);
         currentRoom = room;
-        room.addPlayer(ws, String(msg.name || 'Anon').slice(0, 12));
+        room.addPlayer(ws, lobbyDisplayName(ws, msg.name));
+        syncPresenceRoom(ws, room);
         ws.send(JSON.stringify({ type: 'lobbyCreated', code: room.code }));
         break;
       }
       case 'joinLobby': {
-        if (currentRoom) currentRoom.removePlayer(ws);
+        if (currentRoom) {
+          currentRoom.removePlayer(ws);
+          syncPresenceRoom(ws, null);
+        }
         const room = findRoomByCode(msg.code);
         if (!room) {
           ws.send(JSON.stringify({ type: 'lobbyError', message: 'Lobby nao encontrado. Confira o codigo.' }));
@@ -1338,7 +1402,8 @@ wss.on('connection', (ws) => {
           break;
         }
         currentRoom = room;
-        room.addPlayer(ws, String(msg.name || 'Anon').slice(0, 12));
+        room.addPlayer(ws, lobbyDisplayName(ws, msg.name));
+        syncPresenceRoom(ws, room);
         break;
       }
       case 'startGame': {
@@ -1350,6 +1415,7 @@ wss.on('connection', (ws) => {
       case 'leaveLobby':
         if (currentRoom) currentRoom.removePlayer(ws);
         currentRoom = null;
+        syncPresenceRoom(ws, null);
         break;
       case 'position':
         if (currentRoom) currentRoom.handlePosition(ws, msg.position, msg.rotation);
@@ -1388,6 +1454,8 @@ wss.on('connection', (ws) => {
   ws.on('close', () => {
     globalChatClients.delete(ws);
     if (currentRoom) currentRoom.removePlayer(ws);
+    currentRoom = null;
+    if (ws.chatUser?.id) clearPresence(ws.chatUser.id);
   });
 });
 
