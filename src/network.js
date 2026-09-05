@@ -165,12 +165,24 @@ export class Network {
     this.callbacks.lobbyError = cb;
   }
 
-  createLobby(name) {
-    this.send('createLobby', { name });
+  createLobby(name, opts = {}) {
+    this.send('createLobby', {
+      name,
+      serverId: opts.serverId || undefined,
+      serverName: opts.serverName || undefined,
+      visibility: opts.visibility || undefined,
+      joinToken: opts.joinToken || undefined,
+    });
   }
 
-  joinLobby(code, name) {
-    this.send('joinLobby', { code, name });
+  joinLobby(code, name, opts = {}) {
+    this.send('joinLobby', {
+      code: code || undefined,
+      name,
+      serverId: opts.serverId || undefined,
+      joinToken: opts.joinToken || undefined,
+      lobby: opts.lobby || undefined,
+    });
   }
 
   startGameAsHost(map, gameMode) {

@@ -250,11 +250,87 @@ network.onLobbyError((message) => {
   errEl.style.display = 'block';
 });
 
-network.onOpen(() => setMpStatus('Conectado', 'online'));
+network.onOpen(() => {
+  setMpStatus('Conectado', 'online');
+  tryPortalDeepLinkJoin();
+});
 network.onClose(() => {
   const setup = document.getElementById('mp-setup');
   if (setup && setup.style.display === 'flex') setMpStatus('Servidor Localhost! - Suba ele localmente! ', 'offline');
 });
+
+function readPortalJoinParams() {
+  try {
+    const q = new URLSearchParams(location.search || '');
+    const serverId = q.get('serverId') || '';
+    const joinToken = q.get('joinToken') || '';
+    const lobby = q.get('lobby') || '';
+    const invite = q.get('invite') || '';
+    const visibility = q.get('visibility') || '';
+    const serverName = q.get('serverName') || '';
+    const asHost = q.get('asHost') === '1' || q.get('asHost') === 'true';
+    if (!serverId && !lobby && !joinToken) return null;
+    return { serverId, joinToken, lobby, invite, visibility, serverName, asHost };
+  } catch {
+    return null;
+  }
+}
+
+let _portalDeepLinkDone = false;
+function tryPortalDeepLinkJoin() {
+  if (_portalDeepLinkDone) return;
+  const params = readPortalJoinParams();
+  if (!params) return;
+  if (!network.connected) return;
+  _portalDeepLinkDone = true;
+
+  const nameInput = document.getElementById('mp-name');
+  const nameFromMenu = typeof menu.getPlayerName === 'function' ? menu.getPlayerName() : '';
+  const name = (nameInput?.value || nameFromMenu || 'Jogador').trim().slice(0, 12);
+  if (nameInput && !nameInput.value.trim()) nameInput.value = name;
+  network.setPlayerInfo(name);
+
+  menu.hide?.();
+  const mpSetup = document.getElementById('mp-setup');
+  if (mpSetup) mpSetup.style.display = 'flex';
+  setMpStatus('Entrando via Portal…', 'online');
+
+  if (params.asHost && params.serverId) {
+    network.createLobby(name, {
+      serverId: params.serverId,
+      serverName: params.serverName || undefined,
+      visibility: params.visibility === 'private' ? 'private' : 'public',
+      joinToken: params.joinToken || undefined,
+    });
+  } else if (params.serverId || params.lobby) {
+    network.joinLobby(params.lobby || '', name, {
+      serverId: params.serverId || undefined,
+      joinToken: params.joinToken || undefined,
+      lobby: params.lobby || undefined,
+    });
+  }
+
+  try {
+    const url = new URL(location.href);
+    ['serverId', 'joinToken', 'lobby', 'invite', 'visibility', 'serverName', 'asHost'].forEach((k) => url.searchParams.delete(k));
+    history.replaceState({}, '', url.pathname + (url.search ? url.search : '') + url.hash);
+  } catch {
+  }
+}
+
+(function bootPortalDeepLink() {
+  const params = readPortalJoinParams();
+  if (!params) return;
+  const nameInput = document.getElementById('mp-name');
+  const nameFromMenu = typeof menu.getPlayerName === 'function' ? menu.getPlayerName() : '';
+  if (nameInput && !nameInput.value.trim() && nameFromMenu) nameInput.value = nameFromMenu;
+  menu.hide?.();
+  const mpSetup = document.getElementById('mp-setup');
+  if (mpSetup) mpSetup.style.display = 'flex';
+  setMpStatus(network.connected ? 'Entrando via Portal…' : 'Conectando…', network.connected ? 'online' : null);
+  if (!network.connected) network.connect(nameInput ? nameInput.value : '');
+  else tryPortalDeepLinkJoin();
+})();
 
 function hueFromString(s) {
   let h = 0;
