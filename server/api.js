@@ -23,6 +23,28 @@ import {
 } from './services.js';
 import { listPublicLobbies, getLobby } from './lobbies.js';
 import {
+  assertGameId,
+  bindRuntimeKey,
+  closeServer,
+  createServer,
+  findByRuntimeKey,
+  getServer,
+  issueJoinToken,
+  joinByCode,
+  joinServer,
+  kickPlayer,
+  leaveServer,
+  listGameCapacity,
+  listPlayers,
+  listServers,
+  listServersAdmin,
+  registerRuntimeServer,
+  syncRuntime,
+  toPublicServer,
+  touchHeartbeatByRuntime,
+  updateServer,
+} from './servers-registry.js';
+import {
   ApiError, ROLE_RANK, ROLES, ROLE_LABELS, ADMIN_VIEW_ROLES,
   VIEW_PERMS, PERMISSIONS, hasPermission, getAvailablePermissions
 } from './validation.js';
@@ -40,6 +62,14 @@ function requirePerm(req, perm) {
     throw new ApiError('INSUFFICIENT_PERMISSION', 'Permissão insuficiente.', 403);
   }
   return user;
+}
+
+function requireRuntimeBridge(req) {
+  const secret = env.runtimeBridgeSecret;
+  const header = String(req.headers['x-runtime-bridge-secret'] || req.headers['x-capy-runtime-secret'] || '');
+  if (!secret || !header || header !== secret) {
+    throw new ApiError('FORBIDDEN', 'Runtime bridge não autorizado.', 403);
+  }
 }
 
 // ---------- idempotency ----------
@@ -269,6 +299,322 @@ export async function handleApi(req, res, pathname, query) {
       const lobby = getLobby(lobbyCodeMatch[1]);
       if (!lobby) throw new ApiError('NOT_FOUND', 'Lobby não encontrado.', 404);
       return json(res, 200, { success: true, lobby });
+    }
+
+    if (pathname === '/api/servers/meta' && method === 'GET') {
+      return json(res, 200, { success: true, games: listGameCapacity() });
+    }
+
+    if (pathname === '/api/servers' && method === 'GET') {
+      const mine = query.get('mine') === '1' || query.get('mine') === 'true';
+      const viewer = mine ? requireAuth(req) : (req.user || null);
+      const hasSlotsRaw = query.get('hasSlots');
+      const servers = listServers({
+        gameId: query.get('gameId') || undefined,
+        hasSlots: hasSlotsRaw === '1' || hasSlotsRaw === 'true',
+        mineUserId: mine && viewer ? viewer.id : undefined,
+        q: query.get('q') || undefined,
+        status: query.get('status') || undefined,
+        limit: intParam(query.get('limit'), 100),
+      });
+      return json(res, 200, { success: true, servers });
+    }
+
+    if (pathname === '/api/servers' && method === 'POST') {
+      const user = requireAuth(req);
+      const wait = hit(`srv-create:${user.id}`, 8, 300000);
+      if (wait) return rateLimited(res, wait);
+      if (user.status === 'banned' || user.status === 'suspended') {
+        throw new ApiError('FORBIDDEN', 'Conta suspensa ou banida.', 403);
+      }
+      const body = await readJsonBody(req);
+      assertGameId(body.gameId);
+      const result = createServer({
+        gameId: body.gameId,
+        name: body.name,
+        hostUserId: user.id,
+        hostUsername: user.username,
+        hostDisplayName: user.displayName || user.username,
+        visibility: body.visibility === 'private' ? 'private' : 'public',
+        maxPlayers: body.maxPlayers,
+        meta: body.meta && typeof body.meta === 'object' ? body.meta : undefined,
+      });
+      return json(res, 201, {
+        success: true,
+        server: result.public,
+        inviteCode: result.inviteCode,
+        hostSessionId: result.hostSessionId,
+        joinToken: result.joinToken || null,
+        expiresAt: result.expiresAt || null,
+        playHref: result.playHref || result.public.playHref || null,
+      });
+    }
+
+    if (pathname === '/api/servers/join-by-code' && method === 'POST') {
+      const user = requireAuth(req);
+      const wait = hit(`srv-join-code:${user.id}`, 20, 60000);
+      if (wait) return rateLimited(res, wait);
+      if (user.status === 'banned' || user.status === 'suspended') {
+        throw new ApiError('FORBIDDEN', 'Conta suspensa ou banida.', 403);
+      }
+      const body = await readJsonBody(req);
+      const code = String(body.code || body.inviteCode || '').trim();
+      if (!code) throw new ApiError('INVALID_INPUT', 'Código obrigatório.', 400);
+      const result = joinByCode(code, {
+        userId: user.id,
+        username: user.username,
+        displayName: user.displayName || user.username,
+      });
+      return json(res, 200, {
+        success: true,
+        serverId: result.server.id,
+        gameId: result.gameId,
+        joinToken: result.joinToken,
+        expiresAt: result.expiresAt,
+        playHref: result.playHref,
+        server: result.server,
+      });
+    }
+
+    const serverIdMatch = pathname.match(/^\/api\/servers\/([^/]+)$/);
+    if (serverIdMatch && method === 'GET') {
+      const server = getServer(serverIdMatch[1]);
+      if (!server || server.status === 'closed') {
+        throw new ApiError('NOT_FOUND', 'Servidor não encontrado.', 404);
+      }
+      if (server.visibility === 'private') {
+        const user = req.user;
+        const isHost = user && user.id === server.hostUserId;
+        const isMember = user && listPlayers(server.id).some((p) => p.userId === user.id);
+        const isStaff = user && hasPermission(user, 'servers.view');
+        if (!isHost && !isMember && !isStaff) {
+          throw new ApiError('NOT_FOUND', 'Servidor não encontrado.', 404);
+        }
+      }
+      const viewerId = req.user?.id ?? null;
+      return json(res, 200, {
+        success: true,
+        server: toPublicServer(server, {
+          includeInvite: viewerId != null && viewerId === server.hostUserId,
+          viewerUserId: viewerId,
+        }),
+        players: listPlayers(server.id),
+      });
+    }
+
+    if (serverIdMatch && method === 'PATCH') {
+      const user = requireAuth(req);
+      const body = await readJsonBody(req);
+      const force = hasPermission(user, 'servers.manage');
+      const result = updateServer(
+        serverIdMatch[1],
+        user.id,
+        {
+          name: body.name,
+          visibility: body.visibility,
+          maxPlayers: body.maxPlayers,
+        },
+        { force },
+      );
+      return json(res, 200, {
+        success: true,
+        server: result.server,
+        inviteCode: result.inviteCode,
+      });
+    }
+
+    const serverJoinMatch = pathname.match(/^\/api\/servers\/([^/]+)\/join$/);
+    if (serverJoinMatch && method === 'POST') {
+      const user = requireAuth(req);
+      const wait = hit(`srv-join:${user.id}`, 30, 60000);
+      if (wait) return rateLimited(res, wait);
+      if (user.status === 'banned' || user.status === 'suspended') {
+        throw new ApiError('FORBIDDEN', 'Conta suspensa ou banida.', 403);
+      }
+      const body = await readJsonBody(req);
+      const result = joinServer(
+        serverJoinMatch[1],
+        {
+          userId: user.id,
+          username: user.username,
+          displayName: user.displayName || user.username,
+        },
+        {
+          inviteCode: body.inviteCode || body.code || null,
+          joinToken: body.joinToken || null,
+        },
+      );
+      return json(res, 200, {
+        success: true,
+        server: result.server,
+        joinToken: result.joinToken,
+        expiresAt: result.expiresAt,
+        playHref: result.playHref,
+        gameId: result.gameId,
+        sessionId: result.player.sessionId,
+      });
+    }
+
+    const serverLeaveMatch = pathname.match(/^\/api\/servers\/([^/]+)\/leave$/);
+    if (serverLeaveMatch && method === 'POST') {
+      const user = requireAuth(req);
+      const pub = leaveServer(serverLeaveMatch[1], user.id);
+      return json(res, 200, { success: true, server: pub });
+    }
+
+    const serverCloseMatch = pathname.match(/^\/api\/servers\/([^/]+)\/close$/);
+    if (serverCloseMatch && method === 'POST') {
+      const user = requireAuth(req);
+      const force = hasPermission(user, 'servers.close') || hasPermission(user, 'servers.manage');
+      const body = await readJsonBody(req).catch(() => ({}));
+      const pub = closeServer(serverCloseMatch[1], user.id, {
+        force,
+        reason: body.reason || (force ? 'admin_close' : 'host_closed'),
+      });
+      return json(res, 200, { success: true, server: pub });
+    }
+
+    const serverKickMatch = pathname.match(/^\/api\/servers\/([^/]+)\/kick$/);
+    if (serverKickMatch && method === 'POST') {
+      const user = requireAuth(req);
+      const body = await readJsonBody(req);
+      const targetId = Number(body.userId);
+      if (!Number.isSafeInteger(targetId)) {
+        throw new ApiError('INVALID_INPUT', 'userId obrigatório.', 400);
+      }
+      const force = hasPermission(user, 'servers.kick_player') || hasPermission(user, 'servers.manage');
+      const pub = kickPlayer(serverKickMatch[1], targetId, user.id, { force });
+      return json(res, 200, { success: true, server: pub });
+    }
+
+    if (pathname === '/api/admin/servers' && method === 'GET') {
+      requirePerm(req, 'servers.view');
+      const servers = listServersAdmin({
+        gameId: query.get('gameId') || undefined,
+        includeClosed: query.get('includeClosed') === '1',
+        limit: intParam(query.get('limit'), 200),
+      });
+      return json(res, 200, { success: true, servers });
+    }
+
+    const adminServerClose = pathname.match(/^\/api\/admin\/servers\/([^/]+)\/close$/);
+    if (adminServerClose && method === 'POST') {
+      const user = requirePerm(req, 'servers.close');
+      const body = await readJsonBody(req).catch(() => ({}));
+      const pub = closeServer(adminServerClose[1], user.id, {
+        force: true,
+        reason: body.reason || 'admin_force_close',
+      });
+      return json(res, 200, { success: true, server: pub });
+    }
+
+    const adminServerKick = pathname.match(/^\/api\/admin\/servers\/([^/]+)\/kick$/);
+    if (adminServerKick && method === 'POST') {
+      const user = requirePerm(req, 'servers.kick_player');
+      const body = await readJsonBody(req);
+      const targetId = Number(body.userId);
+      if (!Number.isSafeInteger(targetId)) {
+        throw new ApiError('INVALID_INPUT', 'userId obrigatório.', 400);
+      }
+      const pub = kickPlayer(adminServerKick[1], targetId, user.id, { force: true });
+      return json(res, 200, { success: true, server: pub });
+    }
+
+    // --- Runtime bridge (external game processes: capyrails, stubs) ---
+    if (pathname === '/api/internal/runtime/register' && method === 'POST') {
+      requireRuntimeBridge(req);
+      const wait = hit('runtime-reg:ip', 120, 60000);
+      if (wait) return rateLimited(res, wait);
+      const body = await readJsonBody(req);
+      assertGameId(body.gameId);
+      const runtimeKey = String(body.runtimeKey || body.code || '').trim();
+      if (!runtimeKey) throw new ApiError('INVALID_INPUT', 'runtimeKey obrigatório.', 400);
+
+      if (body.serverId) {
+        const existing = getServer(String(body.serverId));
+        if (existing && existing.status !== 'closed') {
+          const pub = bindRuntimeKey(existing.id, runtimeKey, {
+            playerCount: body.playerCount,
+            status: body.status,
+            hostUserId: body.hostUserId,
+          });
+          if (body.name || body.started != null) {
+            syncRuntime(runtimeKey, {
+              name: body.name,
+              started: body.started,
+              playerCount: body.playerCount,
+              status: body.status,
+              hostName: body.hostName || body.hostUsername,
+              hostUserId: body.hostUserId,
+            });
+          }
+          return json(res, 200, {
+            success: true,
+            server: pub || toPublicServer(existing),
+            bound: true,
+            created: false,
+          });
+        }
+      }
+
+      const result = registerRuntimeServer({
+        gameId: body.gameId,
+        name: body.name || `${body.gameId} ${runtimeKey}`,
+        hostUserId: Number(body.hostUserId) || 0,
+        hostUsername: String(body.hostUsername || body.hostName || 'host').slice(0, 32),
+        hostDisplayName: String(body.hostDisplayName || body.hostName || body.hostUsername || 'host').slice(0, 48),
+        visibility: body.visibility === 'private' ? 'private' : 'public',
+        maxPlayers: body.maxPlayers,
+        runtimeKey,
+        inviteCode: body.inviteCode || (runtimeKey.length === 4 ? runtimeKey : undefined),
+        playerCount: body.playerCount,
+        status: body.status || 'waiting',
+      });
+      return json(res, 200, {
+        success: true,
+        server: result.public,
+        created: result.created,
+        bound: false,
+      });
+    }
+
+    if (pathname === '/api/internal/runtime/sync' && method === 'POST') {
+      requireRuntimeBridge(req);
+      const wait = hit('runtime-sync:ip', 300, 60000);
+      if (wait) return rateLimited(res, wait);
+      const body = await readJsonBody(req);
+      const runtimeKey = String(body.runtimeKey || body.code || '').trim();
+      if (!runtimeKey) throw new ApiError('INVALID_INPUT', 'runtimeKey obrigatório.', 400);
+      const pub = syncRuntime(runtimeKey, {
+        playerCount: body.playerCount,
+        status: body.status,
+        started: body.started,
+        name: body.name,
+        hostName: body.hostName || body.hostUsername,
+        hostUserId: body.hostUserId,
+      });
+      touchHeartbeatByRuntime(runtimeKey);
+      if (!pub) {
+        return json(res, 404, { success: false, error: 'NOT_FOUND', message: 'Runtime não registrado.' });
+      }
+      return json(res, 200, { success: true, server: pub });
+    }
+
+    if (pathname === '/api/internal/runtime/close' && method === 'POST') {
+      requireRuntimeBridge(req);
+      const body = await readJsonBody(req);
+      const runtimeKey = String(body.runtimeKey || body.code || '').trim();
+      const serverId = body.serverId ? String(body.serverId) : null;
+      let server = serverId ? getServer(serverId) : null;
+      if (!server && runtimeKey) server = findByRuntimeKey(runtimeKey);
+      if (!server || server.status === 'closed') {
+        return json(res, 200, { success: true, closed: false });
+      }
+      const pub = closeServer(server.id, server.hostUserId, {
+        force: true,
+        reason: body.reason || 'runtime_closed',
+      });
+      return json(res, 200, { success: true, closed: true, server: pub });
     }
 
     if (pathname === '/api/friends' && method === 'GET') {
