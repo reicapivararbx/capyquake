@@ -38,7 +38,8 @@ const STAFF_ACTION_PERMS = Object.freeze([
   'inventory.give', 'inventory.remove',
   'game.giveXp', 'game.setLevel', 'game.levelUp', 'game.maxStats', 'game.reset', 'game.giveAll',
   'messages.global',
-  'portal.news', 'portal.wiki', 'portal.achievements'
+  'portal.news', 'portal.wiki', 'portal.achievements',
+  'servers.view', 'servers.inspect', 'servers.close', 'servers.kick_player', 'servers.manage'
 ]);
 
 export const PERMISSIONS = Object.freeze({
@@ -47,7 +48,7 @@ export const PERMISSIONS = Object.freeze({
   cool: Object.freeze([]),
   hazbin: Object.freeze([]),
   friend: Object.freeze([]),
-  best_capybara: Object.freeze([...VIEW_PERMS]),
+  best_capybara: Object.freeze([...VIEW_PERMS, 'servers.view']),
   developer: Object.freeze([...VIEW_PERMS, ...STAFF_ACTION_PERMS]),
   admin: Object.freeze([...VIEW_PERMS, ...STAFF_ACTION_PERMS]),
   head_admin: Object.freeze([...VIEW_PERMS, ...STAFF_ACTION_PERMS, 'roles.manage']),

@@ -19,5 +19,9 @@ export const env = {
   adminUsername: process.env.CAPYQUAKE_ADMIN_USERNAME || 'admin',
   adminPassword: process.env.CAPYQUAKE_ADMIN_PASSWORD,
   adminCode: process.env.CAPYQUAKE_ADMIN_CODE,
-  sessionTtlMs: Number(process.env.CAPYQUAKE_SESSION_TTL_HOURS || 168) * 3600 * 1000
+  sessionTtlMs: Number(process.env.CAPYQUAKE_SESSION_TTL_HOURS || 168) * 3600 * 1000,
+  runtimeBridgeSecret:
+    process.env.CAPY_RUNTIME_BRIDGE_SECRET ||
+    process.env.CAPYQUAKE_RUNTIME_BRIDGE_SECRET ||
+    'dev-runtime-bridge',
 };
