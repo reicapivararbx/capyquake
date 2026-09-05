@@ -1130,6 +1130,118 @@ async function pageAdminChat() {
 }
 
 
+async function pageServers() {
+  if (!can('servers.view') && !can('*')) {
+    content.innerHTML = `<p class="bad-msg">Sem permissão servers.view</p>`;
+    return;
+  }
+  const canClose = can('servers.close') || can('servers.manage') || can('*');
+  const canKick = can('servers.kick_player') || can('servers.manage') || can('*');
+
+  content.innerHTML = `
+    <h2>Servidores ao vivo</h2>
+    <p class="dim">Registry central in-memory — salas reais (público + privado). Sem inventar listagens.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:12px 0">
+      <select id="srv-game">
+        <option value="">Todos os jogos</option>
+        <option value="capyquake">Capyquake</option>
+        <option value="capyrails">Capyrails</option>
+        <option value="capyzen">Capyzen</option>
+        <option value="find-the-markers">Find the Markers</option>
+      </select>
+      <select id="srv-status">
+        <option value="">Status ativo</option>
+        <option value="waiting">waiting</option>
+        <option value="playing">playing</option>
+        <option value="full">full</option>
+        <option value="closing">closing</option>
+        <option value="closed">closed</option>
+      </select>
+      <label class="dim"><input type="checkbox" id="srv-closed"> Incluir fechados</label>
+      <button id="srv-reload" class="ghost">Atualizar</button>
+    </div>
+    <div id="srv-table" class="table-wrap">Carregando…</div>
+  `;
+
+  async function load() {
+    const gameId = $('#srv-game')?.value || '';
+    const status = $('#srv-status')?.value || '';
+    const includeClosed = $('#srv-closed')?.checked ? '1' : '';
+    const qs = new URLSearchParams();
+    if (gameId) qs.set('gameId', gameId);
+    if (status) qs.set('status', status);
+    if (includeClosed) qs.set('includeClosed', '1');
+    qs.set('limit', '200');
+    const path = `/api/admin/servers?${qs}`;
+    const box = $('#srv-table');
+    try {
+      const data = await api(path);
+      const rows = data.servers || [];
+      if (!rows.length) {
+        box.innerHTML = `<p class="dim">Nenhum servidor no registry.</p>`;
+        return;
+      }
+      box.innerHTML = `<table class="data">
+        <thead><tr>
+          <th>ID</th><th>Jogo</th><th>Nome</th><th>Host</th><th>Players</th>
+          <th>Privacidade</th><th>Status</th><th>Heartbeat</th><th>Ações</th>
+        </tr></thead>
+        <tbody>${rows.map((s) => {
+          const hb = s.lastHeartbeatAt ? dt(s.lastHeartbeatAt) : '—';
+          const age = s.lastHeartbeatAt ? Math.round((Date.now() - s.lastHeartbeatAt) / 1000) + 's' : '';
+          return `<tr data-id="${esc(s.id)}">
+            <td class="mono" title="${esc(s.id)}">${esc(String(s.id).slice(0, 8))}…</td>
+            <td>${esc(s.gameId)}</td>
+            <td>${esc(s.name)}</td>
+            <td>${esc(s.hostUsername || s.hostUserId || '—')}</td>
+            <td>${esc(s.playerCount)}/${esc(s.maxPlayers)}</td>
+            <td>${s.visibility === 'private' ? '🔒 private' : '🌐 public'}${s.inviteCode ? ` <span class="mono dim">${esc(s.inviteCode)}</span>` : ''}</td>
+            <td><span class="pill">${esc(s.status)}</span></td>
+            <td class="dim" title="${esc(hb)}">${esc(age || hb)}</td>
+            <td style="white-space:nowrap">
+              ${canClose && s.status !== 'closed' ? `<button class="ghost bad" data-close="${esc(s.id)}">Fechar</button>` : ''}
+              ${canKick && s.status !== 'closed' ? `<button class="ghost" data-kick="${esc(s.id)}">Kick</button>` : ''}
+            </td>
+          </tr>`;
+        }).join('')}</tbody></table>`;
+
+      box.querySelectorAll('[data-close]').forEach((btn) => {
+        btn.onclick = () => runAction(btn, async () => {
+          await api(`/api/admin/servers/${encodeURIComponent(btn.dataset.close)}/close`, {
+            method: 'POST',
+            body: { reason: 'admin' },
+            idemKey: uuid(),
+          });
+          await load();
+        }, 'Fechado');
+      });
+      box.querySelectorAll('[data-kick]').forEach((btn) => {
+        btn.onclick = () => {
+          const uid = prompt('userId numérico para kick:');
+          if (!uid) return;
+          runAction(btn, async () => {
+            await api(`/api/admin/servers/${encodeURIComponent(btn.dataset.kick)}/kick`, {
+              method: 'POST',
+              body: { userId: Number(uid) },
+              idemKey: uuid(),
+            });
+            await load();
+          }, 'Kick');
+        };
+      });
+    } catch (e) {
+      box.innerHTML = `<p class="bad-msg">${esc(e.message)}</p>`;
+    }
+  }
+
+  $('#srv-reload').onclick = () => load();
+  $('#srv-game').onchange = () => load();
+  $('#srv-status').onchange = () => load();
+  $('#srv-closed').onchange = () => load();
+  await load();
+}
+
+
 // ---------- router ----------
 
 async function route() {
@@ -1150,6 +1262,7 @@ async function route() {
     if (parts[0] === 'game-tools') return await pageTools(params);
     if (parts[0] === 'logs') return await pageLogs(intParam0(params.get('offset')));
     if (parts[0] === 'chat') return await pageAdminChat();
+    if (parts[0] === 'servers') return await pageServers();
     if (parts[0] === 'settings') return pageSettings();
     return await pageDashboard();
   } catch (e) { content.innerHTML = `<p class="bad-msg">${esc(e.message)}</p>`; }
