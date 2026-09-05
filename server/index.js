@@ -16,9 +16,22 @@ import {
 } from './services.js';
 import { bindRooms } from './lobbies.js';
 import { touchOnline, clearPresence, setRoom, clearRoom } from './presence.js';
+import {
+  bindRuntimeKey,
+  closeServer,
+  findByRuntimeKey,
+  getServer,
+  onServerEvent,
+  peekJoinToken,
+  registerRuntimeServer,
+  startRegistrySweeper,
+  syncRuntime,
+  touchHeartbeatByRuntime,
+} from './servers-registry.js';
 
 ensureAdminSeed();
 ensureEasterEggSeed();
+startRegistrySweeper();
 
 const startTime = Date.now();
 const ADMIN_DIR = resolve(fileURLToPath(new URL('.', import.meta.url)), 'admin');
@@ -106,6 +119,100 @@ function broadcastToAllClients(payload) {
   for (const client of wss.clients) {
     if (client.readyState === 1) client.send(data);
   }
+}
+
+function broadcastServerRegistryEvent(event, payload) {
+  broadcastToAllClients({
+    type: event,
+    data: payload,
+    serverTime: Date.now(),
+  });
+}
+
+onServerEvent((event, payload) => {
+  if (
+    event === 'server_created' ||
+    event === 'server_updated' ||
+    event === 'server_closed' ||
+    event === 'host_changed' ||
+    event === 'player_joined' ||
+    event === 'player_left' ||
+    event === 'player_kicked'
+  ) {
+    broadcastServerRegistryEvent(event, payload);
+  }
+});
+
+function roomHostMeta(room) {
+  const hostWs = room.host && room.players?.has?.(room.host) ? room.host : null;
+  const hostPlayer = hostWs ? room.players.get(hostWs) : null;
+  const hostUser = hostWs?.chatUser || null;
+  return {
+    hostUserId: hostUser?.id || 0,
+    hostUsername: hostUser?.username || hostPlayer?.name || 'host',
+    hostDisplayName: hostUser?.displayName || hostPlayer?.name || 'host',
+    hostName: hostPlayer?.name || hostUser?.username || 'host',
+  };
+}
+
+function publishRoomToRegistry(room, { visibility = 'public', name, serverId = null } = {}) {
+  if (!room?.code) return null;
+  const host = roomHostMeta(room);
+
+  if (serverId) {
+    const existing = getServer(String(serverId));
+    if (existing && existing.status !== 'closed' && existing.gameId === 'capyquake') {
+      bindRuntimeKey(existing.id, room.code, {
+        playerCount: room.players?.size ?? 0,
+        status: room.started ? 'playing' : 'waiting',
+        hostUserId: host.hostUserId || existing.hostUserId,
+      });
+      if (name) {
+        syncRuntime(room.code, { name: String(name).slice(0, 48) });
+      }
+      room.registryServerId = existing.id;
+      room.registryVisibility = existing.visibility || visibility;
+      return { server: existing, public: null, created: false, bound: true };
+    }
+  }
+
+  const result = registerRuntimeServer({
+    gameId: 'capyquake',
+    name: name || `Capyquake ${room.code}`,
+    hostUserId: host.hostUserId,
+    hostUsername: host.hostUsername,
+    hostDisplayName: host.hostDisplayName,
+    visibility,
+    maxPlayers: 6,
+    runtimeKey: room.code,
+    inviteCode: room.code,
+    playerCount: room.players?.size ?? 0,
+    status: room.started ? 'playing' : 'waiting',
+  });
+  room.registryServerId = result.server.id;
+  room.registryVisibility = visibility;
+  return result;
+}
+
+function syncRoomRegistry(room) {
+  if (!room?.code) return;
+  const existing = findByRuntimeKey(room.code);
+  if (!existing) {
+    if ((room.players?.size ?? 0) > 0) publishRoomToRegistry(room, {
+      visibility: room.registryVisibility || 'public',
+    });
+    return;
+  }
+  const host = roomHostMeta(room);
+  syncRuntime(room.code, {
+    playerCount: room.players?.size ?? 0,
+    status: room.started ? 'playing' : undefined,
+    started: !!room.started,
+    hostName: host.hostName,
+    hostUserId: host.hostUserId || undefined,
+    name: existing.name,
+  });
+  touchHeartbeatByRuntime(room.code);
 }
 
 function broadcastGlobalMessageEvent(event, message) {
@@ -1083,6 +1190,7 @@ class GameRoom {
       this.host = ws;
     }
     this.broadcastLobby();
+    syncRoomRegistry(this);
   }
 
   removePlayer(ws) {
@@ -1097,7 +1205,12 @@ class GameRoom {
     }
     this.broadcastLobby();
     if (this.players.size === 0) {
+      const code = this.code;
       rooms.delete(this.id);
+      const reg = findByRuntimeKey(code);
+      if (reg) closeServer(reg.id, reg.hostUserId, { force: true, reason: 'empty' });
+    } else {
+      syncRoomRegistry(this);
     }
   }
 
@@ -1142,6 +1255,7 @@ class GameRoom {
         bots: ['UmLegalGaucho', 'Bot_Mineiro', 'Bot_Paulista', 'Bot_Carioca', 'Bot_Baiano']
       }
     });
+    syncRoomRegistry(this);
     return true;
   }
 
@@ -1374,12 +1488,46 @@ wss.on('connection', (ws) => {
           currentRoom.removePlayer(ws);
           syncPresenceRoom(ws, null);
         }
+        const portalServerId = msg.serverId ? String(msg.serverId) : null;
+        if (portalServerId) {
+          const reg = getServer(portalServerId);
+          if (reg && reg.status !== 'closed' && reg.runtimeKey) {
+            const existingRoom = findRoomByCode(reg.runtimeKey);
+            if (existingRoom && !existingRoom.started && existingRoom.players.size < 6) {
+              currentRoom = existingRoom;
+              existingRoom.addPlayer(ws, lobbyDisplayName(ws, msg.name));
+              syncRoomRegistry(existingRoom);
+              syncPresenceRoom(ws, existingRoom);
+              break;
+            }
+          }
+        }
         const room = new GameRoom();
         rooms.set(room.id, room);
         currentRoom = room;
+        let visibility = msg.visibility === 'private' ? 'private' : 'public';
+        let lobbyName = String(msg.serverName || msg.lobbyName || '').trim().slice(0, 48)
+          || `Capyquake ${room.code}`;
+        if (portalServerId) {
+          const reg = getServer(portalServerId);
+          if (reg && reg.status !== 'closed') {
+            visibility = reg.visibility === 'private' ? 'private' : 'public';
+            if (!msg.serverName && !msg.lobbyName) lobbyName = reg.name || lobbyName;
+          }
+        }
         room.addPlayer(ws, lobbyDisplayName(ws, msg.name));
+        publishRoomToRegistry(room, {
+          visibility,
+          name: lobbyName,
+          serverId: portalServerId,
+        });
         syncPresenceRoom(ws, room);
-        ws.send(JSON.stringify({ type: 'lobbyCreated', code: room.code }));
+        ws.send(JSON.stringify({
+          type: 'lobbyCreated',
+          code: room.code,
+          visibility,
+          serverId: room.registryServerId || portalServerId || null,
+        }));
         break;
       }
       case 'joinLobby': {
@@ -1387,7 +1535,33 @@ wss.on('connection', (ws) => {
           currentRoom.removePlayer(ws);
           syncPresenceRoom(ws, null);
         }
-        const room = findRoomByCode(msg.code);
+        let joinCode = String(msg.code || msg.lobby || '').trim();
+        const portalServerId = msg.serverId ? String(msg.serverId) : '';
+        if (portalServerId) {
+          const byId = getServer(portalServerId);
+          if (byId && byId.status !== 'closed') {
+            if (msg.joinToken) {
+              const peeked = peekJoinToken(String(msg.joinToken));
+              if (peeked && peeked.serverId !== byId.id) {
+                ws.send(JSON.stringify({ type: 'lobbyError', message: 'Token de entrada inválido.' }));
+                break;
+              }
+            }
+            if (byId.runtimeKey) joinCode = byId.runtimeKey;
+            else {
+              ws.send(JSON.stringify({
+                type: 'lobbyError',
+                message: 'O host ainda não abriu a sala. Aguarde e tente de novo.',
+              }));
+              currentRoom = null;
+              break;
+            }
+          } else {
+            const byKey = findByRuntimeKey(portalServerId);
+            if (byKey?.runtimeKey) joinCode = byKey.runtimeKey;
+          }
+        }
+        const room = findRoomByCode(joinCode || msg.code);
         if (!room) {
           ws.send(JSON.stringify({ type: 'lobbyError', message: 'Lobby nao encontrado. Confira o codigo.' }));
           currentRoom = null;
@@ -1403,6 +1577,16 @@ wss.on('connection', (ws) => {
         }
         currentRoom = room;
         room.addPlayer(ws, lobbyDisplayName(ws, msg.name));
+        if (portalServerId && !findByRuntimeKey(room.code)) {
+          publishRoomToRegistry(room, {
+            visibility: room.registryVisibility || 'public',
+            serverId: portalServerId,
+          });
+        } else if (!findByRuntimeKey(room.code)) {
+          publishRoomToRegistry(room, { visibility: room.registryVisibility || 'public' });
+        } else {
+          syncRoomRegistry(room);
+        }
         syncPresenceRoom(ws, room);
         break;
       }
@@ -1418,13 +1602,19 @@ wss.on('connection', (ws) => {
         syncPresenceRoom(ws, null);
         break;
       case 'position':
-        if (currentRoom) currentRoom.handlePosition(ws, msg.position, msg.rotation);
+        if (currentRoom) {
+          currentRoom.handlePosition(ws, msg.position, msg.rotation);
+          touchHeartbeatByRuntime(currentRoom.code);
+        }
         break;
       case 'kill':
         if (currentRoom) currentRoom.handleKill(ws, msg.targetId);
         break;
       case 'chat':
-        if (currentRoom) currentRoom.handleChat(ws, msg);
+        if (currentRoom) {
+          currentRoom.handleChat(ws, msg);
+          touchHeartbeatByRuntime(currentRoom.code);
+        }
         break;
       case 'globalChat':
         handleGlobalChat(ws, msg);
